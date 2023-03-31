@@ -18,7 +18,7 @@
 
 {:deps
    {;org.spdx/java-spdx-library        {:mvn/version "1.1.5"}}         ;####ONCE 1.1.5 IS RELEASED!!!!
-    com.github.spdx/Spdx-Java-Library {:mvn/version "-SNAPSHOT"}}      ;####TO BE REMOVED ONCE Spdx-Java-Library v1.1.5 IS RELEASED!!!!
+    com.github.spdx/Spdx-Java-Library {:mvn/version "1.1.4"}}      ;####TO BE REMOVED ONCE Spdx-Java-Library v1.1.5 IS RELEASED!!!!
  :mvn/repos {"jitpack" {:url "https://jitpack.io"}}                    ;####TO BE REMOVED ONCE Spdx-Java-Library v1.1.5 IS RELEASED!!!!
  :aliases
    {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.9.4" :git/sha "76b78fe"}
