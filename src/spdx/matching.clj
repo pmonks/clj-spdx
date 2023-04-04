@@ -57,7 +57,7 @@
      (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseIdsWithinText text))
              set)))
   ([^String text license-ids]
-   (when (and text (not (empty? license-ids)))
+   (when (and text (seq license-ids))
      (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseIdsWithinText text (seq license-ids)))
              set))))
 
@@ -68,6 +68,6 @@
      (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseExceptionIdsWithinText text))
              set)))
   ([^String text exception-ids]
-   (when (and text (not (empty? exception-ids)))
+   (when (and text (seq exception-ids))
      (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseExceptionIdsWithinText text (seq exception-ids)))
              set))))
