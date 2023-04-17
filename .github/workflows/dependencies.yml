@@ -8,8 +8,11 @@ on:
 jobs:
   antq:
     runs-on: ubuntu-latest
-    container:
-      image: uochan/antq
     steps:
       - uses: actions/checkout@v3
-      - run: java -jar /tmp/antq/antq.jar --skip=pom --error-format="::error file={{file}}::{{message}}"
+      - name: antq
+        uses: liquidz/antq-action@main
+        with:
+          excludes: ''
+          directories: './'
+          skips: 'boot pom shadow-cljs leiningen'
