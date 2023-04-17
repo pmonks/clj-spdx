@@ -3,7 +3,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '0 21 * * 0'
+    - cron: '0 1 * * 2'   # Every Tuesday at 1am
 
 jobs:
   antq:
