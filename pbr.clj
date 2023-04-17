@@ -27,7 +27,7 @@
          :pom          {:description      "Clojure wrapper around spdx/Spdx-Java-Library."
                         :url              "https://github.com/pmonks/clj-spdx"
                         :licenses         [:license   {:name "Apache License 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}]
-                        :developers       [:developer {:id "pmonks" :name "Peter Monks" :email "pmonks+pbr@gmail.com"}]
+                        :developers       [:developer {:id "pmonks" :name "Peter Monks" :email "pmonks+clj-spdx@gmail.com"}]
                         :scm              {:url                  "https://github.com/pmonks/clj-spdx"
                                            :connection           "scm:git:git://github.com/pmonks/clj-spdx.git"
                                            :developer-connection "scm:git:ssh://git@github.com/pmonks/clj-spdx.git"
