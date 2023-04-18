@@ -38,7 +38,7 @@
   (im/listed-license-id? id))
 
 (defn id->info
-  "Returns license information for the given identifier as a map, or nil if there isn't one (e.g. the id is nil)."
+  "Returns license information for the given identifier as a map, or nil if there isn't one (e.g. the id is nil or invalid)."
   [^String id]
   (some-> id
           im/id->license
@@ -63,6 +63,8 @@
                  set)))
 
 (defn init!
-  "Initialises this namespace upon first call (and does nothing on subsequent calls), returning nil. Consumers of this namespace are not required to call this fn, as it will be called implicitly upon first use of any of this namespace's functionality; it is provided to allow explicit control of the cost of initialisation to callers who need it."
+  "Initialises this namespace upon first call (and does nothing on subsequent calls), returning nil. Consumers of this namespace are not required to call this fn, as it will be called implicitly upon first use of any of this namespace's functionality; it is provided to allow explicit control of the cost of initialisation to callers who need it.
+
+  Note: this method has a substantial performance cost."
   []
   (run! id->info (ids)))
