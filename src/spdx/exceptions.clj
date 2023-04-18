@@ -22,7 +22,9 @@
             [spdx.impl.mapping :as im]))
 
 (defn version
-  "The version of the exception list (a String in major.minor format). Note: identical to spdx.license-list/version."
+  "The version of the exception list (a String in major.minor format).
+
+  Note: identical to spdx.license-list/version."
   []
   (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
 
@@ -38,20 +40,27 @@
   (im/listed-exception-id? id))
 
 (defn id->info
-  "Returns exception information for the given identifier as a map, or nil if there isn't one (e.g. the id is nil or invalid)."
+  "Returns exception information for the given identifier as a map, or nil if
+  there isn't one (e.g. the id is nil or invalid)."
   [^String id]
   (some-> id
           im/id->exception
           im/exception->map))
 
 (defn non-deprecated-ids
-  "Returns the set of exception ids that identify current (non-deprecated) exceptions within the provided set of SPDX exception identifiers (or all of them, if not provided)."
+  "Returns the set of exception ids that identify current (non-deprecated)
+  exceptions within the provided set of SPDX exception identifiers (or all of
+  them, if not provided)."
   ([]    (non-deprecated-ids (ids)))
   ([ids] (some-> (seq (filter #(not (:deprecated? (id->info %))) ids))
                  set)))
 
 (defn init!
-  "Initialises this namespace upon first call (and does nothing on subsequent calls), returning nil. Consumers of this namespace are not required to call this fn, as it will be called implicitly upon first use of any of this namespace's functionality; it is provided to allow explicit control of the cost of initialisation to callers who need it.
+  "Initialises this namespace upon first call (and does nothing on subsequent
+  calls), returning nil. Consumers of this namespace are not required to call
+  this fn, as it will be called implicitly upon first use of any of this
+  namespace's functionality; it is provided to allow explicit control of the
+  cost of initialisation to callers who need it.
 
   Note: this method has a substantial performance cost."
   []

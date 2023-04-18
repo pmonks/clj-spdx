@@ -62,7 +62,8 @@
     (.isSpdxListedExceptionId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
 
 (defn cross-ref->map
-  "Turns a org.spdx.library.model.license.CrossRef object into a map. All map keys are optional, but may include:
+  "Turns a org.spdx.library.model.license.CrossRef object into a map. All map
+  keys are optional, but may include:
   :is-wayback-link? - boolean
   :live?            - boolean
   :match            - string
@@ -71,7 +72,8 @@
   :url              - string
   :valid?           - boolean
 
-  See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/CrossRef.html for more information."
+  See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/CrossRef.html
+  for more information."
   ^java.util.Map [^org.spdx.library.model.license.CrossRef cr]
   (when cr
     (merge (value-to-map :is-wayback-link? (.getIsWayBackLink cr))
@@ -84,7 +86,8 @@
            (value-to-map :valid?           (.getValid         cr)))))
 
 (defn license->map
-  "Turns a org.spdx.library.model.license.SpdxListedLicense object into a map. All map keys are optional, but may include:
+  "Turns a org.spdx.library.model.license.SpdxListedLicense object into a map.
+  All map keys are optional, but may include:
   :id                 - string (an SPDX identifier)
   :name               - string
   :comment            - string
@@ -101,7 +104,8 @@
   :header-html        - string
   :header-template    - string
 
-  See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/SpdxListedLicense.html for more information."
+  See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/SpdxListedLicense.html
+  for more information."
   ^java.util.Map [^org.spdx.library.model.license.SpdxListedLicense lic]
   (when lic
     (merge (value-to-map :id                 (.getLicenseId                     lic))
@@ -122,13 +126,16 @@
            (value-to-map :header-template    (.getStandardLicenseHeaderTemplate lic) nil-blank-string))))
 
 (defn id->license
-  "Turns a license id into a org.spdx.library.model.license.SpdxListedLicense object. Note: unlike the underlying Java library it only handles listed SPDX license ids."
+  "Turns a license id into a org.spdx.library.model.license.SpdxListedLicense
+  object. Note: unlike the underlying Java library it only handles listed SPDX
+  license ids."
   ^org.spdx.library.model.license.SpdxListedLicense [^String id]
   (when (listed-license-id? id)
     (.getListedLicenseById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
 
 (defn exception->map
-  "Turns a org.spdx.library.model.license.ListedLicenseException object into a map. All map keys are optional, but may include:
+  "Turns a org.spdx.library.model.license.ListedLicenseException object into a
+  map. All map keys are optional, but may include:
   :id                 - string (an SPDX identifier)
   :name               - string
   :comment            - string
@@ -139,7 +146,8 @@
   :text-html          - string
   :text-template      - string
 
-  See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/ListedLicenseException.html for more information."
+  See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/ListedLicenseException.html
+  for more information."
   ^java.util.Map [^org.spdx.library.model.license.ListedLicenseException exc]
   (when exc
     (merge (value-to-map :id                 (.getLicenseExceptionId exc))
@@ -154,7 +162,9 @@
            (value-to-map :text-template      (.getLicenseExceptionTemplate exc) nil-blank-string))))
 
 (defn id->exception
-  "Turns an exception id into a org.spdx.library.model.license.ListedLicenseException object. Note: unlike the underlying Java library it only handles listed SPDX exception ids."
+  "Turns an exception id into a org.spdx.library.model.license.ListedLicenseException
+  object. Note: unlike the underlying Java library it only handles listed SPDX
+  exception ids."
   ^org.spdx.library.model.license.ListedLicenseException [^String id]
   (when (listed-exception-id? id)
     (.getListedExceptionById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
