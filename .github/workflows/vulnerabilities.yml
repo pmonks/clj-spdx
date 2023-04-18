@@ -1,7 +1,8 @@
 name: vulnerabilities
 on:
-  push:
-  pull_request:
+# Don't require this on push or pull_request, or it'll block releases even for minor vulnerabilities
+#  push:
+#  pull_request:
   schedule:
     - cron: '0 2 * * 2'   # Every Tuesday at 2am
 

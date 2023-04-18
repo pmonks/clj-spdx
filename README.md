@@ -21,13 +21,22 @@ Note also that the author has no official relationship with the [SPDX project](h
 #### Clojure CLI
 
 ```shell
-$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "#.#.#"}}}'  # Where #.#.# is replaced with an actual version number (see badge above)
+$ # Where #.#.# is replaced with an actual version number (see badge above)
+$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "#.#.#"}}}'
 ```
 
 #### Leiningen
 
 ```shell
 $ lein try com.github.pmonks/clj-spdx
+```
+
+#### deps-try
+
+Note: you must already have [`deps-try`](https://github.com/eval/deps-try) installed.
+
+```shell
+$ deps-try com.github.pmonks/clj-spdx
 ```
 
 ### API Documentation
@@ -63,7 +72,7 @@ Of particular interest are:
 * `clojure -T:build ci` - run the full CI suite (check for outdated dependencies, run the unit tests, run the linters)
 * `clojure -T:build install` - build the JAR and install it locally (e.g. so you can test it with downstream code)
 
-Please note that the `deploy` task is restricted to the core development team (and will not function if you run it yourself).
+Please note that the `release` and `deploy` tasks are restricted to the core development team (and will not function if you run them yourself).
 
 ## License
 
