@@ -18,22 +18,30 @@
 
 (ns spdx.impl.mapping
   "Java object mapping namespace. Note: this namespace is not part of the public API of clj-spdx and may change without notice."
-  (:require [clojure.instant :as inst]
+  (:require [clojure.string  :as s]
+            [clojure.instant :as inst]
             [spdx.impl.state :as is]))
 
-(defn- unwrap-value
+(defn- unwrap-optional
   "Because Java is becoming increasingly unhinged..."
   [x]
-  (when x
-    (if (= java.util.Optional (type x))
-      (.orElse ^java.util.Optional x nil)
-      x)))
+  (if (= java.util.Optional (type x))
+    (.orElse ^java.util.Optional x nil)
+    x))
 
 (defn- value-to-map
   "Returns value in a singleton map with the given key, or nil if value is nil."
-  [k v]
-  (when-let [v (unwrap-value v)]
-    {k v}))
+  ([k v] (value-to-map k v nil))
+  ([k v f]
+   (let [f (if f f identity)]
+     (when-let [v (f (unwrap-optional v))]
+       {k v}))))
+
+(defn- nil-blank-string
+  "Returns nil if the given string is blank."
+  [^String s]
+  (when-not (s/blank? s)
+    s))
 
 (defn- read-instant-date
   "Because clojure.instant/read-instant-date isn't nil tolerant. 🙄"
@@ -70,9 +78,9 @@
            (value-to-map :live?            (.getLive          cr))
            (value-to-map :match            (.getMatch         cr))
            (value-to-map :order            (.getOrder         cr))
-           (value-to-map :timestamp        (read-instant-date (unwrap-value (.getTimestamp cr))))
+           (value-to-map :timestamp        (.getTimestamp     cr) read-instant-date)
 ;           (value-to-map :type             (.getType          cr))    ; Spdx-Java-Library implementation detail
-           (value-to-map :url              (.getUrl           cr))
+           (value-to-map :url              (.getUrl           cr) nil-blank-string)
            (value-to-map :valid?           (.getValid         cr)))))
 
 (defn license->map
@@ -97,21 +105,21 @@
   ^java.util.Map [^org.spdx.library.model.license.SpdxListedLicense lic]
   (when lic
     (merge (value-to-map :id                 (.getLicenseId                     lic))
-           (value-to-map :name               (.getName                          lic))
+           (value-to-map :name               (.getName                          lic) nil-blank-string)
 ;           (value-to-map :type               (.getType                          lic))    ; Spdx-Java-Library implementation detail
-           (value-to-map :comment            (.getComment                       lic))
+           (value-to-map :comment            (.getComment                       lic) nil-blank-string)
            (value-to-map :see-also           (seq (.getSeeAlso                  lic)))
            (value-to-map :cross-refs         (seq (filter identity (map cross-ref->map (.getCrossRef lic)))))
-           (value-to-map :deprecated?        (.isDeprecated                     lic))
-           (value-to-map :deprecated-version (.getDeprecatedVersion             lic))
+           (value-to-map :deprecated?        (.isDeprecated                     lic) boolean)
+           (value-to-map :deprecated-version (.getDeprecatedVersion             lic) nil-blank-string)
            (value-to-map :fsf-libre?         (.getFsfLibre                      lic))
            (value-to-map :osi-approved?      (.isOsiApproved                    lic))
-           (value-to-map :text               (.getLicenseText                   lic))
-           (value-to-map :text-html          (.getLicenseTextHtml               lic))
-           (value-to-map :text-template      (.getStandardLicenseTemplate       lic))
-           (value-to-map :header             (.getStandardLicenseHeader         lic))
-           (value-to-map :header-html        (.getLicenseHeaderHtml             lic))
-           (value-to-map :header-template    (.getStandardLicenseHeaderTemplate lic)))))
+           (value-to-map :text               (.getLicenseText                   lic) nil-blank-string)
+           (value-to-map :text-html          (.getLicenseTextHtml               lic) nil-blank-string)
+           (value-to-map :text-template      (.getStandardLicenseTemplate       lic) nil-blank-string)
+           (value-to-map :header             (.getStandardLicenseHeader         lic) nil-blank-string)
+           (value-to-map :header-html        (.getLicenseHeaderHtml             lic) nil-blank-string)
+           (value-to-map :header-template    (.getStandardLicenseHeaderTemplate lic) nil-blank-string))))
 
 (defn id->license
   "Turns a license id into a org.spdx.library.model.license.SpdxListedLicense object. Note: unlike the underlying Java library it only handles listed SPDX license ids."
@@ -134,16 +142,16 @@
   See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/ListedLicenseException.html for more information."
   ^java.util.Map [^org.spdx.library.model.license.ListedLicenseException exc]
   (when exc
-    (merge (value-to-map :id                  (.getLicenseExceptionId exc))
-           (value-to-map :name                (.getName exc))
-;           (value-to-map :type                (.getType exc))    ; Spdx-Java-Library implementation detail
-           (value-to-map :comment             (.getComment exc))
-           (value-to-map :see-also            (seq (.getSeeAlso exc)))
-           (value-to-map :deprecated?         (.isDeprecated exc))
-           (value-to-map :deprecrated-version (.getDeprecatedVersion exc))
-           (value-to-map :text                (.getLicenseExceptionText exc))
-           (value-to-map :text-html           (.getExceptionTextHtml exc))
-           (value-to-map :text-template       (.getLicenseExceptionTemplate exc)))))
+    (merge (value-to-map :id                 (.getLicenseExceptionId exc))
+           (value-to-map :name               (.getName exc))
+;           (value-to-map :type               (.getType exc))    ; Spdx-Java-Library implementation detail
+           (value-to-map :comment            (.getComment exc)                  nil-blank-string)
+           (value-to-map :see-also           (seq (.getSeeAlso exc)))
+           (value-to-map :deprecated?        (.isDeprecated exc)                boolean)
+           (value-to-map :deprecated-version (.getDeprecatedVersion exc)        nil-blank-string)
+           (value-to-map :text               (.getLicenseExceptionText exc)     nil-blank-string)
+           (value-to-map :text-html          (.getExceptionTextHtml exc)        nil-blank-string)
+           (value-to-map :text-template      (.getLicenseExceptionTemplate exc) nil-blank-string))))
 
 (defn id->exception
   "Turns an exception id into a org.spdx.library.model.license.ListedLicenseException object. Note: unlike the underlying Java library it only handles listed SPDX exception ids."
