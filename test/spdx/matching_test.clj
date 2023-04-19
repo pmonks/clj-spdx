@@ -20,14 +20,14 @@
   (:require [clojure.string  :as    s]
             [clojure.test    :refer [deftest testing is]]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
-                                     texts-equivalent-licenses? licenses-within-text exceptions-within-text]]))
+                                     texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text exceptions-within-text]]))
 
 ; Environment variable to control whether all slow tests are run or not - see https://github.com/spdx/Spdx-Java-Library/blob/master/src/test/java/org/spdx/utility/compare/UnitTestHelper.java#L44-L51
-(def run-all-slow-tests? (boolean (when-let [rst (System/getenv "SPDX_JAVA_LIB_RUN_SLOW_TESTS")] (parse-boolean (s/lower-case rst)))))
+(def run-all-slow-tests? (boolean (when-let [rst (System/getenv "SPDX_CLJ_LIB_RUN_SLOW_TESTS")] (parse-boolean (s/lower-case rst)))))
 
 (if run-all-slow-tests?
   (println "🐢 Running slow tests - this will likely take at least an hour!")
-  (println "🐇 Skipping slow tests - this should take a minute or two."))
+  (println "🐇 Skipping slow tests - this should only take a minute or two."))
 
 ; Single license texts
 (def apache-2-text                   (slurp "https://www.apache.org/licenses/LICENSE-2.0.txt"))
@@ -140,6 +140,19 @@
     (is (false? (texts-equivalent-licenses? "" clj-spdx-license))))
   (testing "Equivalent texts"
     (is (true?  (texts-equivalent-licenses? apache-2-text clj-spdx-license)))))
+
+(deftest texts-equivalent-exceptions?-tests
+  (testing "nil, empty string"
+    (is (true?  (texts-equivalent-exceptions? nil nil)))
+    (is (false? (texts-equivalent-exceptions? "" nil)))
+    (is (false? (texts-equivalent-exceptions? nil "")))
+    (is (true?  (texts-equivalent-exceptions? "" "")))
+    (is (false? (texts-equivalent-exceptions? classpath-2-text nil)))
+    (is (false? (texts-equivalent-exceptions? classpath-2-text "")))
+    (is (false? (texts-equivalent-exceptions? nil classpath-2-text)))
+    (is (false? (texts-equivalent-exceptions? "" classpath-2-text))))
+  (testing "Equivalent texts"
+    (is (true?  (texts-equivalent-exceptions? classpath-2-text (str "\n\n" classpath-2-text "\n\n"))))))
 
 (deftest licenses-within-text-tests
   (testing "nil, empty string"
