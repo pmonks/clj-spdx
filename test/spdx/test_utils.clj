@@ -16,7 +16,15 @@
 ; SPDX-License-Identifier: Apache-2.0
 ;
 
-(ns spdx.test-utils)
+(ns spdx.test-utils
+  (:require [clojure.string :as s]))
+
+; Environment variable to control whether all slow tests are run or not - see https://github.com/spdx/Spdx-Java-Library/blob/master/src/test/java/org/spdx/utility/compare/UnitTestHelper.java#L44-L51
+(def run-all-slow-tests? (boolean (when-let [rst (System/getenv "SPDX_CLJ_LIB_RUN_SLOW_TESTS")] (parse-boolean (s/lower-case rst)))))
+
+(if run-all-slow-tests?
+  (println "🐢 Running slow tests - this will likely take at least an hour!")
+  (println "🐇 Skipping slow tests - this should only take a minute or two."))
 
 (defn equivalent-colls?
   "Are all of the colls 'equivalent' (same values and occurrences of each value, but in any order and regardless of concrete collection type)?"

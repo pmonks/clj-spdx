@@ -57,12 +57,16 @@
     false))
 
 (defn texts-equivalent-licenses?
-  "Do the two texts represent equivalent licenses? Note: there is no equivalent
-  function for exceptions."
+  "Do the two texts represent equivalent licenses?"
   [^String text1 ^String text2]
   (if (and text1 text2)
     (org.spdx.utility.compare.LicenseCompareHelper/isLicenseTextEquivalent text1 text2)
     (= nil text1 text2)))   ; Two nil texts are considered equivalent
+
+(defn texts-equivalent-exceptions?
+  "Do the two texts represent equivalent exceptions?"
+  [^String text1 ^String text2]
+  (texts-equivalent-licenses? text1 text2))    ; Spdx-Java-Library doesn't provide this explicitly, but the comparison logic is the same as for licenses
 
 (defn licenses-within-text
   "Returns the set of ids for all licenses found in the given text (optionally
