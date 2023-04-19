@@ -22,7 +22,11 @@
 (def list-obj (delay (org.spdx.library.model.license.ListedLicenses/getListedLicenses)))
 
 (defn init!
-  "Initialises this namespace upon first call (and does nothing on subsequent calls), returning nil. Consumers of this namespace are not required to call this fn, as it will be called implicitly upon first use of any of this namespace's functionality; it is provided to allow explicit control of the cost of initialisation to callers who need it."
+  "Initialises this namespace upon first call (and does nothing on subsequent
+  calls), returning nil. Consumers of this namespace are not required to call
+  this fn, as it will be called implicitly upon first use of any of this
+  namespace's functionality; it is provided to allow explicit control of the
+  cost of initialisation to callers who need it."
   []
   @list-obj
   nil)

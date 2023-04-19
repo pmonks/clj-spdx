@@ -57,14 +57,16 @@
     false))
 
 (defn texts-equivalent-licenses?
-  "Do the two texts represent equivalent licenses? Note: there is no equivalent function for exceptions."
+  "Do the two texts represent equivalent licenses? Note: there is no equivalent
+  function for exceptions."
   [^String text1 ^String text2]
   (if (and text1 text2)
     (org.spdx.utility.compare.LicenseCompareHelper/isLicenseTextEquivalent text1 text2)
     (= nil text1 text2)))   ; Two nil texts are considered equivalent
 
 (defn licenses-within-text
-  "Returns the set of ids for all licenses found in the given text (optionally from the provided list of license ids), or nil if none were found.
+  "Returns the set of ids for all licenses found in the given text (optionally
+  from the provided list of license ids), or nil if none were found.
 
   Note: this method has a substantial performance cost."
   ([^String text]
@@ -77,7 +79,8 @@
              set))))
 
 (defn exceptions-within-text
-  "Returns the set of ids for all exceptions found in the given text (optionally from the provided set of exception ids), or nil if none were found.
+  "Returns the set of ids for all exceptions found in the given text (optionally
+  from the provided set of exception ids), or nil if none were found.
 
   Note: this method has a substantial performance cost."
   ([^String text]
