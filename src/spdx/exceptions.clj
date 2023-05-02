@@ -24,7 +24,7 @@
 (defn version
   "The version of the exception list (a String in major.minor format).
 
-  Note: identical to spdx.license-list/version."
+  Note: identical to spdx.licenses/version."
   []
   (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
 
