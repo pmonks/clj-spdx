@@ -30,7 +30,7 @@
     x))
 
 (defn- value-to-map
-  "Returns value in a singleton map with the given key, or nil if value is nil."
+  "Returns v in a singleton map with key k, or nil if v is nil. Unwraps java.util.Optional values, and when f is provided applies it to v before putting it in the result."
   ([k v] (value-to-map k v nil))
   ([k v f]
    (when-let [v ((or f identity) (unwrap-optional v))]
@@ -39,26 +39,22 @@
 (defn- nil-blank-string
   "Returns s, or nil if it is blank."
   [^String s]
-  (when-not (s/blank? s)
-    s))
+  (when-not (s/blank? s) s))
 
 (defn- read-instant-date
   "Because clojure.instant/read-instant-date isn't nil tolerant... 🙄"
   [^String s]
-  (when s
-    (inst/read-instant-date s)))
+  (when s (inst/read-instant-date s)))
 
 (defn listed-license-id?
   "Is the given id one of the listed SPDX license identifiers?"
   [^String id]
-  (when id
-    (.isSpdxListedLicenseId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  (when id (.isSpdxListedLicenseId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
 
 (defn listed-exception-id?
   "Is the given id one of the listed SPDX exception identifiers?"
   [^String id]
-  (when id
-    (.isSpdxListedExceptionId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  (when id (.isSpdxListedExceptionId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
 
 (defn cross-ref->map
   "Turns a org.spdx.library.model.license.CrossRef object into a map. All map
@@ -129,8 +125,7 @@
   object, or returns nil. Note: unlike the underlying Java library it only
   handles listed SPDX license ids."
   ^org.spdx.library.model.license.SpdxListedLicense [^String id]
-  (when (listed-license-id? id)
-    (.getListedLicenseById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  (when (listed-license-id? id) (.getListedLicenseById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
 
 (defn exception->map
   "Turns a org.spdx.library.model.license.ListedLicenseException object into a
@@ -165,5 +160,4 @@
   object, or returns nil. Note: unlike the underlying Java library it only
   handles listed SPDX exception ids."
   ^org.spdx.library.model.license.ListedLicenseException [^String id]
-  (when (listed-exception-id? id)
-    (.getListedExceptionById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  (when (listed-exception-id? id) (.getListedExceptionById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))

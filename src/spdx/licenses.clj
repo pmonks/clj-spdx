@@ -81,4 +81,5 @@
 
   Note: this method has a substantial performance cost."
   []
+  (is/init!)
   (run! id->info (ids)))
