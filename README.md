@@ -33,8 +33,6 @@ $ lein try com.github.pmonks/clj-spdx
 
 #### deps-try
 
-Note: you must already have [`deps-try`](https://github.com/eval/deps-try) installed.
-
 ```shell
 $ deps-try com.github.pmonks/clj-spdx
 ```
