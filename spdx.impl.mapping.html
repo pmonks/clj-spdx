@@ -13,7 +13,7 @@ keys are optional, but may include:
 :valid?           - boolean
 
 See <a href="https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/CrossRef.html">https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/CrossRef.html</a>
-for more information.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L64">view source</a></div></div><div class="public anchor" id="var-exception-.3Emap"><h3>exception-&gt;map</h3><div class="usage"><code>(exception-&gt;map exc)</code></div><div class="doc"><pre class="plaintext">Turns a org.spdx.library.model.license.ListedLicenseException object into a
+for more information.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L59">view source</a></div></div><div class="public anchor" id="var-exception-.3Emap"><h3>exception-&gt;map</h3><div class="usage"><code>(exception-&gt;map exc)</code></div><div class="doc"><pre class="plaintext">Turns a org.spdx.library.model.license.ListedLicenseException object into a
 map. All map keys are optional, but may include:
 :id                 - string (an SPDX identifier)
 :name               - string
@@ -26,11 +26,11 @@ map. All map keys are optional, but may include:
 :text-template      - string
 
 See <a href="https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/ListedLicenseException.html">https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/ListedLicenseException.html</a>
-for more information.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L136">view source</a></div></div><div class="public anchor" id="var-id-.3Eexception"><h3>id-&gt;exception</h3><div class="usage"><code>(id-&gt;exception id)</code></div><div class="doc"><pre class="plaintext">Turns an exception id into a org.spdx.library.model.license.ListedLicenseException
-object. Note: unlike the underlying Java library it only handles listed SPDX
-exception ids.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L164">view source</a></div></div><div class="public anchor" id="var-id-.3Elicense"><h3>id-&gt;license</h3><div class="usage"><code>(id-&gt;license id)</code></div><div class="doc"><pre class="plaintext">Turns a license id into a org.spdx.library.model.license.SpdxListedLicense
-object. Note: unlike the underlying Java library it only handles listed SPDX
-license ids.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L128">view source</a></div></div><div class="public anchor" id="var-license-.3Emap"><h3>license-&gt;map</h3><div class="usage"><code>(license-&gt;map lic)</code></div><div class="doc"><pre class="plaintext">Turns a org.spdx.library.model.license.SpdxListedLicense object into a map.
+for more information.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L130">view source</a></div></div><div class="public anchor" id="var-id-.3Eexception"><h3>id-&gt;exception</h3><div class="usage"><code>(id-&gt;exception id)</code></div><div class="doc"><pre class="plaintext">Turns a valid exception id into a org.spdx.library.model.license.ListedLicenseException
+object, or returns nil. Note: unlike the underlying Java library it only
+handles listed SPDX exception ids.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L158">view source</a></div></div><div class="public anchor" id="var-id-.3Elicense"><h3>id-&gt;license</h3><div class="usage"><code>(id-&gt;license id)</code></div><div class="doc"><pre class="plaintext">Turns a valid license id into a org.spdx.library.model.license.SpdxListedLicense
+object, or returns nil. Note: unlike the underlying Java library it only
+handles listed SPDX license ids.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L123">view source</a></div></div><div class="public anchor" id="var-license-.3Emap"><h3>license-&gt;map</h3><div class="usage"><code>(license-&gt;map lic)</code></div><div class="doc"><pre class="plaintext">Turns a org.spdx.library.model.license.SpdxListedLicense object into a map.
 All map keys are optional, but may include:
 :id                 - string (an SPDX identifier)
 :name               - string
@@ -49,6 +49,6 @@ All map keys are optional, but may include:
 :header-template    - string
 
 See <a href="https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/SpdxListedLicense.html">https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/SpdxListedLicense.html</a>
-for more information.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L88">view source</a></div></div><div class="public anchor" id="var-listed-exception-id.3F"><h3>listed-exception-id?</h3><div class="usage"><code>(listed-exception-id? id)</code></div><div class="doc"><pre class="plaintext">Is the given id one of the listed SPDX exception identifiers?
-</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L58">view source</a></div></div><div class="public anchor" id="var-listed-license-id.3F"><h3>listed-license-id?</h3><div class="usage"><code>(listed-license-id? id)</code></div><div class="doc"><pre class="plaintext">Is the given id one of the listed SPDX license identifiers?
-</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L52">view source</a></div></div></div></body></html>
+for more information.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L83">view source</a></div></div><div class="public anchor" id="var-listed-exception-id.3F"><h3>listed-exception-id?</h3><div class="usage"><code>(listed-exception-id? id)</code></div><div class="doc"><pre class="plaintext">Is the given id one of the listed SPDX exception identifiers?
+</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L54">view source</a></div></div><div class="public anchor" id="var-listed-license-id.3F"><h3>listed-license-id?</h3><div class="usage"><code>(listed-license-id? id)</code></div><div class="doc"><pre class="plaintext">Is the given id one of the listed SPDX license identifiers?
+</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/impl/mapping.clj#L49">view source</a></div></div></div></body></html>
