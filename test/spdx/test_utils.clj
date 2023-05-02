@@ -24,7 +24,7 @@
 
 (if run-all-slow-tests?
   (println "🐢 Running slow tests - this will likely take at least an hour!")
-  (println "🐇 Skipping slow tests - this should only take a minute or two."))
+  (println "🐇 Skipping slow tests - this should only take a minute or two.\nTo run all tests set env var SPDX_CLJ_LIB_RUN_SLOW_TESTS to 'true'."))
 
 (defn equivalent-colls?
   "Are all of the colls 'equivalent' (same values and occurrences of each value, but in any order and regardless of concrete collection type)?"

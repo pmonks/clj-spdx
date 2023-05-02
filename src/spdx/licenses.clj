@@ -22,8 +22,9 @@
             [spdx.impl.mapping :as im]))
 
 (defn version
-  "The version of the license list (a String in major.minor format). Note:
-  identical to spdx.exception-list/version."
+  "The version of the license list (a String in major.minor format).
+
+  Note: identical to spdx.exceptions/version."
   []
   (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
 
@@ -80,4 +81,5 @@
 
   Note: this method has a substantial performance cost."
   []
+  (is/init!)
   (run! id->info (ids)))

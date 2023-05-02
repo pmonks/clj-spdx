@@ -21,7 +21,7 @@
   [opts]
   (assoc opts
          :lib          'com.github.pmonks/clj-spdx
-         :version      (pbr/calculate-version 0 1)
+         :version      (pbr/calculate-version 1 0)
          :write-pom    true
          :validate-pom true
          :pom          {:description      "Clojure wrapper around spdx/Spdx-Java-Library."
