@@ -58,9 +58,9 @@
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
   calls), returning nil. Consumers of this namespace are not required to call
-  this fn, as it will be called implicitly upon first use of any of this
-  namespace's functionality; it is provided to allow explicit control of the
-  cost of initialisation to callers who need it.
+  this fn, as initialisation will occur implicitly anyway; it is provided to
+  allow explicit control of the performance cost of initialisation to callers
+  who need it.
 
   Note: this method has a substantial performance cost."
   []
