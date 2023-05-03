@@ -59,8 +59,7 @@
   "Initialises this namespace upon first call (and does nothing on subsequent
   calls), returning nil. Consumers of this namespace are not required to call
   this fn, as initialisation will occur implicitly anyway; it is provided to
-  allow explicit control of the performance cost of initialisation to callers
-  who need it.
+  allow explicit control of the cost of initialisation to callers who need it.
 
   Note: this method has a substantial performance cost."
   []
