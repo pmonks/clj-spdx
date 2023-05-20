@@ -8,7 +8,9 @@
 
 # clj-spdx
 
-A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library).  Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so it is almost certain that this library is not yet comprehensive. Contributions of wrappings of additional parts of the Java library are warmly welcomed!
+A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), with some added SPDX-specific functionality that that library doesn't provide (e.g. SPDX expression parsing).
+
+Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so it is almost certain that this library is not yet comprehensive. Contributions of wrappings of additional parts of the Java library are warmly welcomed!
 
 Note also that the author has no official relationship with the [SPDX project](https://spdx.dev/) (who maintain `Spdx-Java-Library`), and this work is in no way associated with, or endorsed by, them.
 
