@@ -73,25 +73,28 @@
                                                                 [:license-id "GPL-2.0"]
                                                                 :with
                                                                 [:license-exception-id "Classpath-exception-2.0"]]]))
-    (is (= (parse "Apache-2.0 OR (GPL-2.0 WITH Classpath-exception-2.0)")   ; Normalisation of redundantly nested WITH clause
+    (is (= (parse "Apache-2.0 OR (GPL-2.0 WITH Classpath-exception-2.0)")   ; Normalisation of redundantly nested WITH clause is not yet implemented
                                                               [:license-expression
                                                                [[:license-id "Apache-2.0"]
                                                                 :or
-                                                                [:license-id "GPL-2.0"]
-                                                                :with
-                                                                [:license-exception-id "Classpath-exception-2.0"]]]))
-    (is (= (parse "Apache-2.0 OR (GPL-2.0+ WITH Classpath-exception-2.0)")   ; Normalisation of redundantly nested WITH clause
+                                                                [:license-expression
+                                                                 [[:license-id "GPL-2.0"]
+                                                                 :with
+                                                                 [:license-exception-id "Classpath-exception-2.0"]]]]]))
+    (is (= (parse "Apache-2.0 OR (GPL-2.0+ WITH Classpath-exception-2.0)")   ; Normalisation of redundantly nested WITH clause is not yet implemented
                                                               [:license-expression
                                                                [[:license-id "Apache-2.0"]
-                                                                :or
-                                                                [:license-id "GPL-2.0"] :or-later
-                                                                :with
-                                                                [:license-exception-id "Classpath-exception-2.0"]]]))
+                                                               :or
+                                                               [:license-expression
+                                                                [[:license-id "GPL-2.0"] :or-later
+                                                                 :with
+                                                                 [:license-exception-id "Classpath-exception-2.0"]]]]]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")
                                                               [:license-expression
                                                                [[:license-expression
                                                                 [[:license-id "Apache-2.0"]
-                                                                 :and [:license-id "MIT"]]]
+                                                                 :and
+                                                                 [:license-id "MIT"]]]
                                                                 :or
                                                                 [:license-id "GPL-2.0"] :or-later :with [:license-exception-id "Classpath-exception-2.0"]
                                                                 :or

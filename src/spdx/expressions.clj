@@ -104,6 +104,21 @@
                                      [:license-expression (vec %&)])}
           raw-parse-result)))))
 
+
+; Note yet implemented:
+;   * The parser simplifies grouped 'WITH' clauses as the order of precedence
+;    makes those redundant (see https://spdx.github.io/spdx-spec/v2-draft/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
+;    e.g. Apache-2.0 OR (GPL-2.0 WITH Classpath-exception-2.0) ->
+;         Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+;
+;  \"CDDL-1.0 OR (GPL-2.0 WITH Classpath-exception-2.0)\")
+;  -> [:license-expression
+;      [[:license-id \"CDDL-1.0\"]
+;       :or
+;       [:license-id \"GPL-2.0\"]
+;       :with
+;       [:license-exception-id \"Classpath-exception-2.0\"]]]
+
 (defn parse
   "Attempt to parse the given string as an SPDX license expression, returning a
   hiccup-style data structure representing the parse tree or nil if the string
@@ -116,26 +131,13 @@
   * The parser removes redundant grouping
     e.g. (((((Apache-2.0)))))) -> Apache-2.0
 
-  * The parser simplifies grouped 'WITH' clauses as the order of precedence
-    makes those redundant (see https://spdx.github.io/spdx-spec/v2-draft/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
-    e.g. Apache-2.0 OR (GPL-2.0 WITH Classpath-exception-2.0) ->
-         Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
-
   Examples:
 
   \"Apache-2.0\"
   -> [:license-expression [:license-id \"Apache-2.0\"]]
 
   \"GPL-2.0+\"
-  -> [:license-expression [[:license-id \"GPL-2.0\"] :or-later]]
-
-  \"CDDL-1.0 OR (GPL-2.0 WITH Classpath-exception-2.0)\")
-  -> [:license-expression
-      [[:license-id \"CDDL-1.0\"]
-       :or
-       [:license-id \"GPL-2.0\"]
-       :with
-       [:license-exception-id \"Classpath-exception-2.0\"]]]"
+  -> [:license-expression [[:license-id \"GPL-2.0\"] :or-later]]"
   [^String s]
   (when-let [raw-parse-result (parse-with-info s)]
     (when-not (insta/failure? raw-parse-result)
