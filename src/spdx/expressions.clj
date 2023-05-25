@@ -102,7 +102,6 @@
                                           (if (and (coll? f) (not= :license-expression (first f)))
                                             [:license-expression f]
                                             f))
-
                                      [:license-expression (vec %&)])}
           raw-parse-result)))))
 
