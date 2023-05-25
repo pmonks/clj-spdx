@@ -130,9 +130,9 @@
 
   \"GPL-2.0+ WITH Classpath-exception-2.0\"
   -> [:license-expression
-       {:license-id \"GPL-2.0\" :or-later true}
-       :with
-       {:license-exception-id \"Classpath-exception-2.0\"}]
+       [{:license-id \"GPL-2.0\" :or-later true}
+        :with
+        {:license-exception-id \"Classpath-exception-2.0\"}]]
 
   \"CDDL-1.1 OR (GPL-2.0 WITH Classpath-exception-2.0)\"
   -> [:license-expression
