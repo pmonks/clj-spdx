@@ -5,7 +5,7 @@
 </pre></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><pre class="plaintext">Initialises this namespace upon first call (and does nothing on subsequent
 calls), returning nil. Consumers of this namespace are not required to call
 this fn, as initialisation will occur implicitly anyway; it is provided to
-allow explicit control of the cost of initialisation to callers who need it.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L160">view source</a></div></div><div class="public anchor" id="var-parse"><h3>parse</h3><div class="usage"><code>(parse s)</code></div><div class="doc"><pre class="plaintext">Attempt to parse the given string as an SPDX license expression, returning a
+allow explicit control of the cost of initialisation to callers who need it.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L159">view source</a></div></div><div class="public anchor" id="var-parse"><h3>parse</h3><div class="usage"><code>(parse s)</code></div><div class="doc"><pre class="plaintext">Attempt to parse the given string as an SPDX license expression, returning a
 data structure representing the parse tree or nil if the string cannot be
 parsed.
 
@@ -29,9 +29,9 @@ Examples:
 
 "GPL-2.0+ WITH Classpath-exception-2.0"
 -&gt; [:license-expression
-     {:license-id "GPL-2.0" :or-later true}
-     :with
-     {:license-exception-id "Classpath-exception-2.0"}]
+     [{:license-id "GPL-2.0" :or-later true}
+      :with
+      {:license-exception-id "Classpath-exception-2.0"}]]
 
 "CDDL-1.1 OR (GPL-2.0 WITH Classpath-exception-2.0)"
 -&gt; [:license-expression
@@ -40,10 +40,10 @@ Examples:
       [:license-expression
         [{:license-id "GPL-2.0"}
          :with
-         {:license-exception-id "Classpath-exception-2.0"}]]]]</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L109">view source</a></div></div><div class="public anchor" id="var-parse-with-info"><h3>parse-with-info</h3><div class="usage"><code>(parse-with-info s)</code></div><div class="doc"><pre class="plaintext">As for parse, but returns instaparse parse error info if parsing fails,
+         {:license-exception-id "Classpath-exception-2.0"}]]]]</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L108">view source</a></div></div><div class="public anchor" id="var-parse-with-info"><h3>parse-with-info</h3><div class="usage"><code>(parse-with-info s)</code></div><div class="doc"><pre class="plaintext">As for parse, but returns instaparse parse error info if parsing fails,
 instead of nil.
 
 See also <a href="https://github.com/Engelberg/instaparse#parse-errors">https://github.com/Engelberg/instaparse#parse-errors</a></pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L81">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code></div><div class="doc"><pre class="plaintext">Is the given string a valid SPDX license expression?
 
 Note: if you intend to parse the given string if it's valid, it's more
-efficient to call parse directly and check for a nil result.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L151">view source</a></div></div></div></body></html>
+efficient to call parse directly and check for a nil result.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L150">view source</a></div></div></div></body></html>
