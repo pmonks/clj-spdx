@@ -28,14 +28,15 @@
   <ws>                  = <#\"\\s+\">
   <ows>                 = <#\"\\s*\">
   <id-string>           = #\"[\\p{Alnum}-\\.]+\"
-  with                  = <ws #\"(?i)WITH\" ws>
-  and                   = <ws #\"(?i)AND\" ws>
-  or                    = <ws #\"(?i)OR\" ws>
-  or-later              = <'+'>
+  with                  = <ws 'WITH' ws>
+  and                   = <ws 'AND' ws>
+  or                    = <ws 'OR' ws>
+  <or-later>            = <'+'>
   license-id            = %s
   license-exception-id  = %s
   license-ref           = ['DocumentRef-' id-string ':'] 'LicenseRef-' id-string
-  <simple-expression>   = license-id | (license-id or-later) | license-ref
+  license-or-later      = (license-id or-later)
+  <simple-expression>   = license-id | license-or-later | license-ref
   <compound-expression> = simple-expression |
                           (simple-expression with license-exception-id) |
                           (compound-expression and compound-expression) |
@@ -91,38 +92,27 @@
           {:with                 (constantly :with)
            :and                  (constantly :and)
            :or                   (constantly :or)
-           :or-later             (constantly :or-later)
-           :license-id           #(vec [:license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&))])
-           :license-exception-id #(vec [:license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&))])
-           :license-ref          #(vec [:license-ref (s/join %&)])
+           :license-id           #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+           :license-exception-id #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+           :license-ref          #(hash-map  :license-ref          (s/join %&))
+           :license-or-later     #(merge     {:or-later true}      (first %&))
            :license-expression   #(case (count %&)
                                      0  nil
                                      1  (let [f (first %&)]
                                           (if (and (coll? f) (not= :license-expression (first f)))
                                             [:license-expression f]
                                             f))
+
                                      [:license-expression (vec %&)])}
           raw-parse-result)))))
 
-
-; Note yet implemented:
-;   * The parser simplifies grouped 'WITH' clauses as the order of precedence
-;    makes those redundant (see https://spdx.github.io/spdx-spec/v2-draft/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
-;    e.g. Apache-2.0 OR (GPL-2.0 WITH Classpath-exception-2.0) ->
-;         Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
-;
-;  \"CDDL-1.0 OR (GPL-2.0 WITH Classpath-exception-2.0)\")
-;  -> [:license-expression
-;      [[:license-id \"CDDL-1.0\"]
-;       :or
-;       [:license-id \"GPL-2.0\"]
-;       :with
-;       [:license-exception-id \"Classpath-exception-2.0\"]]]
-
 (defn parse
   "Attempt to parse the given string as an SPDX license expression, returning a
-  hiccup-style data structure representing the parse tree or nil if the string
-  cannot be parsed.
+  data structure representing the parse tree or nil if the string cannot be
+  parsed.
+
+  See SPDX Specification Annex D for details on SPDX license expressions:
+  https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
 
   Notes:
   * The parser normalises SPDX ids to their canonical case
@@ -134,10 +124,25 @@
   Examples:
 
   \"Apache-2.0\"
-  -> [:license-expression [:license-id \"Apache-2.0\"]]
+  -> [:license-expression {:license-id \"Apache-2.0\"}]
 
   \"GPL-2.0+\"
-  -> [:license-expression [[:license-id \"GPL-2.0\"] :or-later]]"
+  -> [:license-expression {:license-id \"GPL-2.0\" :or-later true}]
+
+  \"GPL-2.0+ WITH Classpath-exception-2.0\"
+  -> [:license-expression
+       {:license-id \"GPL-2.0\" :or-later true}
+       :with
+       {:license-exception-id \"Classpath-exception-2.0\"}]
+
+  \"CDDL-1.1 OR (GPL-2.0 WITH Classpath-exception-2.0)\"
+  -> [:license-expression
+       [{:license-id \"CDDL-1.1\"}
+        :or
+        [:license-expression
+          [{:license-id \"GPL-2.0\"}
+           :with
+           {:license-exception-id \"Classpath-exception-2.0\"}]]]]"
   [^String s]
   (when-let [raw-parse-result (parse-with-info s)]
     (when-not (insta/failure? raw-parse-result)
