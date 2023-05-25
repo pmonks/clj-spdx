@@ -32,23 +32,26 @@
     (is (nil? (parse "       ")))
     (is (nil? (parse "\t\n"))))
   (testing "Error cases"
-    (is (nil? (parse "AND")))                         ; Naked conjunction
-    (is (nil? (parse "OR")))                          ; Naked conjunction
-    (is (nil? (parse "WITH")))                        ; Naked WITH clause
-    (is (nil? (parse "+")))                           ; Naked + ("and later" indicator)
-    (is (nil? (parse "THIS-IS-NOT-A-LICENSE-ID")))    ; Non-existent license id
-    (is (nil? (parse "DocumentRef")))                 ; DocumentRef without id
-    (is (nil? (parse "DocumentRef-")))                ; DocumentRef without id
-    (is (nil? (parse "DocumentRef-foo")))             ; DocumentRef without LicenseRef
-    (is (nil? (parse "LicenseRef")))                  ; LicenseRef without id
-    (is (nil? (parse "LicenseRef-")))                 ; LicenseRef without id
-    (is (nil? (parse "DocumentRef:LicenseRef")))      ; DocumentRef and LicenseRef without ids
-    (is (nil? (parse "DocumentRef-:LicenseRef-")))    ; DocumentRef and LicenseRef without ids
-    (is (nil? (parse "((Apache-2.0")))                ; Mismatched parens
-    (is (nil? (parse "Apache-2.0))")))                ; Mismatched parens
-    (is (nil? (parse "((Apache-2.0)")))               ; Mismatched parens
-    (is (nil? (parse "(Apache-2.0))")))               ; Mismatched parens
-    (is (nil? (parse "Classpath-exception-2.0"))))    ; License exception without "<license> WITH " first
+    (is (nil? (parse "AND")))                                    ; Naked conjunction
+    (is (nil? (parse "OR")))                                     ; Naked conjunction
+    (is (nil? (parse "WITH")))                                   ; Naked WITH clause
+    (is (nil? (parse "+")))                                      ; Naked + ("and later" indicator)
+    (is (nil? (parse "THIS-IS-NOT-A-LICENSE-ID")))               ; Non-existent license id
+    (is (nil? (parse "DocumentRef")))                            ; DocumentRef without id
+    (is (nil? (parse "DocumentRef-")))                           ; DocumentRef without id
+    (is (nil? (parse "DocumentRef-foo")))                        ; DocumentRef without LicenseRef
+    (is (nil? (parse "LicenseRef")))                             ; LicenseRef without id
+    (is (nil? (parse "LicenseRef-")))                            ; LicenseRef without id
+    (is (nil? (parse "DocumentRef:LicenseRef")))                 ; DocumentRef and LicenseRef without ids
+    (is (nil? (parse "DocumentRef-:LicenseRef-")))               ; DocumentRef and LicenseRef without ids
+    (is (nil? (parse "((Apache-2.0")))                           ; Mismatched parens
+    (is (nil? (parse "Apache-2.0))")))                           ; Mismatched parens
+    (is (nil? (parse "((Apache-2.0)")))                          ; Mismatched parens
+    (is (nil? (parse "(Apache-2.0))")))                          ; Mismatched parens
+    (is (nil? (parse "Classpath-exception-2.0")))                ; License exception without "<license> WITH " first
+    (is (nil? (parse "MIT and Apache-2.0")))                     ; AND clause must be capitalised
+    (is (nil? (parse "MIT or Apache-2.0")))                      ; OR clause must be capitalised
+    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0"))))  ; WITH clause must be capitalised
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               [:license-expression {:license-id  "Apache-2.0"}]))
     (is (= (parse "LicenseRef-foo")                           [:license-expression {:license-ref "LicenseRef-foo"}]))
