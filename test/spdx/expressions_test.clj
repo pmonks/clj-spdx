@@ -68,7 +68,7 @@
   (testing "Compound expressions"
     (is (= (parse "GPL-2.0+")                                 [:license-expression {:license-id "GPL-2.0" :or-later true}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]]))
-    (is (= (parse "Apache-2.0 OR GPL-2.0")                    [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]]))
+    (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later true}]]))
     (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]]))
     (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0")
                                                               [:license-expression
@@ -93,7 +93,7 @@
                                                                 [{:license-id "GPL-2.0" :or-later true}
                                                                  :with
                                                                  {:license-exception-id "Classpath-exception-2.0"}]]]]))
-    (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")   ; Note: funky casing is valid
+    (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")
                                                               [:license-expression
                                                                [[:license-expression
                                                                 [{:license-id "Apache-2.0"}
@@ -113,7 +113,8 @@
     (is (not (valid? "+")))
     (is (not (valid? "AND")))
     (is (not (valid? "Apache")))
-    (is (not (valid? "Classpath-exception-2.0"))))
+    (is (not (valid? "Classpath-exception-2.0")))
+    (is (not (valid? "MIT or Apache-2.0"))))    ; OR clause must be capitalised
   (testing "Valid expressions"
     (is (valid? "Apache-2.0"))
     (is (valid? "apache-2.0"))
