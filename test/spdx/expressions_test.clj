@@ -53,58 +53,55 @@
     (is (nil? (parse "MIT or Apache-2.0")))                      ; OR clause must be capitalised
     (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0"))))  ; WITH clause must be capitalised
   (testing "Simple expressions"
-    (is (= (parse "Apache-2.0")                               [:license-expression {:license-id  "Apache-2.0"}]))
-    (is (= (parse "LicenseRef-foo")                           [:license-expression {:license-ref "LicenseRef-foo"}]))
-    (is (= (parse "LicenseRef-foo-bar-blah")                  [:license-expression {:license-ref "LicenseRef-foo-bar-blah"}]))
-    (is (= (parse "DocumentRef-foo:LicenseRef-bar")           [:license-expression {:license-ref "DocumentRef-foo:LicenseRef-bar"}])))
+    (is (= (parse "Apache-2.0")                               [{:license-id  "Apache-2.0"}]))
+    (is (= (parse "")                               [{:license-id  "Apache-2.0"}]))
+    (is (= (parse "LicenseRef-foo")                           [{:license-ref "LicenseRef-foo"}]))
+    (is (= (parse "LicenseRef-foo-bar-blah")                  [{:license-ref "LicenseRef-foo-bar-blah"}]))
+    (is (= (parse "DocumentRef-foo:LicenseRef-bar")           [{:license-ref "DocumentRef-foo:LicenseRef-bar"}])))
   (testing "Simple expressions - mixed case"
-    (is (= (parse "apache-2.0")                               [:license-expression {:license-id "Apache-2.0"}]))
-    (is (= (parse "APACHE-2.0")                               [:license-expression {:license-id "Apache-2.0"}]))
-    (is (= (parse "aPaCHe-2.0")                               [:license-expression {:license-id "Apache-2.0"}])))
+    (is (= (parse "apache-2.0")                               [{:license-id "Apache-2.0"}]))
+    (is (= (parse "APACHE-2.0")                               [{:license-id "Apache-2.0"}]))
+    (is (= (parse "aPaCHe-2.0")                               [{:license-id "Apache-2.0"}])))
   (testing "Simple expressions - whitespace and redundant grouping"
-    (is (= (parse "   Apache-2.0   ")                         [:license-expression {:license-id "Apache-2.0"}]))
-    (is (= (parse "(((((((((Apache-2.0)))))))))")             [:license-expression {:license-id "Apache-2.0"}]))
-    (is (= (parse "((((((((( \t Apache-2.0 \n\n\t )))))))))") [:license-expression {:license-id "Apache-2.0"}])))
+    (is (= (parse "   Apache-2.0   ")                         [{:license-id "Apache-2.0"}]))
+    (is (= (parse "(((((((((Apache-2.0)))))))))")             [{:license-id "Apache-2.0"}]))
+    (is (= (parse "((((((((( \t Apache-2.0 \n\n\t )))))))))") [{:license-id "Apache-2.0"}])))
   (testing "Compound expressions"
-    (is (= (parse "GPL-2.0+")                                 [:license-expression {:license-id "GPL-2.0" :or-later true}]))
-    (is (= (parse "Apache-2.0 OR GPL-2.0")                    [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]]))
-    (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later true}]]))
-    (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [:license-expression [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]]))
+    (is (= (parse "GPL-2.0+")                                 [{:license-id "GPL-2.0" :or-later true}]))
+    (is (= (parse "Apache-2.0 OR GPL-2.0")                    [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
+    (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later true}]))
+    (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
+    (is (= (parse "Apache-2.0 AND MIT+")                       (parse "((((Apache-2.0)))) AND (MIT+)")))
+    (is (= (parse "((((Apache-2.0)))) OR (MIT AND BSD-2-Clause)")
+                                                              [{:license-id "Apache-2.0"}
+                                                               :or
+                                                               [{:license-id "MIT"}
+                                                                :and
+                                                                {:license-id "BSD-2-Clause"}]]))
     (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0")
-                                                              [:license-expression
-                                                               [{:license-id "Apache-2.0"}
-                                                                :or
-                                                                {:license-id "GPL-2.0"}
+                                                              [{:license-id "Apache-2.0"}
+                                                               :or
+                                                               {:license-id "GPL-2.0"} :with {:license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)")
+                                                              [{:license-id "Apache-2.0"}
+                                                               :or
+                                                               [{:license-id "GPL-2.0"}
                                                                 :with
                                                                 {:license-exception-id "Classpath-exception-2.0"}]]))
-    (is (= (parse "apache-2.0 OR (gpl-2.0 WITH classpath-exception-2.0)")   ; Note: normalisation of redundantly nested WITH clause is not yet implemented
-                                                              [:license-expression
-                                                               [{:license-id "Apache-2.0"}
-                                                                :or
-                                                                [:license-expression
-                                                                 [{:license-id "GPL-2.0"}
-                                                                 :with
-                                                                 {:license-exception-id "Classpath-exception-2.0"}]]]]))
-    (is (= (parse "APACHE-2.0 OR (GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)")   ; Note: normalisation of redundantly nested WITH clause is not yet implemented
-                                                              [:license-expression
-                                                               [{:license-id "Apache-2.0"}
+    (is (= (parse "APACHE-2.0 OR (GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)")
+                                                              [{:license-id "Apache-2.0"}
                                                                :or
-                                                               [:license-expression
-                                                                [{:license-id "GPL-2.0" :or-later true}
-                                                                 :with
-                                                                 {:license-exception-id "Classpath-exception-2.0"}]]]]))
+                                                               [{:license-id "GPL-2.0" :or-later true}
+                                                                :with
+                                                                {:license-exception-id "Classpath-exception-2.0"}]]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")
-                                                              [:license-expression
-                                                               [[:license-expression
-                                                                [{:license-id "Apache-2.0"}
-                                                                 :and
-                                                                 {:license-id "MIT"}]]
-                                                                :or
-                                                                {:license-id "GPL-2.0" :or-later true} :with {:license-exception-id "Classpath-exception-2.0"}
-                                                                :or
-                                                                {:license-ref "DocumentRef-foo:LicenseRef-bar"}]]))))
+                                                              [[{:license-id "Apache-2.0"} :and {:license-id "MIT"}]
+                                                               :or
+                                                               {:license-id "GPL-2.0" :or-later true} :with {:license-exception-id "Classpath-exception-2.0"}
+                                                               :or
+                                                               {:license-ref "DocumentRef-foo:LicenseRef-bar"}]))))
 
-; Note: we keep these short, as the parser is far more extensively exercised by the parse-tests
+; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests
   (testing "Nil, empty, etc."
     (is (not (valid? nil)))
@@ -120,5 +117,5 @@
     (is (valid? "apache-2.0"))
     (is (valid? "GPL-2.0+"))
     (is (valid? "GPL-2.0 WITH Classpath-exception-2.0"))
-    (is (valid? "apache-2.0 OR gpl-2.0 WITH classpath-exception-2.0"))
+    (is (valid? "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)"))
     (is (valid? "(APACHE-2.0 AND MIT) OR (GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)"))))

@@ -25,24 +25,30 @@
 
 ; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
-  <ws>                  = <#\"\\s+\">
-  <ows>                 = <#\"\\s*\">
-  <id-string>           = #\"[\\p{Alnum}-\\.]+\"
-  with                  = <ws 'WITH' ws>
-  and                   = <ws 'AND' ws>
-  or                    = <ws 'OR' ws>
-  <or-later>            = <'+'>
-  license-id            = %s
-  license-exception-id  = %s
-  license-ref           = ['DocumentRef-' id-string ':'] 'LicenseRef-' id-string
-  license-or-later      = (license-id or-later)
-  <simple-expression>   = license-id | license-or-later | license-ref
-  <compound-expression> = simple-expression |
-                          (simple-expression with license-exception-id) |
-                          (compound-expression and compound-expression) |
-                          (compound-expression or compound-expression) |
-                          (<'('> license-expression <')'>)
-  license-expression    = ows compound-expression ows
+  (* Primitive tokens *)
+  <ws>                   = <#\"\\s+\">
+  <ows>                  = <#\"\\s*\">
+  <id-string>            = #\"[\\p{Alnum}-\\.]+\"
+  and                    = <ws 'AND' ws>
+  or                     = <ws 'OR' ws>
+  with                   = <ws 'WITH' ws>
+  <or-later>             = <'+'>
+
+  (* Identifiers *)
+  license-id             = %s
+  license-exception-id   = %s
+  license-ref            = ['DocumentRef-' id-string ':'] 'LicenseRef-' id-string
+
+  (* Composite expressions *)
+  license-or-later       = license-id or-later
+  <simple-expression>    = license-id | license-or-later | license-ref
+  <with-expression>      = simple-expression with license-exception-id
+  <composite-expression> = compound-expression ((and|or) compound-expression)+
+  nested-expression      = <'('> ows compound-expression ows <')'>
+  <compound-expression>  = simple-expression | with-expression | composite-expression | nested-expression
+
+  (* Start rule *)
+  <license-expression>   = ows compound-expression ows
   ")
 
 (defn- escape-re
@@ -88,22 +94,20 @@
     (let [raw-parse-result (insta/parse @spdx-license-expression-parser-d s)]
       (if (insta/failure? raw-parse-result)
         raw-parse-result
-        (insta/transform
-          {:with                 (constantly :with)
-           :and                  (constantly :and)
-           :or                   (constantly :or)
-           :license-id           #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-           :license-exception-id #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-           :license-ref          #(hash-map  :license-ref          (s/join %&))
-           :license-or-later     #(merge     {:or-later true}      (first %&))
-           :license-expression   #(case (count %&)
-                                     0  nil
-                                     1  (let [f (first %&)]
-                                          (if (and (coll? f) (not= :license-expression (first f)))
-                                            [:license-expression f]
-                                            f))
-                                     [:license-expression (vec %&)])}
-          raw-parse-result)))))
+        (let [transformed-result (insta/transform {:and                   (constantly :and)
+                                                   :or                    (constantly :or)
+                                                   :with                  (constantly :with)
+                                                   :license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                                   :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                                   :license-ref           #(hash-map  :license-ref          (s/join %&))
+                                                   :license-or-later      #(merge     {:or-later true}      (first %&))
+                                                   :nested-expression     #(case (count %&)
+                                                                             1  (first %&)     ; We do this to "collapse" redundant nesting e.g. "(((Apache-2.0)))"
+                                                                             (vec %&))}
+                                                         raw-parse-result)]
+          (if (sequential? transformed-result)
+            (vec transformed-result)
+            [transformed-result]))))))
 
 (defn parse
   "Attempt to parse the given string as an SPDX license expression, returning a
@@ -123,25 +127,22 @@
   Examples:
 
   \"Apache-2.0\"
-  -> [:license-expression {:license-id \"Apache-2.0\"}]
+  -> [{:license-id \"Apache-2.0\"}]
 
   \"GPL-2.0+\"
-  -> [:license-expression {:license-id \"GPL-2.0\" :or-later true}]
+  -> [{:license-id \"GPL-2.0\" :or-later true}]
 
   \"GPL-2.0+ WITH Classpath-exception-2.0\"
-  -> [:license-expression
-       [{:license-id \"GPL-2.0\" :or-later true}
-        :with
-        {:license-exception-id \"Classpath-exception-2.0\"}]]
+  -> [{:license-id \"GPL-2.0\" :or-later true}
+      :with
+      {:license-exception-id \"Classpath-exception-2.0\"}]
 
   \"CDDL-1.1 OR (GPL-2.0 WITH Classpath-exception-2.0)\"
-  -> [:license-expression
-       [{:license-id \"CDDL-1.1\"}
-        :or
-        [:license-expression
-          [{:license-id \"GPL-2.0\"}
-           :with
-           {:license-exception-id \"Classpath-exception-2.0\"}]]]]"
+  -> [{:license-id \"CDDL-1.1\"}
+      :or
+      [{:license-id \"GPL-2.0\"}
+       :with
+       {:license-exception-id \"Classpath-exception-2.0\"}]]"
   [^String s]
   (when-let [raw-parse-result (parse-with-info s)]
     (when-not (insta/failure? raw-parse-result)
