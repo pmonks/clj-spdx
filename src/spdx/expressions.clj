@@ -31,7 +31,7 @@
   <id-string>            = #\"[\\p{Alnum}-\\.]+\"
   and                    = <ws 'AND' ws>
   or                     = <ws 'OR' ws>
-  with                   = <ws 'WITH' ws>
+  <with>                 = <ws 'WITH' ws>
   <or-later>             = <'+'>
 
   (* Identifiers *)
@@ -96,12 +96,11 @@
         raw-parse-result
         (let [transformed-result (insta/transform {:and                   (constantly :and)
                                                    :or                    (constantly :or)
-                                                   :with                  (constantly :with)
                                                    :license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
                                                    :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
                                                    :license-ref           #(hash-map  :license-ref          (s/join %&))
                                                    :license-or-later      #(merge     {:or-later true}      (first %&))
-                                                   :with-expression       #(merge     (first %&) (nth %& 2))
+                                                   :with-expression       #(merge     (first %&) (second %&))
                                                    :nested-expression     #(case (count %&)
                                                                              1  (first %&)     ; We do this to "collapse" redundant nesting e.g. "(((Apache-2.0)))"
                                                                              (vec %&))}
