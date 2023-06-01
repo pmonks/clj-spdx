@@ -33,7 +33,7 @@
     (is (nil? (parse "\t\n"))))
   (testing "Error cases"
     (is (nil? (parse "AND")))                                    ; Naked conjunction
-    (is (nil? (parse "OR")))                                     ; Naked conjunction
+    (is (nil? (parse "OR")))                                     ; Naked disjunction
     (is (nil? (parse "WITH")))                                   ; Naked WITH clause
     (is (nil? (parse "+")))                                      ; Naked + ("and later" indicator)
     (is (nil? (parse "THIS-IS-NOT-A-LICENSE-ID")))               ; Non-existent license id
@@ -54,7 +54,7 @@
     (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0"))))  ; WITH clause must be capitalised
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               [{:license-id  "Apache-2.0"}]))
-    (is (= (parse "")                               [{:license-id  "Apache-2.0"}]))
+    (is (= (parse "GPL-2.0+")                                 [{:license-id "GPL-2.0" :or-later true}]))
     (is (= (parse "LicenseRef-foo")                           [{:license-ref "LicenseRef-foo"}]))
     (is (= (parse "LicenseRef-foo-bar-blah")                  [{:license-ref "LicenseRef-foo-bar-blah"}]))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar")           [{:license-ref "DocumentRef-foo:LicenseRef-bar"}])))
@@ -67,7 +67,6 @@
     (is (= (parse "(((((((((Apache-2.0)))))))))")             [{:license-id "Apache-2.0"}]))
     (is (= (parse "((((((((( \t Apache-2.0 \n\n\t )))))))))") [{:license-id "Apache-2.0"}])))
   (testing "Compound expressions"
-    (is (= (parse "GPL-2.0+")                                 [{:license-id "GPL-2.0" :or-later true}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later true}]))
     (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
