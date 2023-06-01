@@ -42,7 +42,7 @@
   (* Composite expressions *)
   license-or-later       = license-id or-later
   <simple-expression>    = license-id | license-or-later | license-ref
-  <with-expression>      = simple-expression with license-exception-id
+  with-expression        = simple-expression with license-exception-id
   <composite-expression> = compound-expression ((and|or) compound-expression)+
   nested-expression      = <'('> ows compound-expression ows <')'>
   <compound-expression>  = simple-expression | with-expression | composite-expression | nested-expression
@@ -101,6 +101,7 @@
                                                    :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
                                                    :license-ref           #(hash-map  :license-ref          (s/join %&))
                                                    :license-or-later      #(merge     {:or-later true}      (first %&))
+                                                   :with-expression       #(merge     (first %&) (nth %& 2))
                                                    :nested-expression     #(case (count %&)
                                                                              1  (first %&)     ; We do this to "collapse" redundant nesting e.g. "(((Apache-2.0)))"
                                                                              (vec %&))}
@@ -124,6 +125,11 @@
   * The parser removes redundant grouping
     e.g. (((((Apache-2.0)))))) -> Apache-2.0
 
+  * When a license is modified with the \"or later\" modifier ('+'), the two
+    are grouped
+
+  * When a license is modified WITH a license exception, the two are grouped
+
   Examples:
 
   \"Apache-2.0\"
@@ -132,17 +138,16 @@
   \"GPL-2.0+\"
   -> [{:license-id \"GPL-2.0\" :or-later true}]
 
-  \"GPL-2.0+ WITH Classpath-exception-2.0\"
-  -> [{:license-id \"GPL-2.0\" :or-later true}
-      :with
-      {:license-exception-id \"Classpath-exception-2.0\"}]
+  \"GPL-2.0 WITH Classpath-exception-2.0\"
+  -> [{:license-id \"GPL-2.0\"
+       :license-exception-id \"Classpath-exception-2.0\"}]
 
   \"CDDL-1.1 OR (GPL-2.0 WITH Classpath-exception-2.0)\"
   -> [{:license-id \"CDDL-1.1\"}
       :or
-      [{:license-id \"GPL-2.0\"}
-       :with
-       {:license-exception-id \"Classpath-exception-2.0\"}]]"
+      {:license-id \"GPL-2.0\"
+       :or-later true
+       :license-exception-id \"Classpath-exception-2.0\"}]"
   [^String s]
   (when-let [raw-parse-result (parse-with-info s)]
     (when-not (insta/failure? raw-parse-result)

@@ -80,23 +80,21 @@
     (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0")
                                                               [{:license-id "Apache-2.0"}
                                                                :or
-                                                               {:license-id "GPL-2.0"} :with {:license-exception-id "Classpath-exception-2.0"}]))
+                                                               {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)")
                                                               [{:license-id "Apache-2.0"}
                                                                :or
-                                                               [{:license-id "GPL-2.0"}
-                                                                :with
-                                                                {:license-exception-id "Classpath-exception-2.0"}]]))
-    (is (= (parse "APACHE-2.0 OR (GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)")
+                                                               {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "APACHE-2.0 OR (((((GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)))))")
                                                               [{:license-id "Apache-2.0"}
                                                                :or
-                                                               [{:license-id "GPL-2.0" :or-later true}
-                                                                :with
-                                                                {:license-exception-id "Classpath-exception-2.0"}]]))
+                                                               {:license-id "GPL-2.0"
+                                                                :or-later true
+                                                                :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")
                                                               [[{:license-id "Apache-2.0"} :and {:license-id "MIT"}]
                                                                :or
-                                                               {:license-id "GPL-2.0" :or-later true} :with {:license-exception-id "Classpath-exception-2.0"}
+                                                               {:license-id "GPL-2.0" :or-later true :license-exception-id "Classpath-exception-2.0"}
                                                                :or
                                                                {:license-ref "DocumentRef-foo:LicenseRef-bar"}]))))
 
@@ -117,4 +115,4 @@
     (is (valid? "GPL-2.0+"))
     (is (valid? "GPL-2.0 WITH Classpath-exception-2.0"))
     (is (valid? "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)"))
-    (is (valid? "(APACHE-2.0 AND MIT) OR (GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)"))))
+    (is (valid? "(APACHE-2.0 AND MIT) OR (((GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)))"))))
