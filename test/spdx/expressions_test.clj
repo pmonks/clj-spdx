@@ -70,7 +70,7 @@
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later true}]))
     (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
-    (is (= (parse "Apache-2.0 AND MIT+")                       (parse "((((Apache-2.0)))) AND (MIT+)")))
+    (is (= (parse "Apache-2.0 AND MIT+")                      (parse "((((Apache-2.0)))) AND (MIT+)")))
     (is (= (parse "((((Apache-2.0)))) OR (MIT AND BSD-2-Clause)")
                                                               [{:license-id "Apache-2.0"}
                                                                :or
