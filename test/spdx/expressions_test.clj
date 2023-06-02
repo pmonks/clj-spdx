@@ -32,32 +32,36 @@
     (is (nil? (parse "       ")))
     (is (nil? (parse "\t\n"))))
   (testing "Error cases"
-    (is (nil? (parse "AND")))                                    ; Naked conjunction
-    (is (nil? (parse "OR")))                                     ; Naked disjunction
-    (is (nil? (parse "WITH")))                                   ; Naked WITH clause
-    (is (nil? (parse "+")))                                      ; Naked + ("and later" indicator)
-    (is (nil? (parse "THIS-IS-NOT-A-LICENSE-ID")))               ; Non-existent license id
-    (is (nil? (parse "DocumentRef")))                            ; DocumentRef without id
-    (is (nil? (parse "DocumentRef-")))                           ; DocumentRef without id
-    (is (nil? (parse "DocumentRef-foo")))                        ; DocumentRef without LicenseRef
-    (is (nil? (parse "LicenseRef")))                             ; LicenseRef without id
-    (is (nil? (parse "LicenseRef-")))                            ; LicenseRef without id
-    (is (nil? (parse "DocumentRef:LicenseRef")))                 ; DocumentRef and LicenseRef without ids
-    (is (nil? (parse "DocumentRef-:LicenseRef-")))               ; DocumentRef and LicenseRef without ids
-    (is (nil? (parse "((Apache-2.0")))                           ; Mismatched parens
-    (is (nil? (parse "Apache-2.0))")))                           ; Mismatched parens
-    (is (nil? (parse "((Apache-2.0)")))                          ; Mismatched parens
-    (is (nil? (parse "(Apache-2.0))")))                          ; Mismatched parens
-    (is (nil? (parse "Classpath-exception-2.0")))                ; License exception without "<license> WITH " first
-    (is (nil? (parse "MIT and Apache-2.0")))                     ; AND clause must be capitalised
-    (is (nil? (parse "MIT or Apache-2.0")))                      ; OR clause must be capitalised
-    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0"))))  ; WITH clause must be capitalised
+    (is (nil? (parse "AND")))                                         ; Naked conjunction
+    (is (nil? (parse "OR")))                                          ; Naked disjunction
+    (is (nil? (parse "WITH")))                                        ; Naked WITH clause
+    (is (nil? (parse "+")))                                           ; Naked + ("and later" indicator)
+    (is (nil? (parse "THIS-IS-NOT-A-LICENSE-ID")))                    ; Non-existent license id
+    (is (nil? (parse "DocumentRef")))                                 ; DocumentRef without id
+    (is (nil? (parse "DocumentRef-")))                                ; DocumentRef without id
+    (is (nil? (parse "DocumentRef-foo")))                             ; DocumentRef without LicenseRef
+    (is (nil? (parse "LicenseRef")))                                  ; LicenseRef without id
+    (is (nil? (parse "LicenseRef-")))                                 ; LicenseRef without id
+    (is (nil? (parse "DocumentRef:LicenseRef")))                      ; DocumentRef and LicenseRef without ids
+    (is (nil? (parse "DocumentRef-:LicenseRef-")))                    ; DocumentRef and LicenseRef without ids
+    (is (nil? (parse "LicenseRef-this:is:invalid")))                  ; Invalid characters in LicenseRef id
+    (is (nil? (parse "LicenseRef-also_invalid")))                     ; Invalid characters in LicenseRef id
+    (is (nil? (parse "DocumentRef-also_invalid:LicenseRef-foo")))     ; Invalid characters in DocumentRef id
+    (is (nil? (parse "((Apache-2.0")))                                ; Mismatched parens
+    (is (nil? (parse "Apache-2.0))")))                                ; Mismatched parens
+    (is (nil? (parse "((Apache-2.0)")))                               ; Mismatched parens
+    (is (nil? (parse "(Apache-2.0))")))                               ; Mismatched parens
+    (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
+    (is (nil? (parse "MIT and Apache-2.0")))                          ; AND clause must be capitalised
+    (is (nil? (parse "MIT or Apache-2.0")))                           ; OR clause must be capitalised
+    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0"))))       ; WITH clause must be capitalised
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               [{:license-id  "Apache-2.0"}]))
     (is (= (parse "GPL-2.0+")                                 [{:license-id "GPL-2.0" :or-later true}]))
-    (is (= (parse "LicenseRef-foo")                           [{:license-ref "LicenseRef-foo"}]))
-    (is (= (parse "LicenseRef-foo-bar-blah")                  [{:license-ref "LicenseRef-foo-bar-blah"}]))
-    (is (= (parse "DocumentRef-foo:LicenseRef-bar")           [{:license-ref "DocumentRef-foo:LicenseRef-bar"}])))
+    (is (= (parse "LicenseRef-foo")                           [{:license-ref "foo"}]))
+    (is (= (parse "LicenseRef-foo-bar-blah")                  [{:license-ref "foo-bar-blah"}]))
+    (is (= (parse "DocumentRef-foo:LicenseRef-bar")           [{:license-ref "bar" :document-ref "foo"}]))
+    (is (= (parse "DocumentRef-foo-bar:LicenseRef-blah")      [{:license-ref "blah" :document-ref "foo-bar"}])))
   (testing "Simple expressions - mixed case"
     (is (= (parse "apache-2.0")                               [{:license-id "Apache-2.0"}]))
     (is (= (parse "APACHE-2.0")                               [{:license-id "Apache-2.0"}]))
@@ -70,7 +74,7 @@
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later true}]))
     (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
-    (is (= (parse "Apache-2.0 AND MIT+")                       (parse "((((Apache-2.0)))) AND (MIT+)")))
+    (is (= (parse "Apache-2.0 AND MIT+")                      (parse "((((Apache-2.0)))) AND (MIT+)")))
     (is (= (parse "((((Apache-2.0)))) OR (MIT AND BSD-2-Clause)")
                                                               [{:license-id "Apache-2.0"}
                                                                :or
@@ -96,7 +100,7 @@
                                                                :or
                                                                {:license-id "GPL-2.0" :or-later true :license-exception-id "Classpath-exception-2.0"}
                                                                :or
-                                                               {:license-ref "DocumentRef-foo:LicenseRef-bar"}]))))
+                                                               {:license-ref "bar" :document-ref "foo"}]))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests
