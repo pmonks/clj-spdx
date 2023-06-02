@@ -37,7 +37,7 @@
   (* Identifiers *)
   license-id             = %s
   license-exception-id   = %s
-  license-ref            = ['DocumentRef-' id-string ':'] 'LicenseRef-' id-string
+  license-ref            = [<'DocumentRef-'> id-string <':'>] <'LicenseRef-'> id-string
 
   (* Composite expressions *)
   license-or-later       = license-id or-later
@@ -98,7 +98,9 @@
                                                    :or                    (constantly :or)
                                                    :license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
                                                    :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                   :license-ref           #(hash-map  :license-ref          (s/join %&))
+                                                   :license-ref           #(case (count %&)
+                                                                             1 {:license-ref (first %&)}
+                                                                             2 {:document-ref (first %&) :license-ref (second %&)})
                                                    :license-or-later      #(merge     {:or-later true}      (first %&))
                                                    :with-expression       #(merge     (first %&) (second %&))
                                                    :nested-expression     #(case (count %&)
