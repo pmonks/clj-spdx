@@ -18,7 +18,7 @@
 
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
-            [spdx.expressions :refer [parse parse-with-info valid? init!]]))
+            [spdx.expressions :refer [parse parse-with-info valid? extract-ids init!]]))
 
 (deftest init!-tests
   (testing "Nil response"
@@ -123,3 +123,26 @@
     (is (valid? "GPL-2.0 WITH Classpath-exception-2.0"))
     (is (valid? "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)"))
     (is (valid? "(APACHE-2.0 AND MIT) OR (((GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)))"))))
+
+(deftest extract-ids-tests
+  (testing "Nil"
+    (is (nil? (extract-ids nil))))
+  (testing "Simple parse results"
+    (is (= (extract-ids {:license-id "Apache-2.0"})                               #{"Apache-2.0"}))
+    (is (= (extract-ids [{:license-id "Apache-2.0"}])                             #{"Apache-2.0"}))
+    (is (= (extract-ids [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"}))
+    (is (= (extract-ids [[[[{:license-id "Apache-2.0"}]]]])                       #{"Apache-2.0"})))
+  (testing "Include or later"
+    (is (= (extract-ids {:license-id "GPL-2.0" :or-later true} false) #{"GPL-2.0"}))
+    (is (= (extract-ids {:license-id "GPL-2.0" :or-later true} true)  #{"GPL-2.0+"})))
+  (testing "Parsed expressions"
+    (is (= (extract-ids (parse "Apache-2.0"))            #{"Apache-2.0"}))
+    (is (= (extract-ids (parse "Apache-2.0 OR GPL-2.0")) #{"Apache-2.0" "GPL-2.0"}))
+    (is (= (extract-ids (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0"))
+                                                         #{"Apache-2.0" "GPL-2.0" "Classpath-exception-2.0"}))
+    (is (= (extract-ids (parse "Apache-2.0 OR GPL-2.0+ WITH Classpath-exception-2.0"))
+                                                         #{"Apache-2.0" "GPL-2.0" "Classpath-exception-2.0"}))
+    (is (= (extract-ids (parse "Apache-2.0 OR GPL-2.0+ WITH Classpath-exception-2.0") true)
+                                                         #{"Apache-2.0" "GPL-2.0+" "Classpath-exception-2.0"}))
+    (is (= (extract-ids (parse "(Apache-2.0 AND MIT) OR (BSD-2-Clause AND (GPL-2.0+ WITH Classpath-exception-2.0))"))
+                                                         #{"Apache-2.0" "MIT" "BSD-2-Clause" "GPL-2.0" "Classpath-exception-2.0"}))))

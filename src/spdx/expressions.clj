@@ -19,6 +19,7 @@
 (ns spdx.expressions
   "SPDX license expression functionality. This functionality is bespoke (it is not provided by Spdx-Java-Library)."
   (:require [clojure.string  :as s]
+            [clojure.set     :as set]
             [instaparse.core :as insta]
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
@@ -162,6 +163,17 @@
   [^String s]
   (not (or (s/blank? s)
            (insta/failure? (insta/parse @spdx-license-expression-parser-d s)))))
+
+(defn extract-ids
+  "Extract all SPDX ids (as a set of strings) from the given parse result, optionally including the 'or later' indicator ('+') after license ids that have that designation."
+  ([parse-result] (extract-ids parse-result false))
+  ([parse-result include-or-later]
+   (when parse-result
+     (cond
+       (sequential? parse-result) (set (mapcat #(extract-ids % include-or-later) parse-result))
+       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later (:or-later parse-result)) "+"))})
+                                             (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
+                                             (when (:license-ref          parse-result) (s/join ":" (filter identity [(:document-ref parse-result) (:license-ref parse-result)]))))))))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
