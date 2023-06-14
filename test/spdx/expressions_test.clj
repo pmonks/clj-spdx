@@ -18,7 +18,6 @@
 
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
-;            [spdx.test-utils  :refer [equivalent-colls?]]
             [spdx.expressions :refer [parse parse-with-info valid? init!]]))
 
 (deftest init!-tests
@@ -101,6 +100,10 @@
                                                                {:license-id "GPL-2.0" :or-later true :license-exception-id "Classpath-exception-2.0"}
                                                                :or
                                                                {:license-ref "bar" :document-ref "foo"}]))))
+
+(deftest parse-with-info-tests
+  (testing "Data is returned when parsing fails"
+    (is (not (nil? (parse-with-info "AND"))))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests

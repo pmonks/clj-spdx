@@ -32,6 +32,7 @@
 
 ; Dual license texts
 (def apache-2-gpl-3-text             (str "THIS WORK IS DUAL-LICENSED, UNDER:\n\n" apache-2-text "\n\nOR, AT YOUR DISCRETION:\n\n" gpl-3-text))
+;(def jffi-text                       (slurp "https://raw.githubusercontent.com/jnr/jffi/master/LICENSE"))                      ; Apache-2.0 OR LGPL-3.0+, but blocked on https://github.com/jnr/jffi/issues/141
 (def javamail-license                (slurp "https://raw.githubusercontent.com/javaee/javamail/master/LICENSE.txt"))           ; CDDL-1.1 OR GPL-2.0 WITH Classpath-exception-2.0
 
 ; Exception texts
@@ -102,6 +103,8 @@
 ;    (is (true?  (text-contains-license? (str "ABCD\n" cc-by-4-text            "\nEFGH") "CC-BY-4.0")))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/164
     (is (true?  (text-contains-license? (str "ABCD\n" mpl-2-text              "\nEFGH") "MPL-2.0")))
     (is (true?  (text-contains-license? (str "ABCD\n" clj-spdx-license        "\nEFGH") "Apache-2.0")))
+;    (is (true?  (text-contains-license? jffi-text                                       "Apache-2.0")))           ; Blocked on https://github.com/jnr/jffi/issues/141
+;    (is (true?  (text-contains-license? jffi-text                                       "LGPL-3.0-or-later")))    ; Blocked on https://github.com/jnr/jffi/issues/141
     (is (true?  (text-contains-license? (str "ABCD\n" commonmark-java-license "\nEFGH") "BSD-2-Clause")))))
 
 (deftest text-contains-exception?-tests
@@ -173,6 +176,7 @@
     (testing "Texts with multiple licenses"
       (is (= (licenses-within-text apache-2-gpl-3-text)             #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
 ;      (is (= (licenses-within-text javamail-license)                #{"CDDL-1.1"   "GPL-2.0"}))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/166
+;      (is (= (licenses-within-text jffi-text                        #{"Apache-2.0" "LGPL-3.0-or-later"})))    ; Blocked on https://github.com/jnr/jffi/issues/141
       (is (= (licenses-within-text apache-2-gpl-3-classpath-2-text) #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"})))))
 
 (deftest exceptions-within-text-tests
