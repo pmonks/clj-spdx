@@ -173,8 +173,7 @@
 
 (defn unparse
   "Turn a (successful) parse result back into a (normalised) SPDX expression
-  string. Results are undefined for invalid parse results (those that can't be
-  produced by parse)."
+  string. Results are undefined for invalid handcrafted parse trees."
   [parse-result]
   (when parse-result
     (when-let [result (if (sequential? parse-result)
