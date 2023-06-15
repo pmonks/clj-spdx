@@ -137,14 +137,14 @@
   Examples:
 
   \"Apache-2.0\"
-  -> [{:license-id \"Apache-2.0\"}]
+  -> {:license-id \"Apache-2.0\"}
 
   \"GPL-2.0+\"
-  -> [{:license-id \"GPL-2.0\" :or-later true}]
+  -> {:license-id \"GPL-2.0\" :or-later true}
 
   \"GPL-2.0 WITH Classpath-exception-2.0\"
-  -> [{:license-id \"GPL-2.0\"
-       :license-exception-id \"Classpath-exception-2.0\"}]
+  -> {:license-id \"GPL-2.0\"
+      :license-exception-id \"Classpath-exception-2.0\"}
 
   \"CDDL-1.1 OR (GPL-2.0+ WITH Classpath-exception-2.0)\"
   -> [{:license-id \"CDDL-1.1\"}
@@ -199,7 +199,9 @@
            (insta/failure? (insta/parse @spdx-license-expression-parser-d s)))))
 
 (defn extract-ids
-  "Extract all SPDX ids (as a set of strings) from the given parse result, optionally including the 'or later' indicator ('+') after license ids that have that designation."
+  "Extract all SPDX ids (as a set of strings) from the given parse result,
+  optionally including the 'or later' indicator ('+') after license ids that
+  have that designation (defaults to false)."
   ([parse-result] (extract-ids parse-result false))
   ([parse-result include-or-later]
    (when parse-result
