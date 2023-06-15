@@ -172,7 +172,7 @@
       :else       nil)))
 
 (defn unparse
-  "Turn a (successful) parse result back into a (normalised) SPDX expression
+  "Turns a (successful) parse result back into a (normalised) SPDX expression
   string. Results are undefined for invalid handcrafted parse trees."
   [parse-result]
   (when parse-result
