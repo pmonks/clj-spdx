@@ -19,6 +19,7 @@
 (ns spdx.expressions
   "SPDX license expression functionality. This functionality is bespoke (it is not provided by Spdx-Java-Library)."
   (:require [clojure.string  :as s]
+            [clojure.set     :as set]
             [instaparse.core :as insta]
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
@@ -106,10 +107,12 @@
                                                    :nested-expression     #(case (count %&)
                                                                              1  (first %&)     ; We do this to "collapse" redundant nesting e.g. "(((Apache-2.0)))"
                                                                              (vec %&))}
-                                                         raw-parse-result)]
+                                                  raw-parse-result)]
           (if (sequential? transformed-result)
-            (vec transformed-result)
-            [transformed-result]))))))
+            (case (count transformed-result)
+              1 (first transformed-result)
+              (vec transformed-result))
+            transformed-result))))))
 
 (defn parse
   "Attempt to parse the given string as an SPDX license expression, returning a
@@ -154,6 +157,38 @@
     (when-not (insta/failure? raw-parse-result)
       raw-parse-result)))
 
+(defn- unparse-internal
+  "Internal, naively recursive implementation of unparse."
+  [parse-result]
+  (when parse-result
+    (cond
+      (= :or       parse-result) "OR"
+      (= :and      parse-result) "AND"
+      (sequential? parse-result) (when (pos? (count parse-result)) (str "(" (s/join " " (map unparse-internal parse-result)) ")"))
+      (map?        parse-result) (str (:license-id parse-result) (when (:or-later parse-result) "+")
+                                      (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
+                                      (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
+                                                                             "LicenseRef-" (:license-ref parse-result))))
+      :else       nil)))
+
+(defn unparse
+  "Turn a (successful) parse result back into a (normalised) SPDX expression
+  string. Results are undefined for invalid handcrafted parse trees."
+  [parse-result]
+  (when parse-result
+    (when-let [result (if (sequential? parse-result)
+                        (s/join " " (map unparse-internal parse-result))
+                        (unparse-internal parse-result))]
+      (when-not (s/blank? result)
+        (s/trim result)))))
+
+(defn normalise
+  "'Normalises' an SPDX expression, by running it through parse then unparse."
+  [s]
+  (some-> s
+          parse
+          unparse))
+
 (defn valid?
   "Is the given string a valid SPDX license expression?
 
@@ -162,6 +197,20 @@
   [^String s]
   (not (or (s/blank? s)
            (insta/failure? (insta/parse @spdx-license-expression-parser-d s)))))
+
+(defn extract-ids
+  "Extract all SPDX ids (as a set of strings) from the given parse result, optionally including the 'or later' indicator ('+') after license ids that have that designation."
+  ([parse-result] (extract-ids parse-result false))
+  ([parse-result include-or-later]
+   (when parse-result
+     (cond
+       (sequential? parse-result) (set (mapcat #(extract-ids % include-or-later) parse-result))
+       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later (:or-later parse-result)) "+"))})
+                                             (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
+                                             (when (:license-ref          parse-result)
+                                               #{(str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
+                                                      "LicenseRef-" (:license-ref parse-result))}))
+       :else        nil))))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
