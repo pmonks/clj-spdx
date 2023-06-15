@@ -183,7 +183,7 @@
         (s/trim result)))))
 
 (defn normalise
-  "'Normalises' an SPDX expression, by running it through the parse then unparse."
+  "'Normalises' an SPDX expression, by running it through parse then unparse."
   [s]
   (some-> s
           parse
