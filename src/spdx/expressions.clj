@@ -137,14 +137,14 @@
   Examples:
 
   \"Apache-2.0\"
-  -> [{:license-id \"Apache-2.0\"}]
+  -> {:license-id \"Apache-2.0\"}
 
   \"GPL-2.0+\"
-  -> [{:license-id \"GPL-2.0\" :or-later true}]
+  -> {:license-id \"GPL-2.0\" :or-later true}
 
   \"GPL-2.0 WITH Classpath-exception-2.0\"
-  -> [{:license-id \"GPL-2.0\"
-       :license-exception-id \"Classpath-exception-2.0\"}]
+  -> {:license-id \"GPL-2.0\"
+      :license-exception-id \"Classpath-exception-2.0\"}
 
   \"CDDL-1.1 OR (GPL-2.0+ WITH Classpath-exception-2.0)\"
   -> [{:license-id \"CDDL-1.1\"}
