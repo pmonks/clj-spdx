@@ -199,7 +199,9 @@
            (insta/failure? (insta/parse @spdx-license-expression-parser-d s)))))
 
 (defn extract-ids
-  "Extract all SPDX ids (as a set of strings) from the given parse result, optionally including the 'or later' indicator ('+') after license ids that have that designation."
+  "Extract all SPDX ids (as a set of strings) from the given parse result,
+  optionally including the 'or later' indicator ('+') after license ids that
+  have that designation (defaults to false)."
   ([parse-result] (extract-ids parse-result false))
   ([parse-result include-or-later]
    (when parse-result
