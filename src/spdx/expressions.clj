@@ -17,7 +17,8 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality. This functionality is bespoke (it is not provided by Spdx-Java-Library)."
+  "SPDX license expression functionality. This functionality is bespoke (it is
+  not provided by Spdx-Java-Library)."
   (:require [clojure.string  :as s]
             [clojure.set     :as set]
             [instaparse.core :as insta]
