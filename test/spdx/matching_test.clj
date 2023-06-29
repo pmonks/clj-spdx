@@ -25,7 +25,14 @@
 ; Single license texts
 (def apache-2-text                   (slurp "https://www.apache.org/licenses/LICENSE-2.0.txt"))
 (def gpl-3-text                      (slurp "https://www.gnu.org/licenses/gpl-3.0.txt"))
+
 (def cc-by-4-text                    (slurp "https://creativecommons.org/licenses/by/4.0/legalcode.txt"))
+(def cc-by-sa-4-text                 (when run-all-slow-tests? (slurp "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt")))
+(def cc-by-nc-4-text                 (when run-all-slow-tests? (slurp "https://creativecommons.org/licenses/by-nc/4.0/legalcode.txt")))
+(def cc-by-nc-sa-4-text              (when run-all-slow-tests? (slurp "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt")))
+(def cc-by-nd-4-text                 (when run-all-slow-tests? (slurp "https://creativecommons.org/licenses/by-nd/4.0/legalcode.txt")))
+(def cc-by-nc-nd-4-text              (when run-all-slow-tests? (slurp "https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.txt")))
+
 (def mpl-2-text                      (slurp "https://www.mozilla.org/media/MPL/2.0/index.txt"))
 (def clj-spdx-license                (slurp "https://raw.githubusercontent.com/pmonks/clj-spdx/main/LICENSE"))                 ; Apache-2.0
 (def commonmark-java-license         (slurp "https://raw.githubusercontent.com/commonmark/commonmark-java/main/LICENSE.txt"))  ; BSD-2-Clause
@@ -58,7 +65,7 @@
   (testing "Matching texts & licenses"
     (is (true?  (text-is-license? apache-2-text           "Apache-2.0")))
     (is (true?  (text-is-license? gpl-3-text              "GPL-3.0")))
-;    (is (true?  (text-is-license? cc-by-4-text            "CC-BY-4.0")))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/164
+;    (is (true?  (text-is-license? cc-by-4-text            "CC-BY-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
     (is (true?  (text-is-license? mpl-2-text              "MPL-2.0")))
     (is (true?  (text-is-license? clj-spdx-license        "Apache-2.0")))
     (is (true?  (text-is-license? commonmark-java-license "BSD-2-Clause")))))
@@ -93,18 +100,18 @@
   (testing "Exactly matching texts & licenses"
     (is (true?  (text-contains-license? apache-2-text           "Apache-2.0")))
     (is (true?  (text-contains-license? gpl-3-text              "GPL-3.0")))
-;    (is (true?  (text-contains-license? cc-by-4-text            "CC-BY-4.0")))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/164
+;    (is (true?  (text-contains-license? cc-by-4-text            "CC-BY-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
     (is (true?  (text-contains-license? mpl-2-text              "MPL-2.0")))
     (is (true?  (text-contains-license? clj-spdx-license        "Apache-2.0")))
     (is (true?  (text-contains-license? commonmark-java-license "BSD-2-Clause"))))
   (testing "Matching larger texts & licenses"
     (is (true?  (text-contains-license? (str "ABCD\n" apache-2-text           "\nEFGH") "Apache-2.0")))
     (is (true?  (text-contains-license? (str "ABCD\n" gpl-3-text              "\nEFGH") "GPL-3.0")))
-;    (is (true?  (text-contains-license? (str "ABCD\n" cc-by-4-text            "\nEFGH") "CC-BY-4.0")))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/164
+;    (is (true?  (text-contains-license? (str "ABCD\n" cc-by-4-text            "\nEFGH") "CC-BY-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
     (is (true?  (text-contains-license? (str "ABCD\n" mpl-2-text              "\nEFGH") "MPL-2.0")))
     (is (true?  (text-contains-license? (str "ABCD\n" clj-spdx-license        "\nEFGH") "Apache-2.0")))
-;    (is (true?  (text-contains-license? jffi-text                                       "Apache-2.0")))           ; Blocked on https://github.com/jnr/jffi/issues/141
-;    (is (true?  (text-contains-license? jffi-text                                       "LGPL-3.0-or-later")))    ; Blocked on https://github.com/jnr/jffi/issues/141
+;    (is (true?  (text-contains-license? jffi-text                                       "Apache-2.0")))         ; Blocked on https://github.com/jnr/jffi/issues/141
+;    (is (true?  (text-contains-license? jffi-text                                       "LGPL-3.0-or-later")))  ; Blocked on https://github.com/jnr/jffi/issues/141
     (is (true?  (text-contains-license? (str "ABCD\n" commonmark-java-license "\nEFGH") "BSD-2-Clause")))))
 
 (deftest text-contains-exception?-tests
@@ -162,21 +169,25 @@
     (testing "Texts with single licenses and nothing else"
       (is (= (licenses-within-text apache-2-text)           #{"Apache-2.0"}))
       (is (= (licenses-within-text gpl-3-text)              #{"GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-;      (is (= (licenses-within-text cc-by-4-text)            #{"CC-BY-4.0"}))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/164
+;      (is (= (licenses-within-text cc-by-4-text)            #{"CC-BY-4.0"}))        ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+;      (is (= (licenses-within-text cc-by-nc-4-text)         #{"CC-BY-NC-4.0"}))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+;      (is (= (licenses-within-text cc-by-nc-sa-4-text)      #{"CC-BY-NC-SA-4.0"}))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+;      (is (= (licenses-within-text cc-by-nd-4-text)         #{"CC-BY-ND-4.0"}))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+;      (is (= (licenses-within-text cc-by-nc-nd-4-text)      #{"CC-BY-NC-ND-4.0"}))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
       (is (= (licenses-within-text mpl-2-text)              #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
       (is (= (licenses-within-text clj-spdx-license)        #{"Apache-2.0"}))
       (is (= (licenses-within-text commonmark-java-license) #{"BSD-2-Clause"})))
     (testing "Texts with single licenses and other text"
       (is (= (licenses-within-text (str "ABCD\n" apache-2-text           "\nEFGH")) #{"Apache-2.0"}))
       (is (= (licenses-within-text (str "ABCD\n" gpl-3-text              "\nEFGH")) #{"GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-;      (is (= (licenses-within-text (str "ABCD\n" cc-by-4-text            "\nEFGH")) #{"CC-BY-4.0"}))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/164
+      (is (= (licenses-within-text (str "ABCD\n" cc-by-4-text            "\nEFGH")) #{"CC-BY-4.0"}))    ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
       (is (= (licenses-within-text (str "ABCD\n" mpl-2-text              "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
       (is (= (licenses-within-text (str "ABCD\n" clj-spdx-license        "\nEFGH")) #{"Apache-2.0"}))
       (is (= (licenses-within-text (str "ABCD\n" commonmark-java-license "\nEFGH")) #{"BSD-2-Clause"})))
     (testing "Texts with multiple licenses"
       (is (= (licenses-within-text apache-2-gpl-3-text)             #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-;      (is (= (licenses-within-text javamail-license)                #{"CDDL-1.1"   "GPL-2.0"}))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/166
-;      (is (= (licenses-within-text jffi-text                        #{"Apache-2.0" "LGPL-3.0-or-later"})))    ; Blocked on https://github.com/jnr/jffi/issues/141
+;      (is (= (licenses-within-text javamail-license)                #{"CDDL-1.1"   "GPL-2.0"}))             ; Blocked on https://github.com/spdx/license-list-XML/issues/1972
+;      (is (= (licenses-within-text jffi-text                        #{"Apache-2.0" "LGPL-3.0-or-later"})))  ; Blocked on https://github.com/jnr/jffi/issues/141
       (is (= (licenses-within-text apache-2-gpl-3-classpath-2-text) #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"})))))
 
 (deftest exceptions-within-text-tests
@@ -194,5 +205,5 @@
       (is (= (exceptions-within-text (str "ABCD\n" classpath-2-text "\nEFGH")) #{"Classpath-exception-2.0"})))
     (testing "Texts with multiple licenses/exceptions"
       (is (= (exceptions-within-text apache-2-gpl-3-classpath-2-text) #{"Classpath-exception-2.0"}))
-;      (is (= (exceptions-within-text javamail-license)                #{"Classpath-exception-2.0"}))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/166
+;      (is (= (exceptions-within-text javamail-license)                #{"Classpath-exception-2.0"}))    ; Blocked on https://github.com/spdx/license-list-XML/issues/1972
     )))
