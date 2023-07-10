@@ -41,7 +41,7 @@ $ deps-try com.github.pmonks/clj-spdx
 
 ### API Documentation
 
-[API documentation is available here](https://pmonks.github.io/clj-spdx/).
+[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
 
 ## Contributor Information
 
