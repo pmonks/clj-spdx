@@ -60,7 +60,7 @@
 
 ; Dual license texts
 (def apache-20-gpl-30-text           (str "THIS WORK IS DUAL-LICENSED, UNDER:\n\n" apache-20-text "\n\nOR, AT YOUR DISCRETION:\n\n" gpl-30-text))
-;(def jffi-text                       (slurp "https://raw.githubusercontent.com/jnr/jffi/master/LICENSE"))                      ; Apache-2.0 OR LGPL-3.0+, but blocked on https://github.com/jnr/jffi/issues/141
+;(def jffi-text                       (slurp "https://raw.githubusercontent.com/jnr/jffi/master/LICENSE"))                      ; Apache-2.0 OR LGPL-3.0+, but Failing due to https://github.com/jnr/jffi/issues/141
 (def javamail-license                (slurp "https://raw.githubusercontent.com/javaee/javamail/master/LICENSE.txt"))           ; CDDL-1.1 OR GPL-2.0 WITH Classpath-exception-2.0
 
 ; Exception texts
@@ -84,8 +84,8 @@
   (testing "Invalid id"
     (is (false? (text-is-license? apache-20-text "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Exactly matching official license texts"
-    (is (true?  (text-is-license? apache-10-text          "Apache-1.0")))       ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/184
-    (is (true?  (text-is-license? apache-11-text          "Apache-1.1")))       ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/184
+    (is (true?  (text-is-license? apache-10-text          "Apache-1.0")))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
+    (is (true?  (text-is-license? apache-11-text          "Apache-1.1")))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
     (is (true?  (text-is-license? apache-20-text          "Apache-2.0")))
     (is (true?  (text-is-license? epl-10-text             "EPL-1.0")))
     (is (true?  (text-is-license? epl-20-text             "EPL-2.0")))
@@ -100,12 +100,12 @@
     (is (true?  (text-is-license? agpl-30-text            "AGPL-3.0")))
     (is (true?  (text-is-license? cc0-10-text             "CC0-1.0")))
     (is (true?  (text-is-license? cc-by-30-text           "CC-BY-3.0")))        ; ####TODO: Investigate why this is failing
-    (is (true?  (text-is-license? cc-by-40-text           "CC-BY-4.0")))        ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-is-license? cc-by-sa-40-text        "CC-BY-SA-4.0")))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-is-license? cc-by-nc-40-text        "CC-BY-NC-4.0")))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-is-license? cc-by-nc-sa-40-text     "CC-BY-NC-SA-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-is-license? cc-by-nd-40-text        "CC-BY-ND-4.0")))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-is-license? cc-by-nc-nd-40-text     "CC-BY-NC-ND-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-is-license? cc-by-40-text           "CC-BY-4.0")))        ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-is-license? cc-by-sa-40-text        "CC-BY-SA-4.0")))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-is-license? cc-by-nc-40-text        "CC-BY-NC-4.0")))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-is-license? cc-by-nc-sa-40-text     "CC-BY-NC-SA-4.0")))  ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-is-license? cc-by-nd-40-text        "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-is-license? cc-by-nc-nd-40-text     "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
     (is (true?  (text-is-license? wtfpl-text              "WTFPL")))
     (is (true?  (text-is-license? mpl-20-text             "MPL-2.0"))))
   (testing "Exactly matching 3rd party license texts"
@@ -140,8 +140,8 @@
   (testing "Invalid id"
     (is (false? (text-contains-license? apache-20-text "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Official license text contains license"
-    (is (true?  (text-contains-license? apache-10-text          "Apache-1.0")))       ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/184
-    (is (true?  (text-contains-license? apache-11-text          "Apache-1.1")))       ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/184
+    (is (true?  (text-contains-license? apache-10-text          "Apache-1.0")))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
+    (is (true?  (text-contains-license? apache-11-text          "Apache-1.1")))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
     (is (true?  (text-contains-license? apache-20-text          "Apache-2.0")))
     (is (true?  (text-contains-license? epl-10-text             "EPL-1.0")))
     (is (true?  (text-contains-license? epl-20-text             "EPL-2.0")))          ; ####TODO: Investigate why this is failing
@@ -156,26 +156,26 @@
     (is (true?  (text-contains-license? agpl-30-text            "AGPL-3.0")))
     (is (true?  (text-contains-license? cc0-10-text             "CC0-1.0")))          ; ####TODO: Investigate why this is failing
     (is (true?  (text-contains-license? cc-by-30-text           "CC-BY-3.0")))        ; ####TODO: Investigate why this is failing
-    (is (true?  (text-contains-license? cc-by-40-text           "CC-BY-4.0")))        ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-contains-license? cc-by-sa-40-text        "CC-BY-SA-4.0")))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-contains-license? cc-by-nc-40-text        "CC-BY-NC-4.0")))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-contains-license? cc-by-nc-sa-40-text     "CC-BY-NC-SA-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-contains-license? cc-by-nd-40-text        "CC-BY-ND-4.0")))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (true?  (text-contains-license? cc-by-nc-nd-40-text     "CC-BY-NC-ND-4.0")))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? cc-by-40-text           "CC-BY-4.0")))        ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? cc-by-sa-40-text        "CC-BY-SA-4.0")))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? cc-by-nc-40-text        "CC-BY-NC-4.0")))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? cc-by-nc-sa-40-text     "CC-BY-NC-SA-4.0")))  ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? cc-by-nd-40-text        "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? cc-by-nc-nd-40-text     "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
     (is (true?  (text-contains-license? wtfpl-text              "WTFPL")))
     (is (true?  (text-contains-license? mpl-20-text             "MPL-2.0"))))
   (testing "3rd party license text contains license"
     (is (true?  (text-contains-license? clj-spdx-license        "Apache-2.0")))
-    (is (true?  (text-contains-license? commonmark-java-license "BSD-2-Clause"))))  ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/182
+    (is (true?  (text-contains-license? commonmark-java-license "BSD-2-Clause"))))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/182
   (testing "Larger texts with junk characters contain licenses"
     (is (true?  (text-contains-license? (str "ABCD\n" apache-20-text          "\nEFGH") "Apache-2.0")))
     (is (true?  (text-contains-license? (str "ABCD\n" gpl-30-text             "\nEFGH") "GPL-3.0")))
-    (is (true?  (text-contains-license? (str "ABCD\n" cc-by-40-text           "\nEFGH") "CC-BY-4.0")))          ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+    (is (true?  (text-contains-license? (str "ABCD\n" cc-by-40-text           "\nEFGH") "CC-BY-4.0")))          ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
     (is (true?  (text-contains-license? (str "ABCD\n" mpl-20-text             "\nEFGH") "MPL-2.0")))
     (is (true?  (text-contains-license? (str "ABCD\n" clj-spdx-license        "\nEFGH") "Apache-2.0")))
-;    (is (true?  (text-contains-license? jffi-text                                       "Apache-2.0")))         ; Blocked on https://github.com/jnr/jffi/issues/141
-;    (is (true?  (text-contains-license? jffi-text                                       "LGPL-3.0-or-later")))  ; Blocked on https://github.com/jnr/jffi/issues/141
-    (is (true?  (text-contains-license? (str "ABCD\n" commonmark-java-license "\nEFGH") "BSD-2-Clause")))))     ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/182
+;    (is (true?  (text-contains-license? jffi-text                                       "Apache-2.0")))         ; Failing due to https://github.com/jnr/jffi/issues/141
+;    (is (true?  (text-contains-license? jffi-text                                       "LGPL-3.0-or-later")))  ; Failing due to https://github.com/jnr/jffi/issues/141
+    (is (true?  (text-contains-license? (str "ABCD\n" commonmark-java-license "\nEFGH") "BSD-2-Clause")))))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/182
 
 (deftest text-contains-exception?-tests
   (testing "nil, empty string"
@@ -230,8 +230,8 @@
     (is (nil? (licenses-within-text apache-20-text #{"GPL-3.0"})))
     (is (=    (licenses-within-text apache-20-text #{"Apache-2.0"}) #{"Apache-2.0"})))
   (testing "Matching official license texts"
-    (is (= (licenses-within-text apache-10-text)      #{"Apache-1.0"}))       ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/184
-    (is (= (licenses-within-text apache-11-text)      #{"Apache-1.1"}))       ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/184
+    (is (= (licenses-within-text apache-10-text)      #{"Apache-1.0"}))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
+    (is (= (licenses-within-text apache-11-text)      #{"Apache-1.1"}))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
     (is (= (licenses-within-text apache-20-text)      #{"Apache-2.0"}))
     (is (= (licenses-within-text epl-10-text)         #{"EPL-1.0"}))
     (is (= (licenses-within-text epl-20-text)         #{"EPL-2.0"}))          ; ####TODO: Investigate why this is failing
@@ -246,29 +246,29 @@
     (is (= (licenses-within-text agpl-30-text)        #{"AGPL-3.0-or-later" "AGPL-3.0-only" "AGPL-3.0"}))
     (is (= (licenses-within-text cc0-10-text)         #{"CC0-1.0"}))          ; ####TODO: Investigate why this is failing
     (is (= (licenses-within-text cc-by-30-text)       #{"CC-BY-3.0"}))        ; ####TODO: Investigate why this is failing
-    (is (= (licenses-within-text cc-by-40-text)       #{"CC-BY-4.0"}))        ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (= (licenses-within-text cc-by-sa-40-text)    #{"CC-BY-SA-4.0"}))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (= (licenses-within-text cc-by-nc-40-text)    #{"CC-BY-NC-4.0"}))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (= (licenses-within-text cc-by-nc-sa-40-text) #{"CC-BY-NC-SA-4.0"}))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (= (licenses-within-text cc-by-nd-40-text)    #{"CC-BY-ND-4.0"}))     ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (= (licenses-within-text cc-by-nc-nd-40-text) #{"CC-BY-NC-ND-4.0"}))  ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
-    (is (= (licenses-within-text wtfpl-text)          #{"WTFPL"}))            ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/182
+    (is (= (licenses-within-text cc-by-40-text)       #{"CC-BY-4.0"}))        ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text cc-by-sa-40-text)    #{"CC-BY-SA-4.0"}))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text cc-by-nc-40-text)    #{"CC-BY-NC-4.0"}))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text cc-by-nc-sa-40-text) #{"CC-BY-NC-SA-4.0"}))  ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text cc-by-nd-40-text)    #{"CC-BY-ND-4.0"}))     ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text cc-by-nc-nd-40-text) #{"CC-BY-NC-ND-4.0"}))  ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text wtfpl-text)          #{"WTFPL"}))            ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/182
     (is (= (licenses-within-text mpl-20-text)         #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"})))
   (testing "Matching 3rd party license texts that only contain a single license"
     (is (= (licenses-within-text clj-spdx-license)        #{"Apache-2.0"}))
-    (is (= (licenses-within-text commonmark-java-license) #{"BSD-2-Clause"})))    ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/182
+    (is (= (licenses-within-text commonmark-java-license) #{"BSD-2-Clause"})))    ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/182
   (testing "Matching larger texts with junk characters and a single license"
     (is (= (licenses-within-text (str "ABCD\n" apache-20-text          "\nEFGH")) #{"Apache-2.0"}))
     (is (= (licenses-within-text (str "ABCD\n" gpl-30-text             "\nEFGH")) #{"GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-    (is (= (licenses-within-text (str "ABCD\n" cc-by-40-text           "\nEFGH")) #{"CC-BY-4.0"}))      ; Blocked on https://github.com/spdx/license-list-XML/issues/1960
+    (is (= (licenses-within-text (str "ABCD\n" cc-by-40-text           "\nEFGH")) #{"CC-BY-4.0"}))      ; Failing due to https://github.com/spdx/license-list-XML/issues/1960
     (is (= (licenses-within-text (str "ABCD\n" mpl-20-text             "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
-    (is (= (licenses-within-text (str "ABCD\n" wtfpl-text              "\nEFGH")) #{"WTFPL"}))          ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/182
+    (is (= (licenses-within-text (str "ABCD\n" wtfpl-text              "\nEFGH")) #{"WTFPL"}))          ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/182
     (is (= (licenses-within-text (str "ABCD\n" clj-spdx-license        "\nEFGH")) #{"Apache-2.0"}))
-    (is (= (licenses-within-text (str "ABCD\n" commonmark-java-license "\nEFGH")) #{"BSD-2-Clause"})))  ; Blocked on https://github.com/spdx/Spdx-Java-Library/issues/182
+    (is (= (licenses-within-text (str "ABCD\n" commonmark-java-license "\nEFGH")) #{"BSD-2-Clause"})))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/182
   (testing "Matching larger texts with multiple licenses and (optionally) other text (e.g. exceptions) that shouldn't match"
     (is (= (licenses-within-text apache-20-gpl-30-text)              #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-    (is (= (licenses-within-text javamail-license)                   #{"CDDL-1.1"   "GPL-2.0"}))             ; Blocked on https://github.com/spdx/license-list-XML/issues/1972
-;    (is (= (licenses-within-text jffi-text)                          #{"Apache-2.0" "LGPL-3.0-or-later"}))   ; Blocked on https://github.com/jnr/jffi/issues/141
+    (is (= (licenses-within-text javamail-license)                   #{"CDDL-1.1"   "GPL-2.0"}))             ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
+;    (is (= (licenses-within-text jffi-text)                          #{"Apache-2.0" "LGPL-3.0-or-later"}))   ; Failing due to https://github.com/jnr/jffi/issues/141
     (is (= (licenses-within-text apache-20-gpl-30-classpath-20-text) #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))))
 
 (deftest exceptions-within-text-tests
@@ -285,4 +285,4 @@
     (is (= (exceptions-within-text (str "ABCD\n" classpath-20-text "\nEFGH")) #{"Classpath-exception-2.0"})))
   (testing "Texts with multiple licenses/exceptions"
     (is (= (exceptions-within-text apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0"}))
-    (is (= (exceptions-within-text javamail-license)                   #{"Classpath-exception-2.0"}))))    ; Blocked on https://github.com/spdx/license-list-XML/issues/1972
+    (is (= (exceptions-within-text javamail-license)                   #{"Classpath-exception-2.0"}))))    ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
