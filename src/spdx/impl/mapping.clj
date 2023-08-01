@@ -17,7 +17,8 @@
 ;
 
 (ns spdx.impl.mapping
-  "Java object mapping namespace. Note: this namespace is not part of the public API of clj-spdx and may change without notice."
+  "Java object mapping namespace. Note: this namespace is not part of the public
+  API of clj-spdx and may change without notice."
   (:require [clojure.string  :as s]
             [clojure.instant :as inst]
             [spdx.impl.state :as is]))
@@ -30,7 +31,9 @@
     x))
 
 (defn- value-to-map
-  "Returns v in a singleton map with key k, or nil if v is nil. Unwraps java.util.Optional values, and when f is provided applies it to v before putting it in the result."
+  "Returns v in a singleton map with key k, or nil if v is nil. Unwraps
+  java.util.Optional values, and when f is provided applies it to v before
+  putting it in the result."
   ([k v] (value-to-map k v nil))
   ([k v f]
    (when-let [v ((or f identity) (unwrap-optional v))]

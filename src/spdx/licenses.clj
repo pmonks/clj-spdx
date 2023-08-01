@@ -47,29 +47,59 @@
           im/id->license
           im/license->map))
 
+(defn deprecated-id?
+  "Is the given id deprecated?  Returns nil if id is unlisted, or deprecation
+  status is undefined in the SPDX license list.
+
+  See https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated
+  for more details about what this means."
+  [^String id]
+  (when (listed-id? id)
+    (:deprecated? (id->info id))))
+
 (defn non-deprecated-ids
   "Returns the set of license ids that identify current (non-deprecated)
   licenses within the provided set of SPDX license identifiers (or all of them,
   if not provided)."
   ([]    (non-deprecated-ids (ids)))
-  ([ids] (some-> (seq (filter #(not (:deprecated? (id->info %))) ids))
+  ([ids] (some-> (seq (filter (complement deprecated-id?) ids))
                  set)))
+
+(defn osi-approved-id?
+  "Is the given id OSI approved?  Returns nil if id is unlisted, or osi-approval
+  is undefined in the SPDX license list.
+
+  See https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md
+  for more details about what this means."
+  [^String id]
+  (when (listed-id? id)
+    (:osi-approved? (id->info id))))
 
 (defn osi-approved-ids
   "Returns the set of SPDX license identifiers that identify OSI approved
   licenses within the provided set of SPDX license identifiers (or all of them,
   if not provided)."
   ([]    (osi-approved-ids (ids)))
-  ([ids] (some-> (seq (filter #(:osi-approved? (id->info %)) ids))
+  ([ids] (some-> (seq (filter osi-approved-id? ids))
                  set)))
+
+(defn fsf-libre-id?
+  "Is the given id FSF Libre?  Returns nil if id is unlisted, or FSF fsf-libre
+  status is undefined in the SPDX license list.
+
+  See https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md
+  for more details about what this means."
+  [^String id]
+  (when (listed-id? id)
+    (:fsf-libre? (id->info id))))
 
 (defn fsf-libre-ids
   "Returns the set of SPDX license identifiers that identify FSF Libre licenses
   within the provided set of SPDX license identifiers (or all of them, if not
   provided). See https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md
-  for more details about what this means exactly."
+  for more details about what this means."
   ([]    (fsf-libre-ids (ids)))
-  ([ids] (some-> (seq (filter #(:fsf-libre? (id->info %)) ids))
+  ([ids] (some-> (seq (filter fsf-libre-id? ids))
                  set)))
 
 (defn init!

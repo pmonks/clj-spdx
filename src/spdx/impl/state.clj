@@ -17,7 +17,8 @@
 ;
 
 (ns spdx.impl.state
-  "State management namespace. Note: this namespace is not part of the public API of clj-spdx and may change without notice.")
+  "State management namespace. Note: this namespace is not part of the public
+  API of clj-spdx and may change without notice.")
 
 (def list-obj (delay (org.spdx.library.model.license.ListedLicenses/getListedLicenses)))
 

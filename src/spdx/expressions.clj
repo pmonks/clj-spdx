@@ -17,7 +17,8 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality. This functionality is bespoke (it is not provided by Spdx-Java-Library)."
+  "SPDX license expression functionality. This functionality is bespoke (it is
+  not provided by Spdx-Java-Library)."
   (:require [clojure.string  :as s]
             [clojure.set     :as set]
             [instaparse.core :as insta]
@@ -157,6 +158,24 @@
     (when-not (insta/failure? raw-parse-result)
       raw-parse-result)))
 
+(defn- build-license-id
+  "Builds the correct final license id for the given license id and 'or-later'
+  indicator.  This is primarily to handle the *GPL family's 'or-later' and
+  'only' suffixes (which are a pita)."
+  ([license-id or-later] (build-license-id license-id or-later true))
+  ([license-id or-later include-or-later]
+   (if or-later
+     (let [or-later-variant (str license-id "-or-later")]
+       (if (and (lic/listed-id?          or-later-variant)
+                (not (lic/deprecated-id? or-later-variant)))
+         or-later-variant
+         (str license-id (when include-or-later "+"))))
+     (let [only-variant (str license-id "-only")]
+       (if (and (lic/listed-id?          only-variant)
+                (not (lic/deprecated-id? only-variant)))
+         only-variant
+         license-id)))))
+
 (defn- unparse-internal
   "Internal, naively recursive implementation of unparse."
   [parse-result]
@@ -165,15 +184,15 @@
       (= :or       parse-result) "OR"
       (= :and      parse-result) "AND"
       (sequential? parse-result) (when (pos? (count parse-result)) (str "(" (s/join " " (map unparse-internal parse-result)) ")"))
-      (map?        parse-result) (str (:license-id parse-result) (when (:or-later parse-result) "+")
+      (map?        parse-result) (str (build-license-id (:license-id parse-result) (:or-later parse-result))
                                       (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
                                       (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
                                                                              "LicenseRef-" (:license-ref parse-result))))
       :else       nil)))
 
 (defn unparse
-  "Turn a (successful) parse result back into a (normalised) SPDX expression
-  string. Results are undefined for invalid handcrafted parse trees."
+  "Turns a (successful) parse result back into a (normalised) SPDX expression
+  string. Results are undefined for invalid parse trees."
   [parse-result]
   (when parse-result
     (when-let [result (if (sequential? parse-result)
@@ -201,13 +220,21 @@
 (defn extract-ids
   "Extract all SPDX ids (as a set of strings) from the given parse result,
   optionally including the 'or later' indicator ('+') after license ids that
-  have that designation (defaults to false)."
+  have that designation in the parse tree (defaults to false).
+
+  Note: license 'families' that provide 'or-later' suffixed variants (i.e.
+  *GPL licenses) will always end up with either the 'or-later' or the 'only'
+  suffix version of an id, regardless of the value of the include-or-later
+  flag.  This is because the 'naked' variants of these license ids (e.g.
+  'GPL-2.0') are deprecated in the SPDX license list, and their use is
+  discouraged. See https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated
+  for more details."
   ([parse-result] (extract-ids parse-result false))
   ([parse-result include-or-later]
    (when parse-result
      (cond
        (sequential? parse-result) (set (mapcat #(extract-ids % include-or-later) parse-result))
-       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later (:or-later parse-result)) "+"))})
+       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(build-license-id (:license-id parse-result) (:or-later parse-result) include-or-later)})
                                              (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
                                              (when (:license-ref          parse-result)
                                                #{(str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))

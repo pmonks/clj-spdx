@@ -19,7 +19,7 @@
 (ns spdx.licenses-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.licenses   :refer [version ids listed-id? id->info non-deprecated-ids osi-approved-ids fsf-libre-ids init!]]))
+            [spdx.licenses   :refer [version ids listed-id? id->info deprecated-id? non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids init!]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -41,17 +41,77 @@
   (testing "ids are a set"
     (is (instance? java.util.Set (ids)))))
 
+(deftest deprecated-id?-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (deprecated-id? nil)))
+    (is (nil? (deprecated-id? "")))
+    (is (nil? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "Deprecated ids"
+    (is (deprecated-id? "GPL-2.0"))
+    (is (deprecated-id? "Nunit"))
+    (is (deprecated-id? "wxWindows")))
+  (testing "Non-deprecated ids"
+    (is (not (deprecated-id? "GPL-2.0-only")))
+    (is (not (deprecated-id? "GPL-2.0-or-later")))
+    (is (not (deprecated-id? "Sendmail")))
+    (is (not (deprecated-id? "SSH-OpenSSH")))
+    (is (not (deprecated-id? "Latex2e")))
+    (is (not (deprecated-id? "MIT")))
+    (is (not (deprecated-id? "gnuplot")))
+    (is (not (deprecated-id? "OLDAP-2.2.2")))))
+
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
     (is (pos? (count (non-deprecated-ids)))))
   (testing "non-deprecated-ids are a set"
     (is (instance? java.util.Set (non-deprecated-ids)))))
 
+(deftest osi-approved-id?-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (osi-approved-id? nil)))
+    (is (nil? (osi-approved-id? "")))
+    (is (nil? (osi-approved-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "OSI approved ids"
+    (is (osi-approved-id? "Apache-2.0"))
+    (is (osi-approved-id? "GPL-3.0"))
+    (is (osi-approved-id? "GPL-3.0-only"))
+    (is (osi-approved-id? "GPL-3.0-or-later")))
+  (testing "Non-OSI approved ids"
+    (is (not (osi-approved-id? "BSD-3-Clause-No-Military-License")))
+    (is (not (osi-approved-id? "WTFPL")))
+    (is (not (osi-approved-id? "CC-BY-SA-4.0")))
+    (is (not (osi-approved-id? "BSD-4-Clause")))
+    (is (not (osi-approved-id? "JSON")))
+    (is (not (osi-approved-id? "X11")))
+    (is (not (osi-approved-id? "Beerware")))
+    (is (not (osi-approved-id? "Hippocratic-2.1")))))
+
 (deftest osi-approved-ids-tests
   (testing "We have some osi-approved-ids"
     (is (pos? (count (osi-approved-ids)))))
   (testing "osi-approved-ids are a set"
     (is (instance? java.util.Set (osi-approved-ids)))))
+
+(deftest fsf-libre-id?-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (fsf-libre-id? nil)))
+    (is (nil? (fsf-libre-id? "")))
+    (is (nil? (fsf-libre-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "FSF Libre ids"
+    (is (fsf-libre-id? "Intel"))
+    (is (fsf-libre-id? "Unlicense"))
+    (is (fsf-libre-id? "Apache-1.0"))
+    (is (fsf-libre-id? "CDDL-1.0")))
+  (testing "Non-FSF-Libre ids"
+    ; Note: the SPDX license list tends to leave this field out rather than populate it with false, hence we don't test with false?
+    (is (not (fsf-libre-id? "GPL-1.0")))
+    (is (not (fsf-libre-id? "MIT-0")))
+    (is (not (fsf-libre-id? "PostgreSQL")))
+    (is (not (fsf-libre-id? "Glide")))
+    (is (not (fsf-libre-id? "OML")))
+    (is (not (fsf-libre-id? "Libpng")))
+    (is (not (fsf-libre-id? "MPL-1.0")))
+    (is (not (fsf-libre-id? "Xerox")))))
 
 (deftest fsf-libre-ids-ids-tests
   (testing "We have some fsf-libre-ids"
@@ -60,12 +120,14 @@
     (is (instance? java.util.Set (fsf-libre-ids)))))
 
 (deftest listed-id?-tests
+  (testing "Invalid ids return nil"
+    (is (not (listed-id? nil)))
+    (is (not (listed-id? "")))
+    (is (not (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Common ids are present"
     (is (listed-id? "Apache-2.0"))
     (is (listed-id? "GPL-3.0"))
-    (is (listed-id? "CC-BY-4.0")))
-  (testing "Made up ids are not present"
-    (is (not (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))))
+    (is (listed-id? "CC-BY-4.0"))))
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"
