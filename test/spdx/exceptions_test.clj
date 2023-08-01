@@ -19,7 +19,7 @@
 (ns spdx.exceptions-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.exceptions :refer [version ids listed-id? id->info non-deprecated-ids init!]]))
+            [spdx.exceptions :refer [version ids listed-id? id->info deprecated-id? non-deprecated-ids init!]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -40,6 +40,19 @@
     (is (pos? (count (ids)))))
   (testing "ids are a set"
     (is (instance? java.util.Set (ids)))))
+
+(deftest deprecated-id?-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (deprecated-id? nil)))
+    (is (nil? (deprecated-id? "")))
+    (is (nil? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "Deprecated ids"
+    (is (true? (deprecated-id? "Nokia-Qt-exception-1.1"))))
+  (testing "Non-deprecated ids"
+    (is (false? (deprecated-id? "Classpath-exception-2.0")))
+    (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
+    (is (false? (deprecated-id? "LLVM-exception")))
+    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
