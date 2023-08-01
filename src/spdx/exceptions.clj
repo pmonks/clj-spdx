@@ -47,12 +47,21 @@
           im/id->exception
           im/exception->map))
 
+(defn deprecated-id?
+  "Is the given id deprecated?
+
+  See https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated
+  for more details on what this means."
+  [^String id]
+  (when (listed-id? id)
+    (boolean (:deprecated? (id->info id)))))
+
 (defn non-deprecated-ids
   "Returns the set of exception ids that identify current (non-deprecated)
   exceptions within the provided set of SPDX exception identifiers (or all of
   them, if not provided)."
   ([]    (non-deprecated-ids (ids)))
-  ([ids] (some-> (seq (filter #(not (:deprecated? (id->info %))) ids))
+  ([ids] (some-> (seq (filter (complement deprecated-id?) ids))
                  set)))
 
 (defn init!
