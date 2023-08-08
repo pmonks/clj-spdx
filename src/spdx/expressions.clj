@@ -192,7 +192,13 @@
 
 (defn unparse
   "Turns a (successful) parse result back into a (normalised) SPDX expression
-  string. Results are undefined for invalid parse trees."
+  string. Results are undefined for invalid parse trees.
+
+  Note that the GPL family of licenses have special handling, whereby suffixes
+  are always added. This is because the non-suffixed GPL family license ids
+  have been deprecated in the SPDX license list. Examples:
+  * GPL-2.0   -> GPL-2.0-only
+  * AGPL-3.0+ -> AGPL-3.0-or-later"
   [parse-result]
   (when parse-result
     (when-let [result (if (sequential? parse-result)
@@ -202,7 +208,8 @@
         (s/trim result)))))
 
 (defn normalise
-  "'Normalises' an SPDX expression, by running it through parse then unparse."
+  "'Normalises' an SPDX expression, by running it through parse then unparse.
+  Returns nil if s is nil or is not a valid SPDX expression."
   [s]
   (some-> s
           parse
