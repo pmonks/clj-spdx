@@ -12,11 +12,11 @@ suffix version of an id, regardless of the value of the include-or-later
 flag.  This is because the 'naked' variants of these license ids (e.g.
 'GPL-2.0') are deprecated in the SPDX license list, and their use is
 discouraged. See <a href="https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated">https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated</a>
-for more details.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L220">view source</a></div></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><pre class="plaintext">Initialises this namespace upon first call (and does nothing on subsequent
+for more details.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L227">view source</a></div></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><pre class="plaintext">Initialises this namespace upon first call (and does nothing on subsequent
 calls), returning nil. Consumers of this namespace are not required to call
 this fn, as initialisation will occur implicitly anyway; it is provided to
-allow explicit control of the cost of initialisation to callers who need it.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L244">view source</a></div></div><div class="public anchor" id="var-normalise"><h3>normalise</h3><div class="usage"><code>(normalise s)</code></div><div class="doc"><pre class="plaintext">'Normalises' an SPDX expression, by running it through parse then unparse.
-</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L204">view source</a></div></div><div class="public anchor" id="var-parse"><h3>parse</h3><div class="usage"><code>(parse s)</code></div><div class="doc"><pre class="plaintext">Attempt to parse the given string as an SPDX license expression, returning a
+allow explicit control of the cost of initialisation to callers who need it.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L251">view source</a></div></div><div class="public anchor" id="var-normalise"><h3>normalise</h3><div class="usage"><code>(normalise s)</code></div><div class="doc"><pre class="plaintext">'Normalises' an SPDX expression, by running it through parse then unparse.
+Returns nil if s is nil or is not a valid SPDX expression.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L210">view source</a></div></div><div class="public anchor" id="var-parse"><h3>parse</h3><div class="usage"><code>(parse s)</code></div><div class="doc"><pre class="plaintext">Attempt to parse the given string as an SPDX license expression, returning a
 data structure representing the parse tree or nil if the string cannot be
 parsed.
 
@@ -56,7 +56,13 @@ Examples:
 instead of nil.
 
 See also <a href="https://github.com/Engelberg/instaparse#parse-errors">https://github.com/Engelberg/instaparse#parse-errors</a></pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L89">view source</a></div></div><div class="public anchor" id="var-unparse"><h3>unparse</h3><div class="usage"><code>(unparse parse-result)</code></div><div class="doc"><pre class="plaintext">Turns a (successful) parse result back into a (normalised) SPDX expression
-string. Results are undefined for invalid parse trees.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L193">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code></div><div class="doc"><pre class="plaintext">Is the given string a valid SPDX license expression?
+string. Results are undefined for invalid parse trees.
+
+Note that the GPL family of licenses have special handling, whereby suffixes
+are always added. This is because the non-suffixed GPL family license ids
+have been deprecated in the SPDX license list. Examples:
+* GPL-2.0   -&gt; GPL-2.0-only
+* AGPL-3.0+ -&gt; AGPL-3.0-or-later</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L193">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code></div><div class="doc"><pre class="plaintext">Is the given string a valid SPDX license expression?
 
 Note: if you intend to parse the given string if it's valid, it's more
-efficient to call parse directly and check for a nil result.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L211">view source</a></div></div></div></body></html>
+efficient to call parse directly and check for a nil result.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L218">view source</a></div></div></div></body></html>
