@@ -83,122 +83,189 @@
                                                                 (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (exc/ids))))))
 (def ^:private spdx-license-expression-parser-d  (delay (insta/parser @spdx-license-expression-grammar-d :start :license-expression)))
 
-(def ^:private normalised-spdx-ids-map-d (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
-                                                       (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
+(def ^:private normalised-spdx-ids-map-d         (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
+                                                               (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
+
+(def ^:private current-gpl-family-ids #{
+                                "AGPL-1.0-only" "AGPL-1.0-or-later" "AGPL-3.0-only" "AGPL-3.0-or-later"
+                                "GPL-1.0-only" "GPL-1.0-or-later" "GPL-2.0-only" "GPL-2.0-or-later" "GPL-3.0-only" "GPL-3.0-or-later"
+                                "LGPL-2.0-only" "LGPL-2.0-or-later" "LGPL-2.1-only" "LGPL-2.1-or-later" "LGPL-3.0-only" "LGPL-3.0-or-later"})
+
+(def ^:private deprecated-simple-gpl-family-ids {
+                                "AGPL-1.0"  "AGPL-1.0-only"
+                                ; Note: AGPL-1.0+ never existed as a listed SPDX license identifier
+                                "AGPL-3.0"  "AGPL-3.0-only"
+                                ; Note: AGPL-3.0+ never existed as a listed SPDX license identifier
+                                "GPL-1.0"   "GPL-1.0-only"
+                                "GPL-1.0+"  "GPL-1.0-or-later"
+                                "GPL-2.0"   "GPL-2.0-only"
+                                "GPL-2.0+"  "GPL-2.0-or-later"
+                                "GPL-3.0"   "GPL-3.0-only"
+                                "GPL-3.0+"  "GPL-3.0-or-later"
+                                "LGPL-2.0"  "LGPL-2.0-only"
+                                "LGPL-2.0+" "LGPL-2.0-or-later"
+                                "LGPL-2.1"  "LGPL-2.1-only"
+                                "LGPL-2.1+" "LGPL-2.1-or-later"
+                                "LGPL-3.0"  "LGPL-3.0-only"
+                                "LGPL-3.0+" "LGPL-3.0-or-later"})
+
+(def ^:private deprecated-compound-gpl-family-ids {
+                                "GPL-2.0-with-autoconf-exception"  ["GPL-2.0-only" "Autoconf-exception-2.0"]
+                                "GPL-2.0-with-bison-exception"     ["GPL-2.0-only" "Bison-exception-2.2"]
+                                "GPL-2.0-with-classpath-exception" ["GPL-2.0-only" "Classpath-exception-2.0"]
+                                "GPL-2.0-with-font-exception"      ["GPL-2.0-only" "Font-exception-2.0"]
+                                "GPL-2.0-with-GCC-exception"       ["GPL-2.0-only" "GCC-exception-2.0"]
+                                "GPL-3.0-with-autoconf-exception"  ["GPL-3.0-only" "Autoconf-exception-3.0"]
+                                "GPL-3.0-with-GCC-exception"       ["GPL-3.0-only" "GCC-exception-3.1"]})
+
+(def ^:private deprecated-gpl-family-ids (set/union (set (keys deprecated-simple-gpl-family-ids)) (set (keys deprecated-compound-gpl-family-ids))))
+(def ^:private gpl-family-ids            (set/union current-gpl-family-ids deprecated-gpl-family-ids))
+
+(def ^:private not-blank? (complement s/blank?))
+
+(defn- normalise-gpl-id
+  "Normalises a GPL family `license-id` to a tuple (2 element vector) containing
+  the non-deprecated equivalent license id in first position, and (optionally -
+  may be nil) a license-exception-id in second position if `license-id` was a
+  compound id (an id that also identifies an exception, such as
+  \"GPL-2.0-with-classpath-exception\").
+
+  If `license-id` is not deprecated, returns it as-is (in the first position in
+  the tuple)."
+  [license-id]
+  (get deprecated-compound-gpl-family-ids
+       license-id
+       [(get deprecated-simple-gpl-family-ids
+             license-id
+             license-id)
+        nil]))
+
+(defn- normalise-gpl-license-map
+  "Normalises a license map that is known to contain a GPL family `license-id`.
+  This involves:
+  1. Replacing deprecated GPL family license ids with their non-deprecated
+     equivalent
+  2. Turning `:or-later?` flags into the '-or-later' variant of the `license-id`
+  3. Expanding 'compound' license ids (e.g. GPL-2.0-with-classpath-exception)"
+  [{:keys [license-id or-later? license-exception-id]}]
+  (let [[new-license-id new-license-exception-id] (normalise-gpl-id license-id)
+        new-license-id                            (let [or-later-variant (s/replace new-license-id "-only" "-or-later")]
+                                                    (if (and or-later? (lic/listed-id? or-later-variant))
+                                                      or-later-variant
+                                                      new-license-id))]
+    ; Check if we have two license exception ids after expanding the license-id (e.g. from a valid but weird expression such as "GPL-2.0-with-autoconf-exception WITH Classpath-exception-2.0")
+    (if (and (not-blank? license-exception-id)
+             (not-blank? new-license-exception-id)
+             (not= license-exception-id new-license-exception-id))
+      [{:license-id new-license-id :license-exception-id new-license-exception-id} :and {:license-id new-license-id :license-exception-id license-exception-id}]
+      (merge {:license-id new-license-id}
+             (when (not-blank? license-exception-id)     {:license-exception-id license-exception-id})
+             (when (not-blank? new-license-exception-id) {:license-exception-id new-license-exception-id})))))
+
+(defn- normalise-gpl-elements
+  "Normalises all of the GPL elements in `parse-tree`."
+  [parse-tree]
+  (cond
+    (keyword?    parse-tree) parse-tree
+    (sequential? parse-tree) (some-> (seq (map normalise-gpl-elements parse-tree)) vec)  ; Note: naive (stack consuming) recursion
+    (map?        parse-tree) (if (contains? gpl-family-ids (:license-id parse-tree))
+                               (normalise-gpl-license-map parse-tree)
+                               parse-tree)))
 
 (defn parse-with-info
-  "As for parse, but returns instaparse parse error info if parsing fails,
+  "As for parse, but returns an instaparse parse error info if parsing fails,
   instead of nil.
 
   See also https://github.com/Engelberg/instaparse#parse-errors"
-  [^String s]
-  (when-not (s/blank? s)
-    (let [raw-parse-result (insta/parse @spdx-license-expression-parser-d s)]
-      (if (insta/failure? raw-parse-result)
-        raw-parse-result
-        (let [transformed-result (insta/transform {:and                   (constantly :and)
-                                                   :or                    (constantly :or)
-                                                   :license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                   :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                   :license-ref           #(case (count %&)
-                                                                             1 {:license-ref (first %&)}
-                                                                             2 {:document-ref (first %&) :license-ref (second %&)})
-                                                   :license-or-later      #(merge     {:or-later true}      (first %&))
-                                                   :with-expression       #(merge     (first %&) (second %&))
-                                                   :nested-expression     #(case (count %&)
-                                                                             1  (first %&)     ; We do this to "collapse" redundant nesting e.g. "(((Apache-2.0)))"
-                                                                             (vec %&))}
-                                                  raw-parse-result)]
-          (if (sequential? transformed-result)
-            (case (count transformed-result)
-              1 (first transformed-result)
-              (vec transformed-result))
-            transformed-result))))))
+  ([s] (parse-with-info s nil))
+  ([^String s {:keys [normalise-gpl-ids?] :or {normalise-gpl-ids? true}}]
+   (when-not (s/blank? s)
+     (let [raw-parse-result (insta/parse @spdx-license-expression-parser-d s)]
+       (if (insta/failure? raw-parse-result)
+         raw-parse-result
+         (let [transformed-result (insta/transform {:and                   (constantly :and)
+                                                    :or                    (constantly :or)
+                                                    :license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                                    :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                                    :license-ref           #(case (count %&)
+                                                                              1 {:license-ref  (first %&)}
+                                                                              2 {:document-ref (first %&) :license-ref (second %&)})
+                                                    :license-or-later      #(merge     {:or-later? true}      (first %&))
+                                                    :with-expression       #(merge     (first %&) (second %&))
+                                                    :nested-expression     #(case (count %&)
+                                                                              1 (first %&)     ; Collapse redundant nesting e.g. "(((Apache-2.0)))"
+                                                                              (vec %&))}
+                                                   raw-parse-result)
+               transformed-result (if normalise-gpl-ids? (normalise-gpl-elements transformed-result) transformed-result)]
+           (if (sequential? transformed-result)
+             (case (count transformed-result)
+               1 (first transformed-result)
+               (vec transformed-result))
+             transformed-result)))))))
 
 (defn parse
-  "Attempt to parse the given string as an SPDX license expression, returning a
-  data structure representing the parse tree or nil if the string cannot be
-  parsed.
+  "Attempt to parse `s` (a String) as an SPDX license expression, returning a
+  data structure representing the parse tree, or nil if it cannot be parsed.
 
-  See SPDX Specification Annex D for details on SPDX license expressions:
-  https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
+  The optional `opts` map has these keys:
+  * `normalise-gpl-ids?` (boolean, default true) - controls whether
+    deprecated 'historical oddity' GPL family ids in the expression are
+    normalised to their non-deprecated replacements as part of the parsing
+    process.
 
   Notes:
-  * The parser normalises SPDX ids to their canonical case
+  * The parser always normalises SPDX ids to their canonical case
     e.g. aPAcHe-2.0 -> Apache-2.0
 
-  * The parser removes redundant grouping
+  * The parser always removes redundant grouping
     e.g. (((((Apache-2.0)))))) -> Apache-2.0
 
-  * When a license is modified with the \"or later\" modifier ('+'), the two
-    are grouped
-
-  * When a license is modified WITH a license exception, the two are grouped
-
-  Examples:
+  Examples (assuming default options):
 
   \"Apache-2.0\"
   -> {:license-id \"Apache-2.0\"}
 
+  \"Apache-2.0+\"
+  -> {:license-id \"Apache-2.0\" :or-later? true}
+
   \"GPL-2.0+\"
-  -> {:license-id \"GPL-2.0\" :or-later true}
+  -> {:license-id \"GPL-2.0-or-later\"}
 
   \"GPL-2.0 WITH Classpath-exception-2.0\"
-  -> {:license-id \"GPL-2.0\"
+  -> {:license-id \"GPL-2.0-only\"
       :license-exception-id \"Classpath-exception-2.0\"}
 
   \"CDDL-1.1 OR (GPL-2.0+ WITH Classpath-exception-2.0)\"
   -> [{:license-id \"CDDL-1.1\"}
       :or
-      {:license-id \"GPL-2.0\"
-       :or-later true
-       :license-exception-id \"Classpath-exception-2.0\"}]"
-  [^String s]
-  (when-let [raw-parse-result (parse-with-info s)]
-    (when-not (insta/failure? raw-parse-result)
-      raw-parse-result)))
+      {:license-id \"GPL-2.0-or-later\"
+       :license-exception-id \"Classpath-exception-2.0\"}]
 
-(defn- build-license-id
-  "Builds the correct final license id for the given license id and 'or-later'
-  indicator.  This is primarily to handle the *GPL family's 'or-later' and
-  'only' suffixes (which are a pita)."
-  ([license-id or-later] (build-license-id license-id or-later true))
-  ([license-id or-later include-or-later]
-   (if or-later
-     (let [or-later-variant (str license-id "-or-later")]
-       (if (and (lic/listed-id?          or-later-variant)
-                (not (lic/deprecated-id? or-later-variant)))
-         or-later-variant
-         (str license-id (when include-or-later "+"))))
-     (let [only-variant (str license-id "-only")]
-       (if (and (lic/listed-id?          only-variant)
-                (not (lic/deprecated-id? only-variant)))
-         only-variant
-         license-id)))))
+  See SPDX Specification Annex D for more details on SPDX license expressions:
+  https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/"
+  ([s] (parse s nil))
+  ([s opts]
+   (when-let [raw-parse-result (parse-with-info s opts)]
+     (when-not (insta/failure? raw-parse-result)
+       raw-parse-result))))
 
 (defn- unparse-internal
-  "Internal, naively recursive implementation of unparse."
+  "Internal implementation of unparse."
   [parse-result]
   (when parse-result
     (cond
       (= :or       parse-result) "OR"
       (= :and      parse-result) "AND"
-      (sequential? parse-result) (when (pos? (count parse-result)) (str "(" (s/join " " (map unparse-internal parse-result)) ")"))
-      (map?        parse-result) (str (build-license-id (:license-id parse-result) (:or-later parse-result))
+      (sequential? parse-result) (when (pos? (count parse-result)) (str "(" (s/join " " (map unparse-internal parse-result)) ")"))  ; Note: naive (stack consuming) recursion
+      (map?        parse-result) (str (:license-id parse-result)
+                                      (when (:or-later? parse-result) "+")
                                       (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
                                       (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
-                                                                             "LicenseRef-" (:license-ref parse-result))))
-      :else       nil)))
+                                                                             "LicenseRef-" (:license-ref parse-result)))))))
 
 (defn unparse
-  "Turns a (successful) parse result back into a (normalised) SPDX expression
-  string. Results are undefined for invalid parse trees.
-
-  Note that the GPL family of licenses have special handling, whereby suffixes
-  are always added. This is because the non-suffixed GPL family license ids
-  have been deprecated in the SPDX license list. Examples:
-  * GPL-2.0   -> GPL-2.0-only
-  * AGPL-3.0+ -> AGPL-3.0-or-later"
+  "Turns a valid `parse-result` back into an SPDX expression string.  Results
+  are undefined for invalid parse trees.  Returns nil if `parse-result` is nil."
   [parse-result]
   (when parse-result
     (when-let [result (if (sequential? parse-result)
@@ -208,40 +275,39 @@
         (s/trim result)))))
 
 (defn normalise
-  "'Normalises' an SPDX expression, by running it through parse then unparse.
-  Returns nil if s is nil or is not a valid SPDX expression."
-  [s]
-  (some-> s
-          parse
-          unparse))
+  "Normalises an SPDX expression, by running it through parse then unparse.
+  Returns nil if `s` is nil or is not a valid SPDX expression.
+
+  `opts` are as for parse"
+  ([s] (normalise s nil))
+  ([s opts]
+   (some-> s
+           (parse opts)
+           unparse)))
 
 (defn valid?
-  "Is the given string a valid SPDX license expression?
+  "Is `s` (a String) a valid SPDX license expression?
 
-  Note: if you intend to parse the given string if it's valid, it's more
-  efficient to call parse directly and check for a nil result."
+  Note: if you intend to parse `s` if it's valid, it's more efficient to call
+  parse directly and check for a nil result instead of calling this method
+  first (it avoids double parsing)."
   [^String s]
   (not (or (s/blank? s)
            (insta/failure? (insta/parse @spdx-license-expression-parser-d s)))))
 
 (defn extract-ids
-  "Extract all SPDX ids (as a set of strings) from the given parse result,
-  optionally including the 'or later' indicator ('+') after license ids that
-  have that designation in the parse tree (defaults to false).
+  "Extract all SPDX ids (as a set of strings) from the given `parse-result`.
 
-  Note: license 'families' that provide 'or-later' suffixed variants (i.e.
-  *GPL licenses) will always end up with either the 'or-later' or the 'only'
-  suffix version of an id, regardless of the value of the include-or-later
-  flag.  This is because the 'naked' variants of these license ids (e.g.
-  'GPL-2.0') are deprecated in the SPDX license list, and their use is
-  discouraged. See https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated
-  for more details."
-  ([parse-result] (extract-ids parse-result false))
-  ([parse-result include-or-later]
+  The optional `opts` map has these keys:
+  * include-or-later? (boolean, default false) - controls whether the output
+    includes the 'or later' indicator ('+') after license ids that have that
+    designation in the parse tree."
+  ([parse-result] (extract-ids parse-result nil))
+  ([parse-result  {:keys [include-or-later?] :or {include-or-later? false} :as opts}]
    (when parse-result
      (cond
-       (sequential? parse-result) (set (mapcat #(extract-ids % include-or-later) parse-result))
-       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(build-license-id (:license-id parse-result) (:or-later parse-result) include-or-later)})
+       (sequential? parse-result) (set (mapcat #(extract-ids % opts) parse-result))  ; Note: naive (stack consuming) recursion
+       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later? (:or-later? parse-result)) "+"))})
                                              (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
                                              (when (:license-ref          parse-result)
                                                #{(str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
