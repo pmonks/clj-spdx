@@ -320,6 +320,8 @@
   this fn, as initialisation will occur implicitly anyway; it is provided to
   allow explicit control of the cost of initialisation to callers who need it."
   []
+  (lic/init!)
+  (exc/init!)
   @spdx-license-expression-grammar-d
   @spdx-license-expression-parser-d
   @normalised-spdx-ids-map-d

@@ -73,4 +73,8 @@
   Note: this method has a substantial performance cost."
   []
   (is/init!)
-  (run! id->info (ids)))
+  ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.  It would be
+  ; better to use a larger thread pool (pmap is hardcoded to use CPU cores+2 threads), but that would require additional
+  ; dependencies (claypoole or dom-top or whatever).
+  (doall (pmap id->info (ids)))
+  nil)
