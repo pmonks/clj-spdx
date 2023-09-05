@@ -65,8 +65,6 @@
     (is (= (parse "APACHE-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "aPaCHe-2.0")                               {:license-id "Apache-2.0"})))
   (testing "Compound expressions"
-    (is (= (parse "GPL-2.0+")                                 {:license-id "GPL-2.0-or-later"}))
-    (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0-only"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0-or-later"}]))
     (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0-only"}]))
@@ -95,7 +93,13 @@
                                                                :or
                                                                {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
                                                                :or
-                                                               {:license-ref "bar" :document-ref "foo"}]))
+                                                               {:license-ref "bar" :document-ref "foo"}])))
+  (testing "Expressions that exercise GPL identifier normalisation"
+    (is (= (parse "AGPL-1.0-or-later")                        {:license-id "AGPL-1.0-or-later"}))
+    (is (= (parse "AGPL-1.0+")                                {:license-id "AGPL-1.0-or-later"}))
+    (is (= (parse "GPL-2.0+")                                 {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")
                                                               [{:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
                                                                :and
