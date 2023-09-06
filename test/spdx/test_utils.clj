@@ -18,7 +18,7 @@
 
 (ns spdx.test-utils)
 
-(println "🐢 These tests take around 10 minutes.")
+(println "⚠️ these tests take around 10 minutes 🐢")
 
 (defn equivalent-colls?
   "Are all of the colls 'equivalent' (same values and occurrences of each value, but in any order and regardless of concrete collection type)?"

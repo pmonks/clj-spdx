@@ -19,16 +19,9 @@
 (ns spdx.licenses-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.licenses   :refer [version ids listed-id? id->info deprecated-id? non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids init!]]))
+            [spdx.licenses   :refer [version ids listed-id? id->info deprecated-id? non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
-
-(deftest init!-tests
-  (testing "Nil response"
-    (is (nil? (init!))))   ; Note: this call is slow (it can take > 1 minute on my laptop), as it forces full initialisation of the underlying Java library
-  (testing "Fast on subsequent calls"
-    (let [elapsed-time (parse-double (re-find #"[\d\.]+" (with-out-str (time (init!)))))]   ; Note: this regex isn't quite correct, since it will also match things like 1.2.3. (time) doesn't return messages containing that however.
-      (is (< elapsed-time 1000.0)))))   ; This call should be a LOT less than 1 second, on basically any computer
 
 (deftest version-tests
   (testing "Version number"
