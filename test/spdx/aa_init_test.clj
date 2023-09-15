@@ -18,10 +18,12 @@
 
 ; Naming is a hack to get it to run first
 (ns spdx.aa-init-test
-  (:require [clojure.test     :refer [deftest testing is]]
-            [spdx.licenses    :as sl]
-            [spdx.exceptions  :as se]
-            [spdx.expressions :as sexp]))
+  (:require [clojure.test      :refer [deftest testing is]]
+            [spdx.impl.state   :as sis]
+            [spdx.impl.mapping :as sim]
+            [spdx.licenses     :as sl]
+            [spdx.exceptions   :as se]
+            [spdx.expressions  :as sexp]))
 
 ; clojure.core/time, but with improved output
 (defmacro my-time
@@ -34,21 +36,21 @@
 
 ; This has to be a single test to ensure ordering
 (deftest init!-tests
-  (testing "Nil response"
+  (testing "impl ns's init!"
+    (is (nil? (sis/init!)))
+    (is (nil? (sim/init!))))
+  (testing "spdx.licenses/init!"
     (print "spdx.licenses/init! took: ") (flush)
-    (is (nil? (my-time (sl/init!)))))   ; Note: this call is slow (it can take > 1 minute on my laptop), as it forces full initialisation of the underlying Java library
-  (testing "Fast on subsequent calls"
+    (is (nil? (my-time (sl/init!))))   ; Note: this call is slow (it can take > 1 minute on my laptop), as it forces full initialisation of the underlying Java library
     (let [elapsed-time (parse-double (re-find #"[\d\.]+" (with-out-str (my-time (sl/init!)))))]   ; Note: this regex isn't quite correct, since it will also match things like 1.2.3. (time) doesn't return messages containing that however.
       (is (< elapsed-time 500.0))))   ; This call should be a LOT less than 0.5 second, on basically any computer
-  (testing "Nil response"
+  (testing "spdx.exceptions/init!"
     (print "spdx.exceptions/init! took: ") (flush)
-    (is (nil? (my-time (se/init!)))))
-  (testing "Fast on subsequent calls"
+    (is (nil? (my-time (se/init!))))
     (let [elapsed-time (parse-double (re-find #"[\d\.]+" (with-out-str (my-time (se/init!)))))]   ; Note: this regex isn't quite correct, since it will also match things like 1.2.3. (time) doesn't return messages containing that however.
       (is (< elapsed-time 500.0))))   ; This call should be a LOT less than 0.5 second, on basically any computer
-  (testing "Nil response"
+  (testing "spdx.expressions/init!"
     (print "spdx.expressions/init! took: ") (flush)
-    (is (nil? (my-time (sexp/init!)))))
-  (testing "Fast on subsequent calls"
+    (is (nil? (my-time (sexp/init!))))
     (let [elapsed-time (parse-double (re-find #"[\d\.]+" (with-out-str (my-time (sexp/init!)))))]   ; Note: this regex isn't quite correct, since it will also match things like 1.2.3. (time) doesn't return messages containing that however.
       (is (< elapsed-time 500.0)))))   ; This call should be a LOT less than 0.5 second, on basically any computer

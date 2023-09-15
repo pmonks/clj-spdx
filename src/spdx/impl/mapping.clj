@@ -164,3 +164,12 @@
   handles listed SPDX exception ids."
   ^org.spdx.library.model.license.ListedLicenseException [^String id]
   (when (listed-exception-id? id) (.getListedExceptionById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+
+(defn init!
+  "Initialises this namespace upon first call (and does nothing on subsequent
+  calls), returning nil. Consumers of this namespace are not required to call
+  this fn, as initialisation will occur implicitly anyway; it is provided to
+  allow explicit control of the cost of initialisation to callers who need it."
+  []
+  (is/init!)
+  nil)

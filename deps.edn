@@ -21,6 +21,5 @@
     org.slf4j/slf4j-api        {:mvn/version "2.0.9"}   ; This is required by org.spdx/java-spdx-library, yet somehow isn't coming through transitively (and it's not due to the exclusion above)
     instaparse/instaparse      {:mvn/version "1.4.12"}}
  :aliases
-   {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.9.5" :git/sha "24f2894"}
-                         com.github.pmonks/pbr         {:mvn/version "RELEASE"}}
+   {:build {:deps       {com.github.pmonks/pbr {:mvn/version "RELEASE"}}
             :ns-default pbr.build}}}
