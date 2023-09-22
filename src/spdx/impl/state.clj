@@ -21,6 +21,10 @@
   API of clj-spdx and may change without notice."
   (:require [clojure.string :as s]))
 
+; Static initialisation
+(when (s/blank? (System/getProperty "org.spdx.downloadCacheEnabled"))
+  (System/setProperty "org.spdx.downloadCacheEnabled" (str true)))  ; Note: unlike Spdx-Java-Library itself, we enable the download cache by default
+
 (def list-obj (delay (org.spdx.library.model.license.ListedLicenses/getListedLicenses)))
 
 (defn init!
@@ -31,7 +35,5 @@
   cost of initialisation to callers who need it."
   []
   ; Enable download caching in the Spdx-Java-Library (from v1.1.8 onward)
-  (when (s/blank? (System/getProperty "org.spdx.storage.listedlicense.enableCache"))
-    (System/setProperty "org.spdx.storage.listedlicense.enableCache" (str true)))  ; Note: unlike Spdx-Java-Library itself, we enable the download cache by default
   @list-obj
   nil)
