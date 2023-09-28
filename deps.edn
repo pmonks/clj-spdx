@@ -17,7 +17,7 @@
 ;
 
 {:deps
-   {org.spdx/java-spdx-library {:mvn/version "1.1.7" :exclusions [org.apache.logging.log4j/log4j-slf4j18-impl]}
+   {org.spdx/java-spdx-library {:mvn/version "1.1.8" :exclusions [org.apache.logging.log4j/log4j-slf4j18-impl]}
     org.slf4j/slf4j-api        {:mvn/version "2.0.9"}   ; This is required by org.spdx/java-spdx-library, yet somehow isn't coming through transitively (and it's not due to the exclusion above)
     instaparse/instaparse      {:mvn/version "1.4.12"}}
  :aliases
