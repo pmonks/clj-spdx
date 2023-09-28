@@ -18,11 +18,7 @@
 
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
-            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? extract-ids init!]]))
-
-(deftest init!-tests
-  (testing "Nil response"
-    (is (nil? (init!)))))
+            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? extract-ids]]))
 
 (deftest parse-tests
   (testing "Nil, empty, etc."
