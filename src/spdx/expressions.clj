@@ -27,12 +27,12 @@
 
 ; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
-  (* Primitive tokens *)
+  (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
   <ows>                  = <#\"\\s*\">
   <id-string>            = #\"[\\p{Alnum}-\\.]+\"
-  and                    = <ws 'AND' ws>
-  or                     = <ws 'OR' ws>
+  <and>                  = <ws 'AND' ws>
+  <or>                   = <ws 'OR' ws>
   <with>                 = <ws 'WITH' ws>
   <or-later>             = <'+'>
 
@@ -41,17 +41,16 @@
   license-exception-id   = %s
   license-ref            = [<'DocumentRef-'> id-string <':'>] <'LicenseRef-'> id-string
 
-  (* Composite expressions *)
+  (* 'License component' (hashmap) production rules *)
   license-or-later       = license-id or-later
-  <simple-expression>    = license-id | license-or-later | license-ref
-  with-expression        = simple-expression with license-exception-id
-  <composite-expression> = compound-expression ((and|or) compound-expression)+
-  nested-expression      = <'('> ows compound-expression ows <')'>
-  <compound-expression>  = simple-expression | with-expression | composite-expression | nested-expression
+  <license-component>    = license-id | license-or-later | license-ref
+  with-expression        = license-component with license-exception-id
 
-  (* Start rule *)
-  <license-expression>   = ows compound-expression ows
-  ")
+  (* Composite expression production rules *)
+  <expression-component> = license-component | with-expression | <'('> expression <')'>
+  and-expression         = expression-component (and expression-component)*
+  or-expression          = and-expression (or and-expression)*
+  expression             = ows or-expression ows")
 
 (defn- escape-re
   "Escapes the given string for use in a regex."
@@ -81,7 +80,7 @@
 (def ^:private spdx-license-expression-grammar-d (delay (format spdx-license-expression-grammar-format
                                                                 (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))  ; Filter out the few deprecated ids that end in "+", since they break the parser
                                                                 (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (exc/ids))))))
-(def ^:private spdx-license-expression-parser-d  (delay (insta/parser @spdx-license-expression-grammar-d :start :license-expression)))
+(def ^:private spdx-license-expression-parser-d  (delay (insta/parser @spdx-license-expression-grammar-d :start :expression)))
 
 (def ^:private normalised-spdx-ids-map-d         (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
                                                                (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
@@ -157,7 +156,7 @@
     (if (and (not-blank? license-exception-id)
              (not-blank? new-license-exception-id)
              (not= license-exception-id new-license-exception-id))
-      [{:license-id new-license-id :license-exception-id new-license-exception-id} :and {:license-id new-license-id :license-exception-id license-exception-id}]
+      [:and {:license-id new-license-id :license-exception-id new-license-exception-id} {:license-id new-license-id :license-exception-id license-exception-id}]
       (merge {:license-id new-license-id}
              (when (not-blank? license-exception-id)     {:license-exception-id license-exception-id})
              (when (not-blank? new-license-exception-id) {:license-exception-id new-license-exception-id})))))
@@ -172,6 +171,19 @@
                                (normalise-gpl-license-map parse-tree)
                                parse-tree)))
 
+(defn- normalise-nested-conjunctions
+  "Normalises nested conjunctions of the same type."
+  [type coll]
+  (loop [result [type]
+         f      (first coll)
+         r      (rest coll)]
+    (if-not f
+      (vec result)
+      (if (and (sequential? f)
+               (= type (first f)))
+        (recur (concat result (rest f)) (first r) (rest r))
+        (recur (concat result [f])      (first r) (rest r))))))
+
 (defn parse-with-info
   "As for parse, but returns an instaparse parse error info if parsing fails,
   instead of nil.
@@ -183,25 +195,29 @@
      (let [raw-parse-result (insta/parse @spdx-license-expression-parser-d s)]
        (if (insta/failure? raw-parse-result)
          raw-parse-result
-         (let [transformed-result (insta/transform {:and                   (constantly :and)
-                                                    :or                    (constantly :or)
-                                                    :license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+         (let [transformed-result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
                                                     :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
                                                     :license-ref           #(case (count %&)
                                                                               1 {:license-ref  (first %&)}
                                                                               2 {:document-ref (first %&) :license-ref (second %&)})
-                                                    :license-or-later      #(merge     {:or-later? true}      (first %&))
-                                                    :with-expression       #(merge     (first %&) (second %&))
-                                                    :nested-expression     #(case (count %&)
-                                                                              1 (first %&)     ; Collapse redundant nesting e.g. "(((Apache-2.0)))"
+                                                    :license-or-later      #(merge {:or-later? true} (first %&))
+                                                    :with-expression       #(merge (first %&)        (second %&))
+                                                    :and-expression        #(case (count %&)
+                                                                              1 (first %&)
+                                                                              (normalise-nested-conjunctions :and %&))
+                                                    :or-expression         #(case (count %&)
+                                                                              1 (first %&)
+                                                                              (normalise-nested-conjunctions :or %&))
+                                                    :expression            #(case (count %&)
+                                                                              1 (first %&)
                                                                               (vec %&))}
                                                    raw-parse-result)
                transformed-result (if normalise-gpl-ids? (normalise-gpl-elements transformed-result) transformed-result)]
-           (if (sequential? transformed-result)
-             (case (count transformed-result)
-               1 (first transformed-result)
-               (vec transformed-result))
-             transformed-result)))))))
+;           (if (sequential? transformed-result)
+;             (case (count transformed-result)
+;               1 (first transformed-result)
+;               (vec transformed-result))
+             transformed-result))))));)
 
 (defn parse
   "Attempt to parse `s` (a String) as an SPDX license expression, returning a
@@ -220,6 +236,10 @@
   * The parser always removes redundant grouping
     e.g. (((((Apache-2.0)))))) -> Apache-2.0
 
+  * The parser synthesises grouping when needed to make SPDX license
+    expressions' precedence rules explicit (see
+    https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
+
   Examples (assuming default options):
 
   \"Apache-2.0\"
@@ -236,8 +256,8 @@
       :license-exception-id \"Classpath-exception-2.0\"}
 
   \"CDDL-1.1 OR (GPL-2.0+ WITH Classpath-exception-2.0)\"
-  -> [{:license-id \"CDDL-1.1\"}
-      :or
+  -> [:or
+      {:license-id \"CDDL-1.1\"}
       {:license-id \"GPL-2.0-or-later\"
        :license-exception-id \"Classpath-exception-2.0\"}]
 
@@ -254,23 +274,28 @@
   [parse-result]
   (when parse-result
     (cond
-      (= :or       parse-result) "OR"
-      (= :and      parse-result) "AND"
-      (sequential? parse-result) (when (pos? (count parse-result)) (str "(" (s/join " " (map unparse-internal parse-result)) ")"))  ; Note: naive (stack consuming) recursion
-      (map?        parse-result) (str (:license-id parse-result)
-                                      (when (:or-later? parse-result) "+")
-                                      (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
-                                      (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
-                                                                             "LicenseRef-" (:license-ref parse-result)))))))
+      (sequential? parse-result)
+        (when (pos? (count parse-result))
+          (let [op-str (str " " (s/upper-case (name (first parse-result))) " ")]
+            (str "(" (s/join op-str (map unparse-internal (rest parse-result))) ")")))  ; Note: naive (stack consuming) recursion
+      (map? parse-result)
+        (str (:license-id parse-result)
+             (when (:or-later? parse-result) "+")
+             (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
+             (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
+                                                    "LicenseRef-" (:license-ref parse-result)))))))
 
 (defn unparse
   "Turns a valid `parse-result` back into an SPDX expression string.  Results
   are undefined for invalid parse trees.  Returns nil if `parse-result` is nil."
   [parse-result]
-  (when parse-result
-    (when-let [result (if (sequential? parse-result)
-                        (s/join " " (map unparse-internal parse-result))
-                        (unparse-internal parse-result))]
+  (when-let [result (unparse-internal parse-result)]
+    (let [result (if (s/starts-with? result "(")
+                   (subs result 1)
+                   result)
+          result (if (s/ends-with? result ")")
+                   (subs result 0 (dec (count result)))
+                   result)]
       (when-not (s/blank? result)
         (s/trim result)))))
 
