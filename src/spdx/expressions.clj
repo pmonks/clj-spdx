@@ -271,13 +271,15 @@
 
 (defn- unparse-internal
   "Internal implementation of unparse."
-  [parse-result]
+  [level parse-result]
   (when parse-result
     (cond
       (sequential? parse-result)
         (when (pos? (count parse-result))
           (let [op-str (str " " (s/upper-case (name (first parse-result))) " ")]
-            (str "(" (s/join op-str (map unparse-internal (rest parse-result))) ")")))  ; Note: naive (stack consuming) recursion
+            (str (when (pos? level) "(")
+                 (s/join op-str (map (partial unparse-internal (inc level)) (rest parse-result)))  ; Note: naive (stack consuming) recursion
+                 (when (pos? level) ")"))))
       (map? parse-result)
         (str (:license-id parse-result)
              (when (:or-later? parse-result) "+")
@@ -289,15 +291,9 @@
   "Turns a valid `parse-result` back into an SPDX expression string.  Results
   are undefined for invalid parse trees.  Returns nil if `parse-result` is nil."
   [parse-result]
-  (when-let [result (unparse-internal parse-result)]
-    (let [result (if (s/starts-with? result "(")
-                   (subs result 1)
-                   result)
-          result (if (s/ends-with? result ")")
-                   (subs result 0 (dec (count result)))
-                   result)]
-      (when-not (s/blank? result)
-        (s/trim result)))))
+  (when-let [result (unparse-internal 0 parse-result)]
+    (when-not (s/blank? result)
+      (s/trim result))))
 
 (defn normalise
   "Normalises an SPDX expression, by running it through parse then unparse.

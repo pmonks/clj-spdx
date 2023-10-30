@@ -202,14 +202,11 @@
                                                      "Apache-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
     (is (= (unparse (parse "Apache-2.0 OR (GPL-2.0+ WITH Classpath-exception-2.0)"))
                                                      "Apache-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (unparse (parse "Apache-2.0 OR MIT AND BSD-3-Clause"))
-                                                     "Apache-2.0 OR (MIT AND BSD-3-Clause)"))
-    (is (= (unparse (parse "Apache-2.0 AND MIT OR BSD-3-Clause"))
-                                                     "(Apache-2.0 AND MIT) OR BSD-3-Clause"))
     (is (= (unparse (parse "(Apache-2.0+ AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))
                                                      "(Apache-2.0+ AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0 OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))))
 
-; Note: we keep these short, as the parser is far more extensively exercised by parse-tests and unparse-tests
+; Note: we keep these short(ish), as the parser is far more extensively exercised by parse-tests and unparse-tests
+; Precedence rule tests are only here however, as they're less cumbersome to test using normalise
 (deftest normalise-tests
   (testing "Nil, blank, etc."
     (is (nil? (normalise nil)))
@@ -235,7 +232,30 @@
     (is (= (normalise "(GPL-2.0 WITH Classpath-exception-2.0)")                          "GPL-2.0-only WITH Classpath-exception-2.0"))
     (is (= (normalise "BSD-2-Clause AND MIT OR GPL-2.0+ WITH Classpath-exception-2.0")   "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
     (is (= (normalise "(BSD-2-Clause AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0") "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (normalise "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0"))))
+    (is (= (normalise "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0")))
+  (testing "Precedence rules"
+    (is (= (normalise "Apache-2.0 OR  (MIT OR  BSD-3-Clause)") "Apache-2.0 OR MIT OR BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 AND (MIT AND BSD-3-Clause)") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "(Apache-2.0 OR  MIT) OR  BSD-3-Clause") "Apache-2.0 OR MIT OR BSD-3-Clause"))
+    (is (= (normalise "(Apache-2.0 AND MIT) AND BSD-3-Clause") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 OR  MIT AND BSD-3-Clause")   "Apache-2.0 OR (MIT AND BSD-3-Clause)"))
+    (is (= (normalise "Apache-2.0 AND MIT OR  BSD-3-Clause")   "(Apache-2.0 AND MIT) OR BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 OR  MIT AND BSD-3-Clause OR Unlicense")
+                                                               "Apache-2.0 OR (MIT AND BSD-3-Clause) OR Unlicense"))
+    (is (= (normalise "Apache-2.0 AND MIT OR BSD-3-Clause AND Unlicense")
+                                                               "(Apache-2.0 AND MIT) OR (BSD-3-Clause AND Unlicense)"))
+    (is (= (normalise "Apache-2.0 OR (MIT AND BSD-3-Clause OR Unlicense)")
+                                                               "Apache-2.0 OR (MIT AND BSD-3-Clause) OR Unlicense"))
+    (is (= (normalise "mit OR bsd-3-clause AND apache-2.0 AND beerware OR epl-2.0 AND mpl-2.0 OR unlicense AND lgpl-3.0 OR wtfpl OR glwtpl OR hippocratic-2.1")
+                                                               "MIT OR (BSD-3-Clause AND Apache-2.0 AND Beerware) OR (EPL-2.0 AND MPL-2.0) OR (Unlicense AND LGPL-3.0-only) OR WTFPL OR GLWTPL OR Hippocratic-2.1"))
+    (is (= (normalise "MIT OR (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
+                                                               "MIT OR BSD-3-Clause OR Apache-2.0 OR Beerware OR EPL-2.0 OR MPL-2.0 OR Unlicense OR LGPL-3.0-only OR WTFPL OR GLWTPL OR Hippocratic-2.1"))
+    (is (= (normalise "MIT AND (BSD-3-Clause AND (Apache-2.0 AND (Beerware AND (EPL-2.0 AND (MPL-2.0 AND (Unlicense AND (LGPL-3.0-only AND (WTFPL AND (GLWTPL AND (Hippocratic-2.1))))))))))")
+                                                               "MIT AND BSD-3-Clause AND Apache-2.0 AND Beerware AND EPL-2.0 AND MPL-2.0 AND Unlicense AND LGPL-3.0-only AND WTFPL AND GLWTPL AND Hippocratic-2.1"))
+    (is (= (normalise "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))")
+                                                               "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
+    (is (= (normalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
+                                                               "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))"))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests
