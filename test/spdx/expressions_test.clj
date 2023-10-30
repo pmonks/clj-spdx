@@ -61,35 +61,59 @@
     (is (= (parse "APACHE-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "aPaCHe-2.0")                               {:license-id "Apache-2.0"})))
   (testing "Compound expressions"
-    (is (= (parse "Apache-2.0 OR GPL-2.0")                    [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0-only"}]))
-    (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0-or-later"}]))
-    (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0-only"}]))
+    (is (= (parse "Apache-2.0 OR GPL-2.0")                    [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]))
+    (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-or-later"}]))
+    (is (= (parse "   \t   Apache-2.0\nOR\n\tGPL-2.0   \n  ") [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]))
     (is (= (parse "Apache-2.0 AND MIT+")                      (parse "((((Apache-2.0)))) AND (MIT+)")))
     (is (= (parse "((((Apache-2.0)))) OR (MIT AND BSD-2-Clause)")
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
-                                                               [{:license-id "MIT"}
-                                                                :and
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
+                                                               [:and
+                                                                {:license-id "MIT"}
                                                                 {:license-id "BSD-2-Clause"}]]))
     (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0")
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
                                                                {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)")
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
                                                                {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "APACHE-2.0 OR (((((GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)))))")
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
                                                                {:license-id "GPL-2.0-or-later"
                                                                 :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")
-                                                              [[{:license-id "Apache-2.0"} :and {:license-id "MIT"}]
-                                                               :or
+                                                              [:or
+                                                               [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]
                                                                {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
-                                                               :or
                                                                {:license-ref "bar" :document-ref "foo"}])))
+  (testing "Expressions that exercise operator precedence"
+    (is (= (parse "GPL-2.0-only AND Apache-2.0 OR MIT")       [:or
+                                                               [:and {:license-id "GPL-2.0-only"} {:license-id "Apache-2.0"}]
+                                                               {:license-id "MIT"}]))
+    (is (= (parse "GPL-2.0-only OR Apache-2.0 AND MIT")       [:or
+                                                               {:license-id "GPL-2.0-only"}
+                                                               [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))
+    (is (= (parse "GPL-2.0-only AND Apache-2.0 OR MIT AND BSD-3-Clause")
+                                                              [:or
+                                                               [:and {:license-id "GPL-2.0-only"} {:license-id "Apache-2.0"}]
+                                                               [:and {:license-id "MIT"} {:license-id "BSD-3-Clause"}]]))
+    (is (= (parse "GPL-2.0-only OR Apache-2.0 OR MIT OR BSD-3-Clause OR Unlicense")
+                                                              [:or
+                                                               {:license-id "GPL-2.0-only"}
+                                                               {:license-id "Apache-2.0"}
+                                                               {:license-id "MIT"}
+                                                               {:license-id "BSD-3-Clause"}
+                                                               {:license-id "Unlicense"}]))
+    (is (= (parse "GPL-2.0-only AND Apache-2.0 AND MIT AND BSD-3-Clause AND Unlicense")
+                                                              [:and
+                                                               {:license-id "GPL-2.0-only"}
+                                                               {:license-id "Apache-2.0"}
+                                                               {:license-id "MIT"}
+                                                               {:license-id "BSD-3-Clause"}
+                                                               {:license-id "Unlicense"}])))
   (testing "Expressions that exercise GPL identifier normalisation"
     (is (= (parse "AGPL-1.0-or-later")                        {:license-id "AGPL-1.0-or-later"}))
     (is (= (parse "AGPL-1.0+")                                {:license-id "AGPL-1.0-or-later"}))
@@ -97,8 +121,8 @@
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")
-                                                              [{:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
-                                                               :and
+                                                              [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
                                                                {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))))
 
 (deftest unnormalised-parse-tests
@@ -109,28 +133,27 @@
     (is (= (parse "GPL-2.0-only+" {:normalise-gpl-ids? false})
                                                               {:license-id "GPL-2.0-only" :or-later? true}))
     (is (= (parse "Apache-2.0 OR GPL-2.0" {:normalise-gpl-ids? false})
-                                                              [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]))
+                                                              [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+" {:normalise-gpl-ids? false})
-                                                              [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0" :or-later? true}]))
+                                                              [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0" :or-later? true}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0" {:normalise-gpl-ids? false})
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
                                                                {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)" {:normalise-gpl-ids? false})
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
                                                                {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "APACHE-2.0 OR (((((GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)))))" {:normalise-gpl-ids? false})
-                                                              [{:license-id "Apache-2.0"}
-                                                               :or
+                                                              [:or
+                                                               {:license-id "Apache-2.0"}
                                                                {:license-id "GPL-2.0"
                                                                 :or-later? true
                                                                 :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar" {:normalise-gpl-ids? false})
-                                                              [[{:license-id "Apache-2.0"} :and {:license-id "MIT"}]
-                                                               :or
+                                                              [:or
+                                                               [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]
                                                                {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"}
-                                                               :or
                                                                {:license-ref "bar" :document-ref "foo"}]))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0" {:normalise-gpl-ids? false})
                                                               {:license-id "GPL-2.0-with-GCC-exception" :license-exception-id "Classpath-exception-2.0"}))))
@@ -157,18 +180,17 @@
     (is (= (unparse {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"})
            "GPL-2.0+ WITH Classpath-exception-2.0")))
   (testing "Compound parse results"
-    (is (= (unparse [{:license-id "Apache-2.0"} :or  {:license-id "GPL-2.0-only"}])          "Apache-2.0 OR GPL-2.0-only"))
-    (is (= (unparse [{:license-id "Apache-2.0"} :and {:license-id "MIT"}])                   "Apache-2.0 AND MIT"))
-    (is (= (unparse [{:license-id "Apache-2.0" :or-later? true} :or  {:license-id "GPL-2.0" :or-later? true}])
+    (is (= (unparse [:or  {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}])          "Apache-2.0 OR GPL-2.0-only"))
+    (is (= (unparse [:and {:license-id "Apache-2.0"} {:license-id "MIT"}])                   "Apache-2.0 AND MIT"))
+    (is (= (unparse [:or  {:license-id "Apache-2.0" :or-later? true} {:license-id "GPL-2.0" :or-later? true}])
            "Apache-2.0+ OR GPL-2.0+"))
-    (is (= (unparse [{:license-id "Apache-2.0"}
-                     :or
+    (is (= (unparse [:or
+                     {:license-id "Apache-2.0"}
                      {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"}])
            "Apache-2.0 OR GPL-2.0+ WITH Classpath-exception-2.0"))
-    (is (= (unparse [[{:license-id "Apache-2.0"} :and {:license-id "MIT"}]
-                      :or
+    (is (= (unparse [:or
+                      [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]
                       {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"}
-                      :or
                       {:license-ref "bar" :document-ref "foo"}])
            "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")))
   (testing "Unparse a parse"
@@ -183,7 +205,8 @@
     (is (= (unparse (parse "(Apache-2.0+ AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))
                                                      "(Apache-2.0+ AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0 OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))))
 
-; Note: we keep these short, as the parser is far more extensively exercised by parse-tests and unparse-tests
+; Note: we keep these short(ish), as the parser is far more extensively exercised by parse-tests and unparse-tests
+; Precedence rule tests are only here however, as they're less cumbersome to test using normalise
 (deftest normalise-tests
   (testing "Nil, blank, etc."
     (is (nil? (normalise nil)))
@@ -207,8 +230,32 @@
     (is (= (normalise "LGPL-3.0-or-later") "LGPL-3.0-or-later")))
   (testing "Compound expressions"
     (is (= (normalise "(GPL-2.0 WITH Classpath-exception-2.0)")                          "GPL-2.0-only WITH Classpath-exception-2.0"))
+    (is (= (normalise "BSD-2-Clause AND MIT OR GPL-2.0+ WITH Classpath-exception-2.0")   "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
     (is (= (normalise "(BSD-2-Clause AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0") "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (normalise "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0"))))
+    (is (= (normalise "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0")))
+  (testing "Precedence rules"
+    (is (= (normalise "Apache-2.0 OR  (MIT OR  BSD-3-Clause)") "Apache-2.0 OR MIT OR BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 AND (MIT AND BSD-3-Clause)") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "(Apache-2.0 OR  MIT) OR  BSD-3-Clause") "Apache-2.0 OR MIT OR BSD-3-Clause"))
+    (is (= (normalise "(Apache-2.0 AND MIT) AND BSD-3-Clause") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 OR  MIT AND BSD-3-Clause")   "Apache-2.0 OR (MIT AND BSD-3-Clause)"))
+    (is (= (normalise "Apache-2.0 AND MIT OR  BSD-3-Clause")   "(Apache-2.0 AND MIT) OR BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 OR  MIT AND BSD-3-Clause OR Unlicense")
+                                                               "Apache-2.0 OR (MIT AND BSD-3-Clause) OR Unlicense"))
+    (is (= (normalise "Apache-2.0 AND MIT OR BSD-3-Clause AND Unlicense")
+                                                               "(Apache-2.0 AND MIT) OR (BSD-3-Clause AND Unlicense)"))
+    (is (= (normalise "Apache-2.0 OR (MIT AND BSD-3-Clause OR Unlicense)")
+                                                               "Apache-2.0 OR (MIT AND BSD-3-Clause) OR Unlicense"))
+    (is (= (normalise "mit OR bsd-3-clause AND apache-2.0 AND beerware OR epl-2.0 AND mpl-2.0 OR unlicense AND lgpl-3.0 OR wtfpl OR glwtpl OR hippocratic-2.1")
+                                                               "MIT OR (BSD-3-Clause AND Apache-2.0 AND Beerware) OR (EPL-2.0 AND MPL-2.0) OR (Unlicense AND LGPL-3.0-only) OR WTFPL OR GLWTPL OR Hippocratic-2.1"))
+    (is (= (normalise "MIT OR (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
+                                                               "MIT OR BSD-3-Clause OR Apache-2.0 OR Beerware OR EPL-2.0 OR MPL-2.0 OR Unlicense OR LGPL-3.0-only OR WTFPL OR GLWTPL OR Hippocratic-2.1"))
+    (is (= (normalise "MIT AND (BSD-3-Clause AND (Apache-2.0 AND (Beerware AND (EPL-2.0 AND (MPL-2.0 AND (Unlicense AND (LGPL-3.0-only AND (WTFPL AND (GLWTPL AND (Hippocratic-2.1))))))))))")
+                                                               "MIT AND BSD-3-Clause AND Apache-2.0 AND Beerware AND EPL-2.0 AND MPL-2.0 AND Unlicense AND LGPL-3.0-only AND WTFPL AND GLWTPL AND Hippocratic-2.1"))
+    (is (= (normalise "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))")
+                                                               "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
+    (is (= (normalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
+                                                               "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))"))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests
@@ -236,7 +283,7 @@
     (is (nil? (extract-ids nil))))
   (testing "Simple parse results"
     (is (= (extract-ids {:license-id "Apache-2.0"})                               #{"Apache-2.0"}))
-    (is (= (extract-ids [{:license-id "Apache-2.0"} :or {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"}))
+    (is (= (extract-ids [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"}))
     (is (= (extract-ids [[[[{:license-id "Apache-2.0"}]]]])                       #{"Apache-2.0"})))
   (testing "Include or later"
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? false}) #{"GPL-2.0"}))

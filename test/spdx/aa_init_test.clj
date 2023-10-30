@@ -53,4 +53,5 @@
     (print "spdx.expressions/init! took: ") (flush)
     (is (nil? (my-time (sexp/init!))))
     (let [elapsed-time (parse-double (re-find #"[\d\.]+" (with-out-str (my-time (sexp/init!)))))]   ; Note: this regex isn't quite correct, since it will also match things like 1.2.3. (time) doesn't return messages containing that however.
-      (is (< elapsed-time 500.0)))))   ; This call should be a LOT less than 0.5 second, on basically any computer
+      (is (< elapsed-time 500.0)))   ; This call should be a LOT less than 0.5 second, on basically any computer
+    (print (str "Using SPDX license list v" (sl/version))) (flush)))
