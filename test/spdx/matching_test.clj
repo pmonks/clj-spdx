@@ -144,7 +144,7 @@
 ;    (is (true?  (text-contains-license? apache-11-text          "Apache-1.1")))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
     (is (true?  (text-contains-license? apache-20-text          "Apache-2.0")))
     (is (true?  (text-contains-license? epl-10-text             "EPL-1.0")))
-;    (is (true?  (text-contains-license? epl-20-text             "EPL-2.0")))          ; ####TODO: Investigate why this is failing
+;    (is (true?  (text-contains-license? epl-20-text             "EPL-2.0")))          ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/213
     (is (true?  (text-contains-license? cddl-10-text            "CDDL-1.0")))
     (is (true?  (text-contains-license? cddl-11-text            "CDDL-1.1")))
     (is (true?  (text-contains-license? gpl-10-text             "GPL-1.0")))
@@ -236,7 +236,7 @@
 ;    (is (= (licenses-within-text apache-11-text)      #{"Apache-1.1"}))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/184
     (is (= (licenses-within-text apache-20-text)      #{"Apache-2.0"}))
     (is (= (licenses-within-text epl-10-text)         #{"EPL-1.0"}))
-;    (is (= (licenses-within-text epl-20-text)         #{"EPL-2.0"}))          ; ####TODO: Investigate why this is failing
+;    (is (= (licenses-within-text epl-20-text)         #{"EPL-2.0"}))          ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/213
     (is (= (licenses-within-text cddl-10-text)        #{"CDDL-1.0"}))
     (is (= (licenses-within-text cddl-11-text)        #{"CDDL-1.1"}))
     (is (= (licenses-within-text gpl-10-text)         #{"GPL-1.0-only" "GPL-1.0-or-later" "GPL-1.0+" "GPL-1.0"}))
