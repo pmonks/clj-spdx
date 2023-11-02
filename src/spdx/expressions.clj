@@ -211,13 +211,10 @@
                                                     :expression            #(case (count %&)
                                                                               1 (first %&)
                                                                               (vec %&))}
-                                                   raw-parse-result)
-               transformed-result (if normalise-gpl-ids? (normalise-gpl-elements transformed-result) transformed-result)]
-;           (if (sequential? transformed-result)
-;             (case (count transformed-result)
-;               1 (first transformed-result)
-;               (vec transformed-result))
-             transformed-result))))));)
+                                                   raw-parse-result)]
+             (if normalise-gpl-ids?
+               (normalise-gpl-elements transformed-result)
+               transformed-result)))))))
 
 (defn parse
   "Attempt to parse `s` (a String) as an SPDX license expression, returning a
