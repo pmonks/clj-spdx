@@ -40,6 +40,7 @@
 (def lgpl-30-text                    (slurp "https://www.gnu.org/licenses/lgpl-3.0.txt"))
 (def agpl-30-text                    (slurp "https://www.gnu.org/licenses/agpl-3.0.txt"))
 
+; Note: none of these are readable on JVM 1.8 - it seems to be a CloudFlare encryption problem
 (def cc0-10-text                     (slurp "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt"))
 (def cc-by-30-text                   (slurp "https://creativecommons.org/licenses/by/3.0/legalcode.txt"))
 (def cc-by-40-text                   (slurp "https://creativecommons.org/licenses/by/4.0/legalcode.txt"))

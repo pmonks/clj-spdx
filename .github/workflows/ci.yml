@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        java-version: [ 8, 11, 17, 21 ]
+        java-version: [ 11, 17, 21 ]    # Some of the source data for the unit tests is not readable on Java 8
 
     steps:
       - uses: actions/checkout@v4
