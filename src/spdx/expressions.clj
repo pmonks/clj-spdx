@@ -214,8 +214,8 @@
                  :or {normalise-gpl-ids?           true
                       case-sensitive-conjunctions? false}}]
    (when-not (s/blank? s)
-     (let [grammar          (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
-           raw-parse-result (insta/parse grammar s)]
+     (let [parser           (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
+           raw-parse-result (insta/parse parser s)]
        (if (insta/failure? raw-parse-result)
          raw-parse-result
          (let [transformed-result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
@@ -264,6 +264,11 @@
     expressions' precedence rules explicit (see
     https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
 
+  * The default options result in parsing that is more lenient than the SPDX
+    specification and is therefore not strictly spec compliant.  You can enable
+    strictly compliant parsing by setting `normalise-gpl-ids?` to `false` and
+    `case-sensitive-conjunctions?` to `true`.
+
   Examples (assuming default options):
 
   \"Apache-2.0\"
@@ -279,7 +284,7 @@
   -> {:license-id \"GPL-2.0-only\"
       :license-exception-id \"Classpath-exception-2.0\"}
 
-  \"CDDL-1.1 OR (GPL-2.0+ WITH Classpath-exception-2.0)\"
+  \"CDDL-1.1 or (GPL-2.0+ with Classpath-exception-2.0)\"
   -> [:or
       {:license-id \"CDDL-1.1\"}
       {:license-id \"GPL-2.0-or-later\"
@@ -316,8 +321,15 @@
                                                     "LicenseRef-" (:license-ref parse-result)))))))
 
 (defn unparse
-  "Turns a valid `parse-result` back into an SPDX expression string.  Results
-  are undefined for invalid parse trees.  Returns nil if `parse-result` is nil."
+  "Turns a valid `parse-result` (i.e. obtained from `parse`) back into a
+  canonicalised SPDX expression (a String).  Results are undefined for invalid
+  parse trees.  Returns nil if `parse-result` is nil.
+
+  Canonicalisation involves:
+  * Converting all SPDX listed identifiers to their official case
+  * Upper casing all conjunctions
+  * Removing redundant grouping (parens)
+  * Adding grouping (parens) to make precedence rules explicit"
   [parse-result]
   (when-let [result (unparse-internal 0 parse-result)]
     (when-not (s/blank? result)
@@ -349,9 +361,9 @@
   ([^String s] (valid? s nil))
   ([^String s {:keys [case-sensitive-conjunctions?]
                  :or {case-sensitive-conjunctions? false}}]
-   (let [grammar (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
+   (let [parser (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
      (not (or (s/blank? s)
-              (insta/failure? (insta/parse grammar s)))))))
+              (insta/failure? (insta/parse parser s)))))))
 
 (defn extract-ids
   "Extract all SPDX ids (as a set of strings) from the given `parse-result`.
@@ -382,9 +394,12 @@
   (exc/init!)
   @license-ids-fragment
   @exception-ids-fragment
-  @spdx-license-expression-ci-grammar-d
-  @spdx-license-expression-cs-grammar-d
-  @spdx-license-expression-ci-parser-d
-  @spdx-license-expression-cs-parser-d
   @normalised-spdx-ids-map-d
+; Note: we always leave these to runtime, since they're not expensive, and doing so
+; ensures that callers who exclusively use one parsing variant aren't paying an
+; unnecessary cost.
+;  @spdx-license-expression-ci-grammar-d
+;  @spdx-license-expression-cs-grammar-d
+;  @spdx-license-expression-ci-parser-d
+;  @spdx-license-expression-cs-parser-d
   nil)
