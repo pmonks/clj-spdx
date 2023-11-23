@@ -329,7 +329,9 @@
   * Converting all SPDX listed identifiers to their official case
   * Upper casing all conjunctions
   * Removing redundant grouping (parens)
-  * Adding grouping (parens) to make precedence rules explicit"
+  * Adding grouping (parens) to make precedence rules explicit
+  * (with default options) Normalising deprecated 'historical oddity' GPL family
+    ids to their non-deprecated replacements"
   [parse-result]
   (when-let [result (unparse-internal 0 parse-result)]
     (when-not (s/blank? result)
@@ -352,7 +354,7 @@
 
   Note: if you intend to parse `s` if it's valid, it's more efficient to call
   parse directly and check for a nil result instead of calling this method
-  first (it avoids double parsing).
+  first (doing so avoids double parsing).
 
   The optional `opts` map has these keys:
   * `case-sensitive-conjunctions?` (boolean, default false) - controls whether
