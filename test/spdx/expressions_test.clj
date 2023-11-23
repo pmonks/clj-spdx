@@ -47,9 +47,9 @@
     (is (nil? (parse "((Apache-2.0)")))                               ; Mismatched parens
     (is (nil? (parse "(Apache-2.0))")))                               ; Mismatched parens
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
-    (is (nil? (parse "MIT and Apache-2.0")))                          ; AND clause must be capitalised
-    (is (nil? (parse "MIT or Apache-2.0")))                           ; OR clause must be capitalised
-    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0"))))       ; WITH clause must be capitalised
+    (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-conjunctions? true})))                     ; AND clause must be capitalised
+    (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-conjunctions? true})))                      ; OR clause must be capitalised
+    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0" {:case-sensitive-conjunctions? true}))))  ; WITH clause must be capitalised
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "LicenseRef-foo")                           {:license-ref "foo"}))
@@ -220,7 +220,7 @@
     (is (nil? (normalise "LicenseRef-this:is:invalid")))
     (is (nil? (normalise "((BSD-2-Clause")))
     (is (nil? (normalise "Classpath-exception-2.0")))
-    (is (nil? (normalise "MIT and AGPL-3.0"))))
+    (is (nil? (normalise "MIT and AGPL-3.0" {:case-sensitive-conjunctions? true}))))
   (testing "Simple expressions"
     (is (= (normalise "Apache-2.0")        "Apache-2.0"))
     (is (= (normalise "aPaCHe-2.0")        "Apache-2.0"))
@@ -229,30 +229,31 @@
     (is (= (normalise "LGPL-3.0+")         "LGPL-3.0-or-later"))
     (is (= (normalise "LGPL-3.0-or-later") "LGPL-3.0-or-later")))
   (testing "Compound expressions"
+    (is (= (normalise "MIT and AGPL-3.0")                                                "MIT AND AGPL-3.0-only"))
     (is (= (normalise "(GPL-2.0 WITH Classpath-exception-2.0)")                          "GPL-2.0-only WITH Classpath-exception-2.0"))
-    (is (= (normalise "BSD-2-Clause AND MIT OR GPL-2.0+ WITH Classpath-exception-2.0")   "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (normalise "(BSD-2-Clause AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0") "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (normalise "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0")))
+    (is (= (normalise "BSD-2-Clause AND MIT or GPL-2.0+ WITH Classpath-exception-2.0")   "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
+    (is (= (normalise "(BSD-2-Clause AND MIT) Or GPL-2.0+ WITH Classpath-exception-2.0") "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
+    (is (= (normalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0")))
   (testing "Precedence rules"
-    (is (= (normalise "Apache-2.0 OR  (MIT OR  BSD-3-Clause)") "Apache-2.0 OR MIT OR BSD-3-Clause"))
-    (is (= (normalise "Apache-2.0 AND (MIT AND BSD-3-Clause)") "Apache-2.0 AND MIT AND BSD-3-Clause"))
-    (is (= (normalise "(Apache-2.0 OR  MIT) OR  BSD-3-Clause") "Apache-2.0 OR MIT OR BSD-3-Clause"))
-    (is (= (normalise "(Apache-2.0 AND MIT) AND BSD-3-Clause") "Apache-2.0 AND MIT AND BSD-3-Clause"))
-    (is (= (normalise "Apache-2.0 OR  MIT AND BSD-3-Clause")   "Apache-2.0 OR (MIT AND BSD-3-Clause)"))
-    (is (= (normalise "Apache-2.0 AND MIT OR  BSD-3-Clause")   "(Apache-2.0 AND MIT) OR BSD-3-Clause"))
-    (is (= (normalise "Apache-2.0 OR  MIT AND BSD-3-Clause OR Unlicense")
+    (is (= (normalise "Apache-2.0 OR  (MIT or  BSD-3-Clause)") "Apache-2.0 OR MIT OR BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 and (MIT AND BSD-3-Clause)") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "(Apache-2.0 or  MIT) or  BSD-3-Clause") "Apache-2.0 OR MIT OR BSD-3-Clause"))
+    (is (= (normalise "(Apache-2.0 and MIT) and BSD-3-Clause") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 oR  MIT aNd BSD-3-Clause")   "Apache-2.0 OR (MIT AND BSD-3-Clause)"))
+    (is (= (normalise "Apache-2.0 AnD MIT Or  BSD-3-Clause")   "(Apache-2.0 AND MIT) OR BSD-3-Clause"))
+    (is (= (normalise "Apache-2.0 or  MIT and BSD-3-Clause or Unlicense")
                                                                "Apache-2.0 OR (MIT AND BSD-3-Clause) OR Unlicense"))
-    (is (= (normalise "Apache-2.0 AND MIT OR BSD-3-Clause AND Unlicense")
+    (is (= (normalise "Apache-2.0 AND MIT OR BSD-3-Clause and Unlicense")
                                                                "(Apache-2.0 AND MIT) OR (BSD-3-Clause AND Unlicense)"))
-    (is (= (normalise "Apache-2.0 OR (MIT AND BSD-3-Clause OR Unlicense)")
+    (is (= (normalise "Apache-2.0 OR (MIT and BSD-3-Clause OR Unlicense)")
                                                                "Apache-2.0 OR (MIT AND BSD-3-Clause) OR Unlicense"))
-    (is (= (normalise "mit OR bsd-3-clause AND apache-2.0 AND beerware OR epl-2.0 AND mpl-2.0 OR unlicense AND lgpl-3.0 OR wtfpl OR glwtpl OR hippocratic-2.1")
+    (is (= (normalise "mit or bsd-3-clause AND apache-2.0 and beerware OR epl-2.0 and mpl-2.0 OR unlicense and lgpl-3.0 OR wtfpl or glwtpl OR hippocratic-2.1")
                                                                "MIT OR (BSD-3-Clause AND Apache-2.0 AND Beerware) OR (EPL-2.0 AND MPL-2.0) OR (Unlicense AND LGPL-3.0-only) OR WTFPL OR GLWTPL OR Hippocratic-2.1"))
-    (is (= (normalise "MIT OR (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
+    (is (= (normalise "MIT or (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
                                                                "MIT OR BSD-3-Clause OR Apache-2.0 OR Beerware OR EPL-2.0 OR MPL-2.0 OR Unlicense OR LGPL-3.0-only OR WTFPL OR GLWTPL OR Hippocratic-2.1"))
-    (is (= (normalise "MIT AND (BSD-3-Clause AND (Apache-2.0 AND (Beerware AND (EPL-2.0 AND (MPL-2.0 AND (Unlicense AND (LGPL-3.0-only AND (WTFPL AND (GLWTPL AND (Hippocratic-2.1))))))))))")
+    (is (= (normalise "MIT and (BSD-3-Clause AND (Apache-2.0 and (Beerware AND (EPL-2.0 and (MPL-2.0 AND (Unlicense and (LGPL-3.0-only AND (WTFPL and (GLWTPL AND (Hippocratic-2.1))))))))))")
                                                                "MIT AND BSD-3-Clause AND Apache-2.0 AND Beerware AND EPL-2.0 AND MPL-2.0 AND Unlicense AND LGPL-3.0-only AND WTFPL AND GLWTPL AND Hippocratic-2.1"))
-    (is (= (normalise "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))")
+    (is (= (normalise "MIT and (BSD-3-Clause or (Apache-2.0 and (Beerware or (EPL-2.0 and (MPL-2.0 or (Unlicense and (LGPL-3.0-only or (WTFPL and (GLWTPL or Hippocratic-2.1)))))))))")
                                                                "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
     (is (= (normalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
                                                                "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))"))))
@@ -267,7 +268,7 @@
     (is (not (valid? "AND")))
     (is (not (valid? "Apache")))
     (is (not (valid? "Classpath-exception-2.0")))
-    (is (not (valid? "MIT or Apache-2.0"))))    ; OR clause must be capitalised
+    (is (not (valid? "MIT or Apache-2.0" {:case-sensitive-conjunctions? true}))))    ; OR clause must be capitalised
   (testing "Valid expressions"
     (is (valid? "Apache-2.0"))
     (is (valid? "apache-2.0"))

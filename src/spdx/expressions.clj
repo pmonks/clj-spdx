@@ -25,15 +25,23 @@
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
 
+(def ^:private case-sensitive-conjunctions-fragment
+  "<and>                  = <ws 'AND' ws>
+   <or>                   = <ws 'OR' ws>
+   <with>                 = <ws 'WITH' ws>")
+
+(def ^:private case-insensitive-conjunctions-fragment
+  "<and>                  = <ws #\"(?i)AND\" ws>
+   <or>                   = <ws #\"(?i)OR\" ws>
+   <with>                 = <ws #\"(?i)WITH\" ws>")
+
 ; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
   <ows>                  = <#\"\\s*\">
   <id-string>            = #\"[\\p{Alnum}-\\.]+\"
-  <and>                  = <ws 'AND' ws>
-  <or>                   = <ws 'OR' ws>
-  <with>                 = <ws 'WITH' ws>
+  %s
   <or-later>             = <'+'>
 
   (* Identifiers *)
@@ -77,13 +85,23 @@
                  \> "\\>"
                  })))
 
-(def ^:private spdx-license-expression-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))  ; Filter out the few deprecated ids that end in "+", since they break the parser
-                                                                (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (exc/ids))))))
-(def ^:private spdx-license-expression-parser-d  (delay (insta/parser @spdx-license-expression-grammar-d :start :expression)))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated ids that end in "+", since they break the parser)
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (exc/ids)))))
 
-(def ^:private normalised-spdx-ids-map-d         (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
-                                                               (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
+(def ^:private spdx-license-expression-cs-grammar-d (delay (format spdx-license-expression-grammar-format
+                                                                   case-sensitive-conjunctions-fragment
+                                                                   @license-ids-fragment
+                                                                   @exception-ids-fragment)))
+(def ^:private spdx-license-expression-ci-grammar-d (delay (format spdx-license-expression-grammar-format
+                                                                   case-insensitive-conjunctions-fragment
+                                                                   @license-ids-fragment
+                                                                   @exception-ids-fragment)))
+
+(def ^:private spdx-license-expression-cs-parser-d (delay (insta/parser @spdx-license-expression-cs-grammar-d :start :expression)))
+(def ^:private spdx-license-expression-ci-parser-d (delay (insta/parser @spdx-license-expression-ci-grammar-d :start :expression)))
+
+(def ^:private normalised-spdx-ids-map-d (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
+                                                       (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
 
 (def ^:private current-gpl-family-ids #{
                                 "AGPL-1.0-only" "AGPL-1.0-or-later" "AGPL-3.0-only" "AGPL-3.0-or-later"
@@ -156,7 +174,8 @@
     (if (and (not-blank? license-exception-id)
              (not-blank? new-license-exception-id)
              (not= license-exception-id new-license-exception-id))
-      [:and {:license-id new-license-id :license-exception-id new-license-exception-id} {:license-id new-license-id :license-exception-id license-exception-id}]
+      [:and {:license-id new-license-id :license-exception-id new-license-exception-id}
+            {:license-id new-license-id :license-exception-id license-exception-id}]
       (merge {:license-id new-license-id}
              (when (not-blank? license-exception-id)     {:license-exception-id license-exception-id})
              (when (not-blank? new-license-exception-id) {:license-exception-id new-license-exception-id})))))
@@ -186,13 +205,17 @@
 
 (defn parse-with-info
   "As for parse, but returns an instaparse parse error info if parsing fails,
-  instead of nil.
+  instead of nil. See https://github.com/Engelberg/instaparse#parse-errors
 
-  See also https://github.com/Engelberg/instaparse#parse-errors"
+  `opts` are as for parse"
   ([s] (parse-with-info s nil))
-  ([^String s {:keys [normalise-gpl-ids?] :or {normalise-gpl-ids? true}}]
+  ([^String s {:keys [normalise-gpl-ids?
+                      case-sensitive-conjunctions?]
+                 :or {normalise-gpl-ids?           true
+                      case-sensitive-conjunctions? false}}]
    (when-not (s/blank? s)
-     (let [raw-parse-result (insta/parse @spdx-license-expression-parser-d s)]
+     (let [grammar          (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
+           raw-parse-result (insta/parse grammar s)]
        (if (insta/failure? raw-parse-result)
          raw-parse-result
          (let [transformed-result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
@@ -216,6 +239,7 @@
                (normalise-gpl-elements transformed-result)
                transformed-result)))))))
 
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
   "Attempt to parse `s` (a String) as an SPDX license expression, returning a
   data structure representing the parse tree, or nil if it cannot be parsed.
@@ -225,6 +249,9 @@
     deprecated 'historical oddity' GPL family ids in the expression are
     normalised to their non-deprecated replacements as part of the parsing
     process.
+  * `case-sensitive-conjunctions?` (boolean, default false) - controls whether
+    conjunctions in expressions (AND, OR, WITH) are case-sensitive
+    (spec-compliant, but strict) or not (non-spec-compliant, lenient).
 
   Notes:
   * The parser always normalises SPDX ids to their canonical case
@@ -261,7 +288,11 @@
   See SPDX Specification Annex D for more details on SPDX license expressions:
   https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/"
   ([s] (parse s nil))
-  ([s opts]
+  ([s {:keys [normalise-gpl-ids?
+              case-sensitive-conjunctions?]
+         :or {normalise-gpl-ids?           true
+              case-sensitive-conjunctions? false}
+         :as opts}]
    (when-let [raw-parse-result (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-result)
        raw-parse-result))))
@@ -292,6 +323,7 @@
     (when-not (s/blank? result)
       (s/trim result))))
 
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn normalise
   "Normalises an SPDX expression, by running it through parse then unparse.
   Returns nil if `s` is nil or is not a valid SPDX expression.
@@ -308,10 +340,18 @@
 
   Note: if you intend to parse `s` if it's valid, it's more efficient to call
   parse directly and check for a nil result instead of calling this method
-  first (it avoids double parsing)."
-  [^String s]
-  (not (or (s/blank? s)
-           (insta/failure? (insta/parse @spdx-license-expression-parser-d s)))))
+  first (it avoids double parsing).
+
+  The optional `opts` map has these keys:
+  * `case-sensitive-conjunctions?` (boolean, default false) - controls whether
+    conjunctions in expressions (AND, OR, WITH) are case-sensitive
+    (spec-compliant, but strict) or not (non-spec-compliant, lenient)."
+  ([^String s] (valid? s nil))
+  ([^String s {:keys [case-sensitive-conjunctions?]
+                 :or {case-sensitive-conjunctions? false}}]
+   (let [grammar (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
+     (not (or (s/blank? s)
+              (insta/failure? (insta/parse grammar s)))))))
 
 (defn extract-ids
   "Extract all SPDX ids (as a set of strings) from the given `parse-result`.
@@ -340,7 +380,11 @@
   []
   (lic/init!)
   (exc/init!)
-  @spdx-license-expression-grammar-d
-  @spdx-license-expression-parser-d
+  @license-ids-fragment
+  @exception-ids-fragment
+  @spdx-license-expression-ci-grammar-d
+  @spdx-license-expression-cs-grammar-d
+  @spdx-license-expression-ci-parser-d
+  @spdx-license-expression-cs-parser-d
   @normalised-spdx-ids-map-d
   nil)
