@@ -120,10 +120,17 @@
     (is (= (parse "GPL-2.0+")                                 {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
+    ; These next couple are pretty cursed...
+    (is (= (parse "GPL-2.0-with-classpath-exception WITH Classpath-exception-2.0")
+                                                              {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")
                                                               [:and
                                                                {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))))
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "GPL-2.0-with-GCC-exception+ WITH Classpath-exception-2.0")
+                                                              [:and
+                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "GCC-exception-2.0"}
+                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]))))
 
 (deftest unnormalised-parse-tests
   (testing "Simple expressions"
