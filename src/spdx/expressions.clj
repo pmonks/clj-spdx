@@ -290,6 +290,10 @@
       {:license-id \"GPL-2.0-or-later\"
        :license-exception-id \"Classpath-exception-2.0\"}]
 
+  \"DocumentRef-foo:LicenseRef-bar\")
+  -> {:document-ref \"foo\"
+      :license-ref \"bar\"}
+
   See SPDX Specification Annex D for more details on SPDX license expressions:
   https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/"
   ([s] (parse s nil))
