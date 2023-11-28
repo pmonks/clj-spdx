@@ -47,9 +47,9 @@
     (is (nil? (parse "((Apache-2.0)")))                               ; Mismatched parens
     (is (nil? (parse "(Apache-2.0))")))                               ; Mismatched parens
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
-    (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-conjunctions? true})))                     ; AND clause must be capitalised
-    (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-conjunctions? true})))                      ; OR clause must be capitalised
-    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0" {:case-sensitive-conjunctions? true}))))  ; WITH clause must be capitalised
+    (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-operators? true})))                     ; AND clause must be capitalised
+    (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-operators? true})))                      ; OR clause must be capitalised
+    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0" {:case-sensitive-operators? true}))))  ; WITH clause must be capitalised
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "LicenseRef-foo")                           {:license-ref "foo"}))
@@ -120,10 +120,17 @@
     (is (= (parse "GPL-2.0+")                                 {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
+    ; These next couple are pretty cursed...
+    (is (= (parse "GPL-2.0-with-classpath-exception WITH Classpath-exception-2.0")
+                                                              {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")
                                                               [:and
                                                                {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))))
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "GPL-2.0-with-GCC-exception+ WITH Classpath-exception-2.0")
+                                                              [:and
+                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "GCC-exception-2.0"}
+                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]))))
 
 (deftest unnormalised-parse-tests
   (testing "Simple expressions"
@@ -220,7 +227,7 @@
     (is (nil? (normalise "LicenseRef-this:is:invalid")))
     (is (nil? (normalise "((BSD-2-Clause")))
     (is (nil? (normalise "Classpath-exception-2.0")))
-    (is (nil? (normalise "MIT and AGPL-3.0" {:case-sensitive-conjunctions? true}))))
+    (is (nil? (normalise "MIT and AGPL-3.0" {:case-sensitive-operators? true}))))
   (testing "Simple expressions"
     (is (= (normalise "Apache-2.0")        "Apache-2.0"))
     (is (= (normalise "aPaCHe-2.0")        "Apache-2.0"))
@@ -268,7 +275,7 @@
     (is (not (valid? "AND")))
     (is (not (valid? "Apache")))
     (is (not (valid? "Classpath-exception-2.0")))
-    (is (not (valid? "MIT or Apache-2.0" {:case-sensitive-conjunctions? true}))))    ; OR clause must be capitalised
+    (is (not (valid? "MIT or Apache-2.0" {:case-sensitive-operators? true}))))    ; OR clause must be capitalised
   (testing "Valid expressions"
     (is (valid? "Apache-2.0"))
     (is (valid? "apache-2.0"))
