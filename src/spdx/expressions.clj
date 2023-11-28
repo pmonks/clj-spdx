@@ -25,12 +25,12 @@
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
 
-(def ^:private case-sensitive-conjunctions-fragment
+(def ^:private case-sensitive-operators-fragment
   "<and>                  = <ws 'AND' ws>
    <or>                   = <ws 'OR' ws>
    <with>                 = <ws 'WITH' ws>")
 
-(def ^:private case-insensitive-conjunctions-fragment
+(def ^:private case-insensitive-operators-fragment
   "<and>                  = <ws #\"(?i)AND\" ws>
    <or>                   = <ws #\"(?i)OR\" ws>
    <with>                 = <ws #\"(?i)WITH\" ws>")
@@ -89,11 +89,11 @@
 (def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (exc/ids)))))
 
 (def ^:private spdx-license-expression-cs-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                   case-sensitive-conjunctions-fragment
+                                                                   case-sensitive-operators-fragment
                                                                    @license-ids-fragment
                                                                    @exception-ids-fragment)))
 (def ^:private spdx-license-expression-ci-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                   case-insensitive-conjunctions-fragment
+                                                                   case-insensitive-operators-fragment
                                                                    @license-ids-fragment
                                                                    @exception-ids-fragment)))
 
@@ -190,8 +190,8 @@
                                (normalise-gpl-license-map parse-tree)
                                parse-tree)))
 
-(defn- normalise-nested-conjunctions
-  "Normalises nested conjunctions of the same type."
+(defn- normalise-nested-operators
+  "Normalises nested operators of the same type."
   [type coll]
   (loop [result [type]
          f      (first coll)
@@ -210,11 +210,11 @@
   `opts` are as for parse"
   ([s] (parse-with-info s nil))
   ([^String s {:keys [normalise-gpl-ids?
-                      case-sensitive-conjunctions?]
-                 :or {normalise-gpl-ids?           true
-                      case-sensitive-conjunctions? false}}]
+                      case-sensitive-operators?]
+                 :or {normalise-gpl-ids?        true
+                      case-sensitive-operators? false}}]
    (when-not (s/blank? s)
-     (let [parser           (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
+     (let [parser           (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
            raw-parse-result (insta/parse parser s)]
        (if (insta/failure? raw-parse-result)
          raw-parse-result
@@ -227,10 +227,10 @@
                                                     :with-expression       #(merge (first %&)        (second %&))
                                                     :and-expression        #(case (count %&)
                                                                               1 (first %&)
-                                                                              (normalise-nested-conjunctions :and %&))
+                                                                              (normalise-nested-operators :and %&))
                                                     :or-expression         #(case (count %&)
                                                                               1 (first %&)
-                                                                              (normalise-nested-conjunctions :or %&))
+                                                                              (normalise-nested-operators :or %&))
                                                     :expression            #(case (count %&)
                                                                               1 (first %&)
                                                                               (vec %&))}
@@ -249,8 +249,8 @@
     deprecated 'historical oddity' GPL family ids in the expression are
     normalised to their non-deprecated replacements as part of the parsing
     process.
-  * `case-sensitive-conjunctions?` (boolean, default false) - controls whether
-    conjunctions in expressions (AND, OR, WITH) are case-sensitive
+  * `case-sensitive-operators?` (boolean, default false) - controls whether
+    operators in expressions (AND, OR, WITH) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
 
   Notes:
@@ -265,9 +265,9 @@
     https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
 
   * The default options result in parsing that is more lenient than the SPDX
-    specification and is therefore not strictly spec compliant.  You can enable
-    strictly compliant parsing by setting `normalise-gpl-ids?` to `false` and
-    `case-sensitive-conjunctions?` to `true`.
+    specification and that is therefore not strictly spec compliant.  You can
+    enable strictly compliant parsing by setting `normalise-gpl-ids?` to `false`
+    and `case-sensitive-operators?` to `true`.
 
   Examples (assuming default options):
 
@@ -294,9 +294,9 @@
   https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/"
   ([s] (parse s nil))
   ([s {:keys [normalise-gpl-ids?
-              case-sensitive-conjunctions?]
+              case-sensitive-operators?]
          :or {normalise-gpl-ids?           true
-              case-sensitive-conjunctions? false}
+              case-sensitive-operators? false}
          :as opts}]
    (when-let [raw-parse-result (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-result)
@@ -327,7 +327,7 @@
 
   Canonicalisation involves:
   * Converting all SPDX listed identifiers to their official case
-  * Upper casing all conjunctions
+  * Upper casing all operators
   * Removing redundant grouping (parens)
   * Adding grouping (parens) to make precedence rules explicit
   * (with default options) Normalising deprecated 'historical oddity' GPL family
@@ -357,13 +357,13 @@
   first (doing so avoids double parsing).
 
   The optional `opts` map has these keys:
-  * `case-sensitive-conjunctions?` (boolean, default false) - controls whether
-    conjunctions in expressions (AND, OR, WITH) are case-sensitive
+  * `case-sensitive-operators?` (boolean, default false) - controls whether
+    operators in expressions (AND, OR, WITH) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient)."
   ([^String s] (valid? s nil))
-  ([^String s {:keys [case-sensitive-conjunctions?]
-                 :or {case-sensitive-conjunctions? false}}]
-   (let [parser (if case-sensitive-conjunctions? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
+  ([^String s {:keys [case-sensitive-operators?]
+                 :or {case-sensitive-operators? false}}]
+   (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
      (not (or (s/blank? s)
               (insta/failure? (insta/parse parser s)))))))
 
