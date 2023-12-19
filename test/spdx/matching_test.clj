@@ -88,7 +88,6 @@
   (testing "Exactly matching official license texts"
     (is (true?  (text-is-license? @apache-20-text            "Apache-2.0")))
     (when run-all-tests?
-(println "####TEST! running all tests...")
 ;      (is (true?  (text-is-license? @apache-10-text          "Apache-1.0")))       ; Failing due to https://github.com/spdx/license-list-XML/issues/2259
 ;      (is (true?  (text-is-license? @apache-11-text          "Apache-1.1")))       ; Failing due to https://github.com/spdx/license-list-XML/issues/2259
       (is (true?  (text-is-license? @epl-10-text             "EPL-1.0")))
