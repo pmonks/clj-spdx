@@ -66,13 +66,15 @@
 (defn texts-equivalent-exceptions?
   "Do the two texts represent equivalent exceptions?"
   [^String text1 ^String text2]
-  (texts-equivalent-licenses? text1 text2))    ; Spdx-Java-Library doesn't provide this explicitly, but the comparison logic is the same as for licenses
+  (texts-equivalent-licenses? text1 text2))    ; Spdx-Java-Library doesn't provide a separate API for exception text comparison, but the comparison logic is the same as for licenses
 
 (defn licenses-within-text
   "Returns the set of ids for all licenses found in the given text (optionally
   from the provided list of license ids), or nil if none were found.
 
-  Note: this method has a substantial performance cost."
+  Note: this method has a substantial performance cost. Callers are encouraged
+  to break their ids into batches and call the 2-arg version with each batch
+  in parallel (e.g. using `clojure.core/pmap`), then merge the results."
   ([^String text]
    (when text
      (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseIdsWithinText text))
@@ -86,7 +88,9 @@
   "Returns the set of ids for all exceptions found in the given text (optionally
   from the provided set of exception ids), or nil if none were found.
 
-  Note: this method has a substantial performance cost."
+  Note: this method has a substantial performance cost. Callers are encouraged
+  to break their ids into batches and call the 2-arg version with each batch
+  in parallel (e.g. using `clojure.core/pmap`), then merge the results."
   ([^String text]
    (when text
      (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseExceptionIdsWithinText text))
