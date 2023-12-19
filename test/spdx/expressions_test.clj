@@ -18,6 +18,7 @@
 
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
+            [spdx.test-utils]      ; Unused, but we force it to run first
             [spdx.expressions :refer [parse parse-with-info unparse normalise valid? extract-ids]]))
 
 (deftest parse-tests
