@@ -19,6 +19,7 @@
 ; Naming is a hack to get it to run first
 (ns spdx.aa-init-test
   (:require [clojure.test      :refer [deftest testing is]]
+            [spdx.test-utils]      ; Unused, but we force it to run first
             [spdx.impl.state   :as sis]
             [spdx.impl.mapping :as sim]
             [spdx.licenses     :as sl]

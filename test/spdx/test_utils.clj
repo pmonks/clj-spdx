@@ -16,9 +16,16 @@
 ; SPDX-License-Identifier: Apache-2.0
 ;
 
-(ns spdx.test-utils)
+(ns spdx.test-utils
+  (:require [clojure.string :as s]))
 
-(println "⚠️ these tests can take as long as 10 minutes 🐢")
+(println "\n☔️ Running tests on Clojure" (clojure-version) "/ JVM" (System/getProperty "java.version") (str "(" (System/getProperty "java.vm.name") " v" (System/getProperty "java.vm.version") ")\n"))
+
+(def run-all-tests? (Boolean/valueOf (s/trim (or (System/getenv "CLJ_SPDX_RUN_ALL_TESTS") "false"))))
+
+(if run-all-tests?
+  (println "⚠️ Running all tests - this takes around an hour 🐢")
+  (println "⚠️ Running subset of tests - this takes around 10 minutes 🐢\n  To run all tests, set env var CLJ_SPDX_RUN_ALL_TESTS to true"))
 
 (defn equivalent-colls?
   "Are all of the colls 'equivalent' (same values and occurrences of each value, but in any order and regardless of concrete collection type)?"

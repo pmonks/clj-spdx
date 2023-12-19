@@ -18,6 +18,7 @@
 
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
+            [spdx.test-utils]      ; Unused, but we force it to run first
             [spdx.expressions :refer [parse parse-with-info unparse normalise valid? extract-ids]]))
 
 (deftest parse-tests
@@ -46,6 +47,8 @@
     (is (nil? (parse "Apache-2.0))")))                                ; Mismatched parens
     (is (nil? (parse "((Apache-2.0)")))                               ; Mismatched parens
     (is (nil? (parse "(Apache-2.0))")))                               ; Mismatched parens
+    (is (nil? (parse "Apache-2.0 AND")))                              ; Dangling operator
+    (is (nil? (parse "(Apache-2.0 AND) MIT")))                        ; Bad nesting (parens)
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
     (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-operators? true})))                     ; AND clause must be capitalised
     (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-operators? true})))                      ; OR clause must be capitalised
@@ -244,6 +247,8 @@
   (testing "Precedence rules"
     (is (= (normalise "Apache-2.0 OR  (MIT or  BSD-3-Clause)") "Apache-2.0 OR MIT OR BSD-3-Clause"))
     (is (= (normalise "Apache-2.0 and (MIT AND BSD-3-Clause)") "Apache-2.0 AND MIT AND BSD-3-Clause"))
+    (is (= (normalise "((((((Apache-2.0)))))) AND (MIT and BSD-3-Clause)")
+                                                               "Apache-2.0 AND MIT AND BSD-3-Clause"))
     (is (= (normalise "(Apache-2.0 or  MIT) or  BSD-3-Clause") "Apache-2.0 OR MIT OR BSD-3-Clause"))
     (is (= (normalise "(Apache-2.0 and MIT) and BSD-3-Clause") "Apache-2.0 AND MIT AND BSD-3-Clause"))
     (is (= (normalise "Apache-2.0 oR  MIT aNd BSD-3-Clause")   "Apache-2.0 OR (MIT AND BSD-3-Clause)"))
