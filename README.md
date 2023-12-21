@@ -23,8 +23,7 @@ Note also that the author has no official relationship with the [SPDX project](h
 #### Clojure CLI
 
 ```shell
-$ # Where #.#.# is replaced with an actual version number (see badge above)
-$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "#.#.#"}}}'
+$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "RELEASE"}}}'
 ```
 
 #### Leiningen
