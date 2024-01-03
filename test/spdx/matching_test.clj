@@ -95,10 +95,10 @@
       (is (true?  (text-is-license? @cddl-10-text            "CDDL-1.0")))
       (is (true?  (text-is-license? @cddl-11-text            "CDDL-1.1")))
 ;      (is (true?  (text-is-license? @gpl-10-text             "GPL-1.0")))          ; ####TODO: Investigate why this is failing
-;      (is (true?  (text-is-license? @gpl-20-text             "GPL-2.0")))          ; ####TODO: Investigate why this is failing
+;      (is (true?  (text-is-license? @gpl-20-text             "GPL-2.0")))          ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
       (is (true?  (text-is-license? @gpl-30-text             "GPL-3.0")))
-;      (is (true?  (text-is-license? @lgpl-20-text            "LGPL-2.0")))         ; ####TODO: Investigate why this is failing
-;      (is (true?  (text-is-license? @lgpl-21-text            "LGPL-2.1")))         ; ####TODO: Investigate why this is failing
+;      (is (true?  (text-is-license? @lgpl-20-text            "LGPL-2.0")))         ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
+;      (is (true?  (text-is-license? @lgpl-21-text            "LGPL-2.1")))         ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
       (is (true?  (text-is-license? @lgpl-30-text            "LGPL-3.0")))
       (is (true?  (text-is-license? @agpl-30-text            "AGPL-3.0")))
       (is (true?  (text-is-license? @cc0-10-text             "CC0-1.0")))
@@ -153,10 +153,10 @@
       (is (true?  (text-contains-license? @cddl-10-text            "CDDL-1.0")))
       (is (true?  (text-contains-license? @cddl-11-text            "CDDL-1.1")))
       (is (true?  (text-contains-license? @gpl-10-text             "GPL-1.0")))
-;      (is (true?  (text-contains-license? @gpl-20-text             "GPL-2.0")))          ; ####TODO: Investigate why this is failing
+;      (is (true?  (text-contains-license? @gpl-20-text             "GPL-2.0")))          ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
       (is (true?  (text-contains-license? @gpl-30-text             "GPL-3.0")))
-;      (is (true?  (text-contains-license? @lgpl-20-text            "LGPL-2.0")))         ; ####TODO: Investigate why this is failing
-;      (is (true?  (text-contains-license? @lgpl-21-text            "LGPL-2.1")))         ; ####TODO: Investigate why this is failing
+;      (is (true?  (text-contains-license? @lgpl-20-text            "LGPL-2.0")))         ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
+;      (is (true?  (text-contains-license? @lgpl-21-text            "LGPL-2.1")))         ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
       (is (true?  (text-contains-license? @lgpl-30-text            "LGPL-3.0")))
       (is (true?  (text-contains-license? @agpl-30-text            "AGPL-3.0")))
       (is (true?  (text-contains-license? @cc0-10-text             "CC0-1.0")))
@@ -246,10 +246,10 @@
       (is (= (licenses-within-text @cddl-10-text)        #{"CDDL-1.0"}))
       (is (= (licenses-within-text @cddl-11-text)        #{"CDDL-1.1"}))
       (is (= (licenses-within-text @gpl-10-text)         #{"GPL-1.0-only" "GPL-1.0-or-later" "GPL-1.0+" "GPL-1.0"}))
-;      (is (= (licenses-within-text @gpl-20-text)         #{"GPL-2.0"}))          ; ####TODO: Investigate why this is failing
+;      (is (= (licenses-within-text @gpl-20-text)         #{"GPL-2.0"}))          ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
       (is (= (licenses-within-text @gpl-30-text)         #{"GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-;      (is (= (licenses-within-text @lgpl-20-text)        #{"LGPL-2.0"}))         ; ####TODO: Investigate why this is failing
-;      (is (= (licenses-within-text @lgpl-21-text)        #{"LGPL-2.1"}))         ; ####TODO: Investigate why this is failing
+;      (is (= (licenses-within-text @lgpl-20-text)        #{"LGPL-2.0"}))         ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
+;      (is (= (licenses-within-text @lgpl-21-text)        #{"LGPL-2.1"}))         ; Failing due to https://github.com/spdx/license-list-XML/issues/1972
       (is (= (licenses-within-text @lgpl-30-text)        #{"LGPL-3.0-or-later" "LGPL-3.0+" "LGPL-3.0" "LGPL-3.0-only"}))
       (is (= (licenses-within-text @agpl-30-text)        #{"AGPL-3.0-or-later" "AGPL-3.0-only" "AGPL-3.0"}))
       (is (= (licenses-within-text @cc0-10-text)         #{"CC0-1.0"}))
