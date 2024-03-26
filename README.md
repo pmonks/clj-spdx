@@ -63,9 +63,10 @@ $ deps-try com.github.pmonks/clj-spdx
 
 (require '[spdx.expressions :as sexp])
 
-(sexp/parse "GPL-2.0+ WITH Classpath-exception-2.0")
-;=> {:license-id "GPL-2.0-or-later"
-;=>  :license-exception-id "Classpath-exception-2.0"}
+(sexp/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
+;=> [:or
+;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
+;=>   {:license-id "Apache-2.0"}]
 ```
 
 ### API Documentation
