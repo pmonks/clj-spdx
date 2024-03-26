@@ -7,13 +7,13 @@ not provided by Spdx-Java-Library).</pre></div><div class="public anchor" id="va
 The optional `opts` map has these keys:
 * include-or-later? (boolean, default false) - controls whether the output
   includes the 'or later' indicator ('+') after license ids that have that
-  designation in the parse tree.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L374">view source</a></div></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><pre class="plaintext">Initialises this namespace upon first call (and does nothing on subsequent
+  designation in the parse tree.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L374">view source</a></div></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><pre class="plaintext">Initialises this namespace upon first call (and does nothing on subsequent
 calls), returning nil. Consumers of this namespace are not required to call
 this fn, as initialisation will occur implicitly anyway; it is provided to
-allow explicit control of the cost of initialisation to callers who need it.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L393">view source</a></div></div><div class="public anchor" id="var-normalise"><h3>normalise</h3><div class="usage"><code>(normalise s)</code><code>(normalise s opts)</code></div><div class="doc"><pre class="plaintext">Normalises an SPDX expression, by running it through parse then unparse.
+allow explicit control of the cost of initialisation to callers who need it.</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L393">view source</a></div></div><div class="public anchor" id="var-normalise"><h3>normalise</h3><div class="usage"><code>(normalise s)</code><code>(normalise s opts)</code></div><div class="doc"><pre class="plaintext">Normalises an SPDX expression, by running it through parse then unparse.
 Returns nil if `s` is nil or is not a valid SPDX expression.
 
-`opts` are as for parse</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L345">view source</a></div></div><div class="public anchor" id="var-parse"><h3>parse</h3><div class="usage"><code>(parse s)</code><code>(parse s {:keys [normalise-gpl-ids? case-sensitive-operators?], :or {normalise-gpl-ids? true, case-sensitive-operators? false}, :as opts})</code></div><div class="doc"><pre class="plaintext">Attempt to parse `s` (a String) as an SPDX license expression, returning a
+`opts` are as for parse</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L345">view source</a></div></div><div class="public anchor" id="var-parse"><h3>parse</h3><div class="usage"><code>(parse s)</code><code>(parse s {:keys [normalise-gpl-ids? case-sensitive-operators?], :or {normalise-gpl-ids? true, case-sensitive-operators? false}, :as opts})</code></div><div class="doc"><pre class="plaintext">Attempt to parse `s` (a String) as an SPDX license expression, returning a
 data structure representing the parse tree, or nil if it cannot be parsed.
 
 The optional `opts` map has these keys:
@@ -67,10 +67,10 @@ Examples (assuming default options):
     :license-ref "bar"}
 
 See SPDX Specification Annex D for more details on SPDX license expressions:
-<a href="https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/">https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/</a></pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L243">view source</a></div></div><div class="public anchor" id="var-parse-with-info"><h3>parse-with-info</h3><div class="usage"><code>(parse-with-info s)</code><code>(parse-with-info s {:keys [normalise-gpl-ids? case-sensitive-operators?], :or {normalise-gpl-ids? true, case-sensitive-operators? false}})</code></div><div class="doc"><pre class="plaintext">As for parse, but returns an instaparse parse error info if parsing fails,
+<a href="https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/">https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/</a></pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L243">view source</a></div></div><div class="public anchor" id="var-parse-with-info"><h3>parse-with-info</h3><div class="usage"><code>(parse-with-info s)</code><code>(parse-with-info s {:keys [normalise-gpl-ids? case-sensitive-operators?], :or {normalise-gpl-ids? true, case-sensitive-operators? false}})</code></div><div class="doc"><pre class="plaintext">As for parse, but returns an instaparse parse error info if parsing fails,
 instead of nil. See <a href="https://github.com/Engelberg/instaparse#parse-errors">https://github.com/Engelberg/instaparse#parse-errors</a>
 
-`opts` are as for parse</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L206">view source</a></div></div><div class="public anchor" id="var-unparse"><h3>unparse</h3><div class="usage"><code>(unparse parse-result)</code></div><div class="doc"><pre class="plaintext">Turns a valid `parse-result` (i.e. obtained from `parse`) back into a
+`opts` are as for parse</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L206">view source</a></div></div><div class="public anchor" id="var-unparse"><h3>unparse</h3><div class="usage"><code>(unparse parse-result)</code></div><div class="doc"><pre class="plaintext">Turns a valid `parse-result` (i.e. obtained from `parse`) back into a
 canonicalised SPDX expression (a String).  Results are undefined for invalid
 parse trees.  Returns nil if `parse-result` is nil.
 
@@ -80,7 +80,7 @@ Canonicalisation involves:
 * Removing redundant grouping (parens)
 * Adding grouping (parens) to make precedence rules explicit
 * (with default options) Normalising deprecated 'historical oddity' GPL family
-  ids to their non-deprecated replacements</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L327">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code><code>(valid? s {:keys [case-sensitive-operators?], :or {case-sensitive-operators? false}})</code></div><div class="doc"><pre class="plaintext">Is `s` (a String) a valid SPDX license expression?
+  ids to their non-deprecated replacements</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L327">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code><code>(valid? s {:keys [case-sensitive-operators?], :or {case-sensitive-operators? false}})</code></div><div class="doc"><pre class="plaintext">Is `s` (a String) a valid SPDX license expression?
 
 Note: if you intend to parse `s` if it's valid, it's more efficient to call
 parse directly and check for a nil result instead of calling this method
@@ -89,4 +89,4 @@ first (doing so avoids double parsing).
 The optional `opts` map has these keys:
 * `case-sensitive-operators?` (boolean, default false) - controls whether
   operators in expressions (AND, OR, WITH) are case-sensitive
-  (spec-compliant, but strict) or not (non-spec-compliant, lenient).</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/main/src/spdx/expressions.clj#L356">view source</a></div></div></div></body></html>
+  (spec-compliant, but strict) or not (non-spec-compliant, lenient).</pre></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L356">view source</a></div></div></div></body></html>
