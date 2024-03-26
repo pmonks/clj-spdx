@@ -22,11 +22,12 @@
   (assoc opts
          :lib          'com.github.pmonks/clj-spdx
          :version      (pbr/calculate-version 1 0)
+         :prod-branch  "release"
          :write-pom    true
          :validate-pom true
          :pom          {:description      "Clojure wrapper around spdx/Spdx-Java-Library."
                         :url              "https://github.com/pmonks/clj-spdx"
-                        :licenses         [:license   {:name "Apache License 2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}]
+                        :licenses         [:license   {:name "Apache-2.0" :url "http://www.apache.org/licenses/LICENSE-2.0.html"}]
                         :developers       [:developer {:id "pmonks" :name "Peter Monks" :email "pmonks+clj-spdx@gmail.com"}]
                         :scm              {:url                  "https://github.com/pmonks/clj-spdx"
                                            :connection           "scm:git:git://github.com/pmonks/clj-spdx.git"

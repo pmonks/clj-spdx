@@ -1,9 +1,9 @@
 | | | | |
 |---:|:---:|:---:|:---:|
-| [**main**](https://github.com/pmonks/clj-spdx/tree/main) | [![CI](https://github.com/pmonks/clj-spdx/workflows/CI/badge.svg?branch=main)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Amain) | [![Dependencies](https://github.com/pmonks/clj-spdx/workflows/dependencies/badge.svg?branch=main)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Amain) | [![Vulnerabilities](https://github.com/pmonks/clj-spdx/workflows/vulnerabilities/badge.svg?branch=main)](https://pmonks.github.io/clj-spdx/nvd/dependency-check-report.html) |
-| [**dev**](https://github.com/pmonks/clj-spdx/tree/dev)  | [![CI](https://github.com/pmonks/clj-spdx/workflows/CI/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev) | [![Dependencies](https://github.com/pmonks/clj-spdx/workflows/dependencies/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Adev) | [![Vulnerabilities](https://github.com/pmonks/clj-spdx/workflows/vulnerabilities/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Avulnerabilities+branch%3Adev) |
+| [**release**](https://github.com/pmonks/clj-spdx/tree/release) | [![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=release)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Arelease) | [![Dependencies](https://github.com/pmonks/clj-spdx/workflows/dependencies/badge.svg?branch=release)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Arelease) | [![Vulnerabilities](https://github.com/pmonks/clj-spdx/workflows/vulnerabilities/badge.svg?branch=release)](https://pmonks.github.io/clj-spdx/nvd/dependency-check-report.html) |
+| [**dev**](https://github.com/pmonks/clj-spdx/tree/dev)  | [![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev) | [![Dependencies](https://github.com/pmonks/clj-spdx/workflows/dependencies/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Adev) | [![Vulnerabilities](https://github.com/pmonks/clj-spdx/workflows/vulnerabilities/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Avulnerabilities+branch%3Adev) |
 
-[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/) [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues) [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/main/LICENSE)
+[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/) [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues) [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE)
 
 
 # clj-spdx
@@ -12,7 +12,7 @@ A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java
 
 Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so it is almost certain that this library is not yet comprehensive. Contributions of any kind are warmly welcomed, including wrapping of additional parts of the Java library!
 
-Note also that the author has no official relationship with the [SPDX project](https://spdx.dev/) (who maintain `Spdx-Java-Library`), and this work is in no way associated with, or endorsed by, them.
+Note also that this project has no official relationship with the [SPDX project](https://spdx.dev/) (who maintain `Spdx-Java-Library`), and this work is in no way associated with, or endorsed by, them.
 
 ## Installation
 
@@ -23,8 +23,7 @@ Note also that the author has no official relationship with the [SPDX project](h
 #### Clojure CLI
 
 ```shell
-$ # Where #.#.# is replaced with an actual version number (see badge above)
-$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "#.#.#"}}}'
+$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "RELEASE"}}}'
 ```
 
 #### Leiningen
@@ -39,23 +38,54 @@ $ lein try com.github.pmonks/clj-spdx
 $ deps-try com.github.pmonks/clj-spdx
 ```
 
+### Demo
+
+```clojure
+(require '[spdx.licenses :as sl])
+
+; This is optional but can be time consuming, so we run it explicitly to force
+; population of the local Spdx-Java-Library cache.
+(sl/init!)
+
+(sl/ids)
+;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many more]
+
+(require '[spdx.exceptions :as se])
+
+(se/ids)
+;=> #{"GCC-exception-2.0-note" "Qwt-exception-1.0" [and many more]
+
+(require '[spdx.matching :as sm])
+
+(def apache-20-text (slurp "https://www.apache.org/licenses/LICENSE-2.0.txt"))
+(sm/licenses-within-text apache-20-text)
+;=> #{"Apache-2.0"}
+
+(require '[spdx.expressions :as sexp])
+
+(sexp/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
+;=> [:or
+;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
+;=>   {:license-id "Apache-2.0"}]
+```
+
 ### API Documentation
 
 [API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
 
 ## Contributor Information
 
-[Contributing Guidelines](https://github.com/pmonks/clj-spdx/blob/main/.github/CONTRIBUTING.md)
+[Contributing Guidelines](https://github.com/pmonks/clj-spdx/blob/release/.github/CONTRIBUTING.md)
 
 [Bug Tracker](https://github.com/pmonks/clj-spdx/issues)
 
-[Code of Conduct](https://github.com/pmonks/clj-spdx/blob/main/.github/CODE_OF_CONDUCT.md)
+[Code of Conduct](https://github.com/pmonks/clj-spdx/blob/release/.github/CODE_OF_CONDUCT.md)
 
 ### Developer Workflow
 
-This project uses the [git-flow branching strategy](https://nvie.com/posts/a-successful-git-branching-model/), with the caveat that the permanent branches are called `main` and `dev`, and any changes to the `main` branch are considered a release and auto-deployed (JARs to Clojars, API docs to GitHub Pages, etc.).
+This project uses the [git-flow branching strategy](https://nvie.com/posts/a-successful-git-branching-model/), and the permanent branches are called `release` and `dev`, and any changes to the `release` branch are considered a release and auto-deployed (JARs to Clojars, API docs to GitHub Pages, etc.).
 
-For this reason, **all development must occur either in branch `dev`, or (preferably) in temporary branches off of `dev`.**  All PRs from forked repos must also be submitted against `dev`; the `main` branch is **only** updated from `dev` via PRs created by the core development team.  All other changes submitted to `main` will be rejected.
+For this reason, **all development must occur either in branch `dev`, or (preferably) in temporary branches off of `dev`.**  All PRs from forked repos must also be submitted against `dev`; the `release` branch is **only** updated from `dev` via PRs created by the core development team.  All other changes submitted to `release` will be rejected.
 
 ### Build Tasks
 
