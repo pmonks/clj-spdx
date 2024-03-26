@@ -43,6 +43,10 @@ $ deps-try com.github.pmonks/clj-spdx
 ```clojure
 (require '[spdx.licenses :as sl])
 
+; This is optional but can be time consuming, so we run it explicitly to force
+; population of the local Spdx-Java-Library cache.
+(sl/init!)
+
 (sl/ids)
 ;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many more]
 
