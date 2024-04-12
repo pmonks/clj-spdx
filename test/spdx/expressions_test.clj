@@ -49,6 +49,11 @@
     (is (nil? (parse "(Apache-2.0))")))                               ; Mismatched parens
     (is (nil? (parse "Apache-2.0 AND")))                              ; Dangling operator
     (is (nil? (parse "(Apache-2.0 AND) MIT")))                        ; Bad nesting (parens)
+    (is (nil? (parse "(GPL-2.0) WITH Classpath-Exception-2.0")))      ; Bad nesting (parens)
+    (is (nil? (parse "(GPL-2.0 WITH) Classpath-Exception-2.0")))      ; Bad nesting (parens)
+    (is (nil? (parse "GPL-2.0 (WITH) Classpath-Exception-2.0")))      ; Bad nesting (parens)
+    (is (nil? (parse "GPL-2.0 (WITH Classpath-Exception-2.0)")))      ; Bad nesting (parens)
+    (is (nil? (parse "GPL-2.0 WITH (Classpath-Exception-2.0)")))      ; Bad nesting (parens)
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
     (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-operators? true})))                     ; AND clause must be capitalised
     (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-operators? true})))                      ; OR clause must be capitalised
