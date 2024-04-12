@@ -53,6 +53,7 @@
 ;(def wtfpl-text                      (delay (slurp "http://www.wtfpl.net/txt/copying/")))   ; Site stopped responding some time in 2024
 
 (def mpl-20-text                     (delay (slurp "https://www.mozilla.org/media/MPL/2.0/index.txt")))
+(def mit-text                        (delay (slurp "https://mit-license.org/license.txt")))
 
 
 ; 3rd party software with single licenses
@@ -108,7 +109,9 @@
 ;    (is (true?  (text-is-license? @cc-by-nd-40-text    "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
 ;    (is (true?  (text-is-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
 ;    (is (true?  (text-is-license? @wtfpl-text          "WTFPL")))            ; Site stopped responding some time in 2024
-    (is (true?  (text-is-license? @mpl-20-text         "MPL-2.0"))))
+    (is (true?  (text-is-license? @mpl-20-text         "MPL-2.0")))
+;    (is (true?  (text-is-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234
+    )
   (testing "Exactly matching 3rd party license texts"
     (is (true?  (text-is-license? @clj-spdx-license        "Apache-2.0")))
     (is (true?  (text-is-license? @commonmark-java-license "BSD-2-Clause")))))
@@ -164,7 +167,9 @@
 ;    (is (true?  (text-contains-license? @cc-by-nd-40-text    "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
 ;    (is (true?  (text-contains-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
 ;    (is (true?  (text-contains-license? @wtfpl-text          "WTFPL")))            ; Site stopped responding some time in 2024
-    (is (true?  (text-contains-license? @mpl-20-text         "MPL-2.0"))))
+    (is (true?  (text-contains-license? @mpl-20-text         "MPL-2.0")))
+;    (is (true?  (text-contains-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234
+    )
   (testing "3rd party license text contains license"
     (is (true?  (text-contains-license? @clj-spdx-license        "Apache-2.0")))
     (is (true?  (text-contains-license? @commonmark-java-license "BSD-2-Clause"))))
@@ -173,6 +178,7 @@
     (is (true?  (text-contains-license? (str "ABCD\n" @gpl-30-text             "\nEFGH") "GPL-3.0")))
 ;    (is (true?  (text-contains-license? (str "ABCD\n" @cc-by-40-text           "\nEFGH") "CC-BY-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
     (is (true?  (text-contains-license? (str "ABCD\n" @mpl-20-text             "\nEFGH") "MPL-2.0")))
+;    (is (true?  (text-contains-license? (str "ABCD\n" @mit-text                "\nEFGH") "MIT")))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234
     (is (true?  (text-contains-license? (str "ABCD\n" @clj-spdx-license        "\nEFGH") "Apache-2.0")))
     (is (true?  (text-contains-license? @jffi-text                                       "Apache-2.0")))
     (is (true?  (text-contains-license? @jffi-text                                       "LGPL-3.0-or-later")))
@@ -254,7 +260,9 @@
 ;    (is (= (licenses-within-text @cc-by-nd-40-text)    #{"CC-BY-ND-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
 ;    (is (= (licenses-within-text @cc-by-nc-nd-40-text) #{"CC-BY-NC-ND-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
 ;    (is (= (licenses-within-text @wtfpl-text)          #{"WTFPL"}))            ; Site stopped responding some time in 2024
-    (is (= (licenses-within-text @mpl-20-text)         #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"})))
+    (is (= (licenses-within-text @mpl-20-text)         #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
+;    (is (= (licenses-within-text @mit-text             #{"MIT"})))             ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234
+    )
   (testing "Matching 3rd party license texts that only contain a single license"
     (is (= (licenses-within-text @clj-spdx-license)        #{"Apache-2.0"}))
     (is (= (licenses-within-text @commonmark-java-license) #{"BSD-2-Clause"})))
@@ -263,6 +271,7 @@
     (is (= (licenses-within-text (str "ABCD\n" @gpl-30-text             "\nEFGH")) #{"GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
 ;    (is (= (licenses-within-text (str "ABCD\n" @cc-by-40-text           "\nEFGH")) #{"CC-BY-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
     (is (= (licenses-within-text (str "ABCD\n" @mpl-20-text             "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
+;    (is (= (licenses-within-text (str "ABCD\n" @mit-text                "\nEFGH")) #{"MIT"}))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234
 ;    (is (= (licenses-within-text (str "ABCD\n" @wtfpl-text              "\nEFGH")) #{"WTFPL"}))      ; Site stopped responding some time in 2024
     (is (= (licenses-within-text (str "ABCD\n" @clj-spdx-license        "\nEFGH")) #{"Apache-2.0"}))
     (is (= (licenses-within-text (str "ABCD\n" @commonmark-java-license "\nEFGH")) #{"BSD-2-Clause"})))
