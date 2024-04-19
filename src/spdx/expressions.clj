@@ -35,7 +35,7 @@
    <or>                   = <ws #\"(?i)OR\" ws>
    <with>                 = <ws #\"(?i)WITH\" ws>")
 
-; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
+; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
@@ -48,13 +48,15 @@
   license-id             = %s
   license-exception-id   = %s
   license-ref            = [<'DocumentRef-'> id-string <':'>] <'LicenseRef-'> id-string
+  addition-ref           = [<'DocumentRef-'> id-string <':'>] <'AdditionRef-'> id-string
 
   (* 'License component' (hashmap) production rules *)
   license-or-later       = license-id or-later
   <license-component>    = license-id | license-or-later | license-ref
-  with-expression        = license-component with license-exception-id
+  <exception-component>  = license-exception-id | addition-ref
+  with-expression        = license-component with exception-component
 
-  (* Composite expression production rules *)
+  (* Composite expression (vector) production rules *)
   <expression-component> = license-component | with-expression | <'('> expression <')'>
   and-expression         = expression-component (and expression-component)*
   or-expression          = and-expression (or and-expression)*
@@ -223,6 +225,9 @@
                                                     :license-ref           #(case (count %&)
                                                                               1 {:license-ref  (first %&)}
                                                                               2 {:document-ref (first %&) :license-ref (second %&)})
+                                                    :addition-ref          #(case (count %&)
+                                                                              1 {:addition-ref  (first %&)}
+                                                                              2 {:addition-document-ref (first %&) :addition-ref (second %&)})
                                                     :license-or-later      #(merge {:or-later? true} (first %&))
                                                     :with-expression       #(merge (first %&)        (second %&))
                                                     :and-expression        #(case (count %&)
@@ -262,7 +267,7 @@
 
   * The parser synthesises grouping when needed to make SPDX license
     expressions' precedence rules explicit (see
-    https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
+    https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
 
   * The default options result in parsing that is more lenient than the SPDX
     specification and that is therefore not strictly spec compliant.  You can
@@ -294,8 +299,13 @@
   -> {:document-ref \"foo\"
       :license-ref \"bar\"}
 
+  \"Apache-2.0 WITH DocumentRef-foo:AdditionRef-bar\")
+  -> {:license-id \"Apache-2.0\"
+      :addition-document-ref \"foo\"
+      :addition-ref \"bar\"}
+
   See SPDX Specification Annex D for more details on SPDX license expressions:
-  https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/"
+  https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/"
   ([s] (parse s nil))
   ([s {:keys [normalise-gpl-ids?
               case-sensitive-operators?]
@@ -305,6 +315,20 @@
    (when-let [raw-parse-result (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-result)
        raw-parse-result))))
+
+(defn- unparse-license-ref
+  "Unparses a license-ref from map m, returning nil if there isn't one."
+  [m]
+  (when (and m (:license-ref m))
+    (str (when-let [document-ref (:document-ref m)] (str "DocumentRef-" document-ref ":"))
+         "LicenseRef-" (:license-ref m))))
+
+(defn- unparse-addition-ref
+  "Unparses an addition-ref from map m, returning nil if there isn't one."
+  [m]
+  (when (and m (:addition-ref m))
+    (str (when-let [addition-document-ref (:addition-document-ref m)] (str "DocumentRef-" addition-document-ref ":"))
+         "AdditionRef-" (:addition-ref m))))
 
 (defn- unparse-internal
   "Internal implementation of unparse."
@@ -319,10 +343,10 @@
                  (when (pos? level) ")"))))
       (map? parse-result)
         (str (:license-id parse-result)
-             (when (:or-later? parse-result) "+")
+             (when (:or-later? parse-result)            "+")
              (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
-             (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
-                                                    "LicenseRef-" (:license-ref parse-result)))))))
+             (when (:license-ref parse-result)          (unparse-license-ref parse-result))
+             (when (:addition-ref parse-result)         (str " WITH " (unparse-addition-ref parse-result)))))))
 
 (defn unparse
   "Turns a valid `parse-result` (i.e. obtained from `parse`) back into a
@@ -385,9 +409,8 @@
        (sequential? parse-result) (set (mapcat #(extract-ids % opts) parse-result))  ; Note: naive (stack consuming) recursion
        (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later? (:or-later? parse-result)) "+"))})
                                              (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
-                                             (when (:license-ref          parse-result)
-                                               #{(str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
-                                                      "LicenseRef-" (:license-ref parse-result))}))
+                                             (when (:license-ref          parse-result) #{(unparse-license-ref parse-result)})
+                                             (when (:addition-ref         parse-result) #{(unparse-addition-ref parse-result)}))
        :else        nil))))
 
 (defn init!

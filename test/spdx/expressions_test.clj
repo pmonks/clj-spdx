@@ -55,6 +55,8 @@
     (is (nil? (parse "GPL-2.0 (WITH Classpath-Exception-2.0)")))      ; Bad nesting (parens)
     (is (nil? (parse "GPL-2.0 WITH (Classpath-Exception-2.0)")))      ; Bad nesting (parens)
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
+    (is (nil? (parse "AdditionRef-foo")))                             ; AdditionRef without  "<license> WITH " first
+    (is (nil? (parse "DocumentRef-foo:AdditionRef-bar")))             ; AdditionRef without  "<license> WITH " first
     (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-operators? true})))                     ; AND clause must be capitalised
     (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-operators? true})))                      ; OR clause must be capitalised
     (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0" {:case-sensitive-operators? true}))))  ; WITH clause must be capitalised
@@ -96,7 +98,10 @@
                                                               [:or
                                                                [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]
                                                                {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
-                                                               {:license-ref "bar" :document-ref "foo"}])))
+                                                               {:license-ref "bar" :document-ref "foo"}]))
+    (is (= (parse "LicenseRef-foo WITH AdditionRef-bar")      {:license-ref "foo" :addition-ref "bar"}))
+    (is (= (parse "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")
+                                                              {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"})))
   (testing "Expressions that exercise operator precedence"
     (is (= (parse "GPL-2.0-only AND Apache-2.0 OR MIT")       [:or
                                                                [:and {:license-id "GPL-2.0-only"} {:license-id "Apache-2.0"}]
@@ -189,11 +194,16 @@
     (is (nil? (unparse "Apache-2.0"))))
   (testing "Simple parse results"
     (is (= (unparse {:license-id "Apache-2.0"})                                              "Apache-2.0"))
+    (is (= (unparse {:license-ref "foo"})                                                    "LicenseRef-foo"))
+    (is (= (unparse {:document-ref "foo" :license-ref "bar"})                                "DocumentRef-foo:LicenseRef-bar"))
     (is (= (unparse {:license-id "Apache-2.0" :or-later? true})                              "Apache-2.0+"))
     (is (= (unparse {:license-id "GPL-2.0" :or-later? true})                                 "GPL-2.0+"))
     (is (= (unparse {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}) "GPL-2.0 WITH Classpath-exception-2.0"))
     (is (= (unparse {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"})
-           "GPL-2.0+ WITH Classpath-exception-2.0")))
+           "GPL-2.0+ WITH Classpath-exception-2.0"))
+    (is (= (unparse {:license-ref "foo" :addition-ref "bar"})                                "LicenseRef-foo WITH AdditionRef-bar"))
+    (is (= (unparse {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"})
+           "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
   (testing "Compound parse results"
     (is (= (unparse [:or  {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}])          "Apache-2.0 OR GPL-2.0-only"))
     (is (= (unparse [:and {:license-id "Apache-2.0"} {:license-id "MIT"}])                   "Apache-2.0 AND MIT"))
@@ -237,18 +247,22 @@
     (is (nil? (normalise "Classpath-exception-2.0")))
     (is (nil? (normalise "MIT and AGPL-3.0" {:case-sensitive-operators? true}))))
   (testing "Simple expressions"
-    (is (= (normalise "Apache-2.0")        "Apache-2.0"))
-    (is (= (normalise "aPaCHe-2.0")        "Apache-2.0"))
-    (is (= (normalise "((bsd-4-clause))")  "BSD-4-Clause"))
-    (is (= (normalise "LGPL-3.0")          "LGPL-3.0-only"))
-    (is (= (normalise "LGPL-3.0+")         "LGPL-3.0-or-later"))
-    (is (= (normalise "LGPL-3.0-or-later") "LGPL-3.0-or-later")))
+    (is (= (normalise "Apache-2.0")                     "Apache-2.0"))
+    (is (= (normalise "aPaCHe-2.0")                     "Apache-2.0"))
+    (is (= (normalise "((bsd-4-clause))")               "BSD-4-Clause"))
+    (is (= (normalise "LGPL-3.0")                       "LGPL-3.0-only"))
+    (is (= (normalise "LGPL-3.0+")                      "LGPL-3.0-or-later"))
+    (is (= (normalise "LGPL-3.0-or-later")              "LGPL-3.0-or-later"))
+    (is (= (normalise "LicenseRef-foo")                 "LicenseRef-foo"))
+    (is (= (normalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar")))
   (testing "Compound expressions"
-    (is (= (normalise "MIT and AGPL-3.0")                                                "MIT AND AGPL-3.0-only"))
-    (is (= (normalise "(GPL-2.0 WITH Classpath-exception-2.0)")                          "GPL-2.0-only WITH Classpath-exception-2.0"))
-    (is (= (normalise "BSD-2-Clause AND MIT or GPL-2.0+ WITH Classpath-exception-2.0")   "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (normalise "(BSD-2-Clause AND MIT) Or GPL-2.0+ WITH Classpath-exception-2.0") "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
-    (is (= (normalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")         "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0")))
+    (is (= (normalise "MIT and AGPL-3.0")                                                        "MIT AND AGPL-3.0-only"))
+    (is (= (normalise "(GPL-2.0 WITH Classpath-exception-2.0)")                                  "GPL-2.0-only WITH Classpath-exception-2.0"))
+    (is (= (normalise "BSD-2-Clause AND MIT or GPL-2.0+ WITH Classpath-exception-2.0")           "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
+    (is (= (normalise "(BSD-2-Clause AND MIT) Or GPL-2.0+ WITH Classpath-exception-2.0")         "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
+    (is (= (normalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")                 "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0"))
+    (is (= (normalise "LicenseRef-foo with AdditionRef-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
+    (is (= (normalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
   (testing "Precedence rules"
     (is (= (normalise "Apache-2.0 OR  (MIT or  BSD-3-Clause)") "Apache-2.0 OR MIT OR BSD-3-Clause"))
     (is (= (normalise "Apache-2.0 and (MIT AND BSD-3-Clause)") "Apache-2.0 AND MIT AND BSD-3-Clause"))
@@ -306,9 +320,11 @@
   (testing "Include or later"
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? false}) #{"GPL-2.0"}))
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? true})  #{"GPL-2.0+"})))
-  (testing "LicenseRefs"
-    (is (= (extract-ids {:license-ref "foo"})                     #{"LicenseRef-foo"}))
-    (is (= (extract-ids {:document-ref "foo" :license-ref "bar"}) #{"DocumentRef-foo:LicenseRef-bar"})))
+  (testing "LicenseRefs and AdditionRefs"
+    (is (= (extract-ids {:license-ref "foo"})                                                                          #{"LicenseRef-foo"}))
+    (is (= (extract-ids {:document-ref "foo" :license-ref "bar"})                                                      #{"DocumentRef-foo:LicenseRef-bar"}))
+    (is (= (extract-ids {:license-ref "foo" :addition-ref "bar"})                                                      #{"LicenseRef-foo" "AdditionRef-bar"}))
+    (is (= (extract-ids {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"}) #{"DocumentRef-foo:LicenseRef-bar" "DocumentRef-blah:AdditionRef-banana"})))
   (testing "Parsed expressions"
     (is (= (extract-ids (parse "Apache-2.0"))            #{"Apache-2.0"}))
     (is (= (extract-ids (parse "GPL-2.0+"))              #{"GPL-2.0-or-later"}))
