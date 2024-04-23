@@ -18,8 +18,7 @@
 
 (ns spdx.exceptions
   "Exception list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
-  (:require [embroidery.api    :as e]
-            [spdx.impl.state   :as is]
+  (:require [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]))
 
 (defn version
@@ -75,5 +74,6 @@
   []
   (is/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
-  (doall (e/pmap* id->info (ids)))
+  ; Note: using embroidery's pmap* function has been found to be counter-productive here
+  (doall (pmap id->info (ids)))
   nil)
