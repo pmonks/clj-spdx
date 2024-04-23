@@ -10,7 +10,7 @@
 
 A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. custom [SPDX expression](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/) parsing).
 
-Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so it is almost certain that this library is not yet comprehensive. Contributions of any kind are warmly welcomed, including wrapping of additional parts of the Java library!
+Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library!
 
 Note also that this project has no official relationship with the [SPDX project](https://spdx.dev/) (who maintain `Spdx-Java-Library`), and this work is in no way associated with, or endorsed by, them.
 
