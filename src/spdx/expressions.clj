@@ -309,7 +309,7 @@
   ([s] (parse s nil))
   ([s {:keys [normalise-gpl-ids?
               case-sensitive-operators?]
-         :or {normalise-gpl-ids?           true
+         :or {normalise-gpl-ids?        true
               case-sensitive-operators? false}
          :as opts}]
    (when-let [raw-parse-result (parse-with-info s opts)]
