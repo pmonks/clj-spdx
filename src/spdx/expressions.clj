@@ -357,7 +357,6 @@
     (when-not (s/blank? result)
       (s/trim result))))
 
-#_{:clj-kondo/ignore [:unused-binding]}
 (defn normalise
   "Normalises an SPDX expression, by running it through [[parse]] then
   [[unparse]].  Returns `nil` if `s` is not a valid SPDX expression.
