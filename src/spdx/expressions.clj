@@ -344,8 +344,8 @@
       (map? parse-result)
         (str (:license-id parse-result)
              (when (:or-later? parse-result)            "+")
-             (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
              (when (:license-ref parse-result)          (unparse-license-ref parse-result))
+             (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
              (when (:addition-ref parse-result)         (str " WITH " (unparse-addition-ref parse-result)))))))
 
 (defn unparse

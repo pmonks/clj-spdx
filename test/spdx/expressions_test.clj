@@ -261,6 +261,8 @@
     (is (= (normalise "BSD-2-Clause AND MIT or GPL-2.0+ WITH Classpath-exception-2.0")           "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
     (is (= (normalise "(BSD-2-Clause AND MIT) Or GPL-2.0+ WITH Classpath-exception-2.0")         "(BSD-2-Clause AND MIT) OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
     (is (= (normalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")                 "GPL-2.0-only WITH GCC-exception-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0"))
+    (is (= (normalise "LicenseRef-foo WITH Classpath-exception-2.0")                             "LicenseRef-foo WITH Classpath-exception-2.0"))
+    (is (= (normalise "Apache-2.0 WITH AdditionRef-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
     (is (= (normalise "LicenseRef-foo with AdditionRef-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
     (is (= (normalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
   (testing "Precedence rules"
