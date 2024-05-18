@@ -42,7 +42,7 @@
 (defn addition-ref?
   "Is `id` an `AdditionRef`?"
   [id]
-  (when id (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id)))
+  (when id (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id))))
 
 (defn id->info
   "Returns SPDX exception list information for `id` as a map, or `nil` if `id`

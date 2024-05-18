@@ -42,7 +42,7 @@
 (defn license-ref?
   "Is `id` a `LicenseRef`?"
   [id]
-  (when id (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?LicenseRef-[\p{Alnum}-\.]+" id)))
+  (when id (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?LicenseRef-[\p{Alnum}-\.]+" id))))
 
 (defn id->info
   "Returns SPDX license list information for `id` as a map, or `nil` if `id` is
