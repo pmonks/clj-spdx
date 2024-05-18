@@ -39,6 +39,11 @@
   [^String id]
   (im/listed-exception-id? id))
 
+(defn addition-ref?
+  "Is `id` an `AdditionRef`?"
+  [id]
+  (when id (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id)))
+
 (defn id->info
   "Returns SPDX exception list information for `id` as a map, or `nil` if `id`
   is not a valid SPDX exception id."

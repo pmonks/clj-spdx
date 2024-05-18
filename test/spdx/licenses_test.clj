@@ -19,7 +19,7 @@
 (ns spdx.licenses-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.licenses   :refer [version ids listed-id? id->info deprecated-id? non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids]]))
+            [spdx.licenses   :refer [version ids listed-id? license-ref? id->info deprecated-id? non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -33,6 +33,45 @@
     (is (pos? (count (ids)))))
   (testing "ids are a set"
     (is (instance? java.util.Set (ids)))))
+
+(deftest listed-id?-tests
+  (testing "Invalid ids return nil"
+    (is (not (listed-id? nil)))
+    (is (not (listed-id? "")))
+    (is (not (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "Common ids are present"
+    (is (listed-id? "Apache-2.0"))
+    (is (listed-id? "GPL-3.0"))
+    (is (listed-id? "CC-BY-4.0"))))
+
+(deftest license-ref?-tests
+  (testing "Invalid LicenseRefs return nil"
+    (is (not (license-ref? nil)))
+    (is (not (license-ref? "")))
+    (is (not (license-ref? "INVALID-LICENSE-REF"))))
+  (testing "Valid LicenseRefs"
+    (is (license-ref? "LicenseRef-foo"))
+    (is (license-ref? "DocumentRef-foo:LicenseRef-bar"))
+    (is (license-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG"))))
+
+(deftest id->info-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (id->info nil)))
+    (is (nil? (id->info "")))
+    (is (nil? (id->info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "Valid ids are not nil"
+    (is (not (nil? (id->info "Apache-2.0")))))
+  (testing "Returned info is a Map"
+    (is (instance? java.util.Map (id->info "Apache-2.0"))))
+  (testing "Expected keys are present"
+    (is (equivalent-colls? (keys (id->info "Apache-2.0"))
+                           [:text-template :text-html :header-template :name :cross-refs :header :header-html :id :comment :fsf-libre? :see-also :osi-approved? :text])))
+  (testing "Select keys have expected values"
+    (let [info (id->info "Apache-2.0")]
+      (is (=           (:name          info) "Apache License 2.0"))
+      (is              (:osi-approved? info))
+      (is              (:fsf-libre?    info))
+      (is (pos? (count (:cross-refs    info)))))))
 
 (deftest deprecated-id?-tests
   (testing "Invalid ids return nil"
@@ -112,31 +151,3 @@
   (testing "fsf-libre-ids are a set"
     (is (instance? java.util.Set (fsf-libre-ids)))))
 
-(deftest listed-id?-tests
-  (testing "Invalid ids return nil"
-    (is (not (listed-id? nil)))
-    (is (not (listed-id? "")))
-    (is (not (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "Common ids are present"
-    (is (listed-id? "Apache-2.0"))
-    (is (listed-id? "GPL-3.0"))
-    (is (listed-id? "CC-BY-4.0"))))
-
-(deftest id->info-tests
-  (testing "Invalid ids return nil"
-    (is (nil? (id->info nil)))
-    (is (nil? (id->info "")))
-    (is (nil? (id->info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "Valid ids are not nil"
-    (is (not (nil? (id->info "Apache-2.0")))))
-  (testing "Returned info is a Map"
-    (is (instance? java.util.Map (id->info "Apache-2.0"))))
-  (testing "Expected keys are present"
-    (is (equivalent-colls? (keys (id->info "Apache-2.0"))
-                           [:text-template :text-html :header-template :name :cross-refs :header :header-html :id :comment :fsf-libre? :see-also :osi-approved? :text])))
-  (testing "Select keys have expected values"
-    (let [info (id->info "Apache-2.0")]
-      (is (=           (:name          info) "Apache License 2.0"))
-      (is              (:osi-approved? info))
-      (is              (:fsf-libre?    info))
-      (is (pos? (count (:cross-refs    info)))))))
