@@ -421,7 +421,7 @@
   @normalised-spdx-ids-map-d
 ; Note: we always leave these to runtime, since they're not expensive, and doing so
 ; ensures that callers who exclusively use one parsing variant aren't paying an
-; unnecessary cost.
+; unnecessary memory cost.
 ;  @spdx-license-expression-ci-grammar-d
 ;  @spdx-license-expression-cs-grammar-d
 ;  @spdx-license-expression-ci-parser-d
