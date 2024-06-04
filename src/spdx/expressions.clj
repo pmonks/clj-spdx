@@ -387,6 +387,30 @@
      (not (or (s/blank? s)
               (insta/failure? (insta/parse parser s)))))))
 
+(defn simple?
+  "Is `s` (a `String`) a 'simple' SPDX license expression (i.e. one that
+  contains no AND or OR operators, though it may contain a WITH operator)?
+  Returns `nil` if `s` not a valid SPDX expression.
+
+  The optional `opts` map is as for `parse`."
+  ([^String s] (simple? s nil))
+  ([^String s opts]
+   (when-let [p (parse s opts)]
+     (map? p))))
+
+; Note: we can't use complement here, due to the presence of nil results from simple?
+(defn compound?
+  "Is `s` (a `String`) a 'compound' SPDX license expression (i.e. one that
+  contains at least one AND or OR operator)?  Returns `nil` if `s` not a valid
+  SPDX expression.
+
+  The optional `opts` map is as for `parse`."
+  ([^String s] (compound? s nil))
+  ([^String s opts]
+    (let [result (simple? s opts)]
+      (when-not (nil? result)
+        (not result)))))
+
 (defn extract-ids
   "Extract all SPDX ids (as a set of `String`s) from `parse-result`.
 

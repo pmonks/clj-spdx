@@ -19,7 +19,7 @@
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils]      ; Unused, but we force it to run first
-            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? extract-ids]]))
+            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? simple? compound? extract-ids]]))
 
 (deftest parse-tests
   (testing "Nil, empty, etc."
@@ -311,6 +311,40 @@
     (is (valid? "GPL-2.0 WITH Classpath-exception-2.0"))
     (is (valid? "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)"))
     (is (valid? "(APACHE-2.0 AND MIT) OR (((GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)))"))))
+
+(deftest simple?-tests
+  (testing "Nil, empty, etc."
+    (is (nil? (simple? nil)))
+    (is (nil? (simple? ""))))
+  (testing "Invalid expressions"
+    (is (nil? (simple? "+")))
+    (is (nil? (simple? "AND")))
+    (is (nil? (simple? "Apache")))
+    (is (nil? (simple? "Classpath-exception-2.0")))
+    (is (nil? (simple? "MIT or Apache-2.0" {:case-sensitive-operators? true}))))    ; OR clause must be capitalised
+  (testing "Valid expressions - simple"
+    (is (true? (simple? "Apache-2.0")))
+    (is (true? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0"))))
+  (testing "Valid expressions - compound"
+    (is (false? (simple? "Apache-2.0 AND MIT")))
+    (is (false? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))))
+
+(deftest compound?-tests
+  (testing "Nil, empty, etc."
+    (is (nil? (compound? nil)))
+    (is (nil? (compound? ""))))
+  (testing "Invalid expressions"
+    (is (nil? (compound? "+")))
+    (is (nil? (compound? "AND")))
+    (is (nil? (compound? "Apache")))
+    (is (nil? (compound? "Classpath-exception-2.0")))
+    (is (nil? (compound? "MIT or Apache-2.0" {:case-sensitive-operators? true}))))    ; OR clause must be capitalised
+  (testing "Valid expressions - simple"
+    (is (false? (compound? "Apache-2.0")))
+    (is (false? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0"))))
+  (testing "Valid expressions - compound"
+    (is (true? (compound? "Apache-2.0 AND MIT")))
+    (is (true? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))))
 
 (deftest extract-ids-tests
   (testing "Nil"
