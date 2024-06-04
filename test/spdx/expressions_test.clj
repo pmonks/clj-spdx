@@ -154,6 +154,8 @@
                                                                {:license-id "Apache-2.0"}]))
     (is (= (parse "Apache-2.0 OR Apache-2.0 AND MIT")         [:or {:license-id "Apache-2.0"} [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))  ; Note: an example of one that should NOT be collapsed, since that would change the meaning of the expression
     (is (= (parse "Apache-2.0 AND Apache-2.0 OR MIT")         [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "Apache-2.0 OR MIT OR Apache-2.0")          [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "Apache-2.0 AND MIT AND Apache-2.0")        [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 AND Apache-2.0 OR Apache-2.0 AND Apache-2.0")
                                                               {:license-id "Apache-2.0"}))
     (is (= (parse "Apache-2.0 AND (Apache-2.0 OR (Apache-2.0 AND Apache-2.0))")
