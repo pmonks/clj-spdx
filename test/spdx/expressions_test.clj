@@ -143,7 +143,32 @@
     (is (= (parse "GPL-2.0-with-GCC-exception+ WITH Classpath-exception-2.0")
                                                               [:and
                                                                {:license-id "GPL-2.0-or-later" :license-exception-id "GCC-exception-2.0"}
-                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]))))
+                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}])))
+  (testing "Expressions that exercise collapsing redundant clauses"
+    (is (= (parse "Apache-2.0 OR Apache-2.0")                 {:license-id "Apache-2.0"}))
+    (is (= (parse "Apache-2.0 AND Apache-2.0" {:collapse-redundant-clauses? true})
+                                                              {:license-id "Apache-2.0"}))
+    (is (= (parse "Apache-2.0 AND Apache-2.0" {:collapse-redundant-clauses? false})
+                                                              [:and
+                                                               {:license-id "Apache-2.0"}
+                                                               {:license-id "Apache-2.0"}]))
+    (is (= (parse "Apache-2.0 OR Apache-2.0 AND MIT")         [:or {:license-id "Apache-2.0"} [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))  ; Note: an example of one that should NOT be collapsed, since that would change the meaning of the expression
+    (is (= (parse "Apache-2.0 AND Apache-2.0 OR MIT")         [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "Apache-2.0 OR MIT OR Apache-2.0")          [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "Apache-2.0 AND MIT AND Apache-2.0")        [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "Apache-2.0 AND Apache-2.0 OR Apache-2.0 AND Apache-2.0")
+                                                              {:license-id "Apache-2.0"}))
+    (is (= (parse "Apache-2.0 AND (Apache-2.0 OR (Apache-2.0 AND Apache-2.0))")
+                                                              {:license-id "Apache-2.0"}))
+    (is (= (parse "(Apache-2.0 AND Apache-2.0) OR (Apache-2.0 AND Apache-2.0)")
+                                                              {:license-id "Apache-2.0"}))
+    (is (= (parse "GPL-2.0-or-later WITH Classpath-exception-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0")
+                                                              {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}))
+    (is (= (parse "GPL-2.0+ WITH Classpath-exception-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0")
+                                                              {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}))
+    (is (= (parse "LicenseRef-foo OR LicenseRef-foo")         {:license-ref "foo"}))
+    (is (= (parse "DocumentRef-foo:LicenseRef-bar AND DocumentRef-foo:LicenseRef-bar ")
+                                                              {:document-ref "foo" :license-ref "bar"}))))
 
 (deftest unnormalised-parse-tests
   (testing "Simple expressions"
@@ -289,7 +314,11 @@
     (is (= (normalise "MIT and (BSD-3-Clause or (Apache-2.0 and (Beerware or (EPL-2.0 and (MPL-2.0 or (Unlicense and (LGPL-3.0-only or (WTFPL and (GLWTPL or Hippocratic-2.1)))))))))")
                                                                "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
     (is (= (normalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
-                                                               "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))"))))
+                                                               "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))")))
+  (testing "Collapsing redundant expressions"
+    (is (= (normalise "Apache-2.0 OR Apache-2.0")              "Apache-2.0"))
+    (is (= (normalise "Apache-2.0 OR (Apache-2.0 AND (Apache-2.0 AND Apache-2.0) OR Apache-2.0)")
+                                                               "Apache-2.0"))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests

@@ -192,6 +192,17 @@
                                (normalise-gpl-license-map parse-tree)
                                parse-tree)))
 
+(defn- collapse-redundant-clauses
+  "Collapses redundant clauses in `parse-tree`."
+  [parse-tree]
+  (cond
+    (keyword?    parse-tree) parse-tree
+    (sequential? parse-tree) (let [result (some-> (seq (distinct (map collapse-redundant-clauses parse-tree))) vec)]  ; Note: naive (stack consuming) recursion
+                               (if (= 2 (count result))
+                                 (second result)
+                                 result))
+    (map?        parse-tree) parse-tree))
+
 (defn- normalise-nested-operators
   "Normalises nested operators of the same type."
   [type coll]
@@ -212,37 +223,39 @@
   `opts` are as for [[parse]]"
   ([s] (parse-with-info s nil))
   ([^String s {:keys [normalise-gpl-ids?
-                      case-sensitive-operators?]
-                 :or {normalise-gpl-ids?        true
-                      case-sensitive-operators? false}}]
+                      case-sensitive-operators?
+                      collapse-redundant-clauses?]
+                 :or {normalise-gpl-ids?          true
+                      case-sensitive-operators?   false
+                      collapse-redundant-clauses? true}}]
    (when-not (s/blank? s)
-     (let [parser           (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
-           raw-parse-result (insta/parse parser s)]
-       (if (insta/failure? raw-parse-result)
-         raw-parse-result
-         (let [transformed-result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                    :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                    :license-ref           #(case (count %&)
-                                                                              1 {:license-ref  (first %&)}
-                                                                              2 {:document-ref (first %&) :license-ref (second %&)})
-                                                    :addition-ref          #(case (count %&)
-                                                                              1 {:addition-ref  (first %&)}
-                                                                              2 {:addition-document-ref (first %&) :addition-ref (second %&)})
-                                                    :license-or-later      #(merge {:or-later? true} (first %&))
-                                                    :with-expression       #(merge (first %&)        (second %&))
-                                                    :and-expression        #(case (count %&)
-                                                                              1 (first %&)
-                                                                              (normalise-nested-operators :and %&))
-                                                    :or-expression         #(case (count %&)
-                                                                              1 (first %&)
-                                                                              (normalise-nested-operators :or %&))
-                                                    :expression            #(case (count %&)
-                                                                              1 (first %&)
-                                                                              (vec %&))}
-                                                   raw-parse-result)]
-             (if normalise-gpl-ids?
-               (normalise-gpl-elements transformed-result)
-               transformed-result)))))))
+     (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
+           result (insta/parse parser s)]
+       (if (insta/failure? result)
+         result
+         (let [result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                        :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                        :license-ref           #(case (count %&)
+                                                                  1 {:license-ref  (first %&)}
+                                                                  2 {:document-ref (first %&) :license-ref (second %&)})
+                                        :addition-ref          #(case (count %&)
+                                                                  1 {:addition-ref  (first %&)}
+                                                                  2 {:addition-document-ref (first %&) :addition-ref (second %&)})
+                                        :license-or-later      #(merge {:or-later? true} (first %&))
+                                        :with-expression       #(merge (first %&)        (second %&))
+                                        :and-expression        #(case (count %&)
+                                                                  1 (first %&)
+                                                                  (normalise-nested-operators :and %&))
+                                        :or-expression         #(case (count %&)
+                                                                  1 (first %&)
+                                                                  (normalise-nested-operators :or %&))
+                                        :expression            #(case (count %&)
+                                                                  1 (first %&)
+                                                                  (vec %&))}
+                                       result)
+               result (if normalise-gpl-ids?          (normalise-gpl-elements result)     result)
+               result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)]
+           result))))))
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
@@ -259,6 +272,9 @@
   * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
     operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
+  * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
+    whether redundant clauses (e.g. \"Apache-2.0 AND Apache-2.0\") are
+    collapsed during parsing.
 
   Notes:
 
@@ -308,9 +324,11 @@
   ```"
   ([s] (parse s nil))
   ([s {:keys [normalise-gpl-ids?
-              case-sensitive-operators?]
-         :or {normalise-gpl-ids?        true
-              case-sensitive-operators? false}
+              case-sensitive-operators?
+              collapse-redundant-clauses?]
+         :or {normalise-gpl-ids?          true
+              case-sensitive-operators?   false
+              collapse-redundant-clauses? true}
          :as opts}]
    (when-let [raw-parse-result (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-result)
