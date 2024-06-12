@@ -17,8 +17,8 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality. This functionality is bespoke (it is
-  not provided by Spdx-Java-Library)."
+  "SPDX license expression functionality. This functionality is bespoke (it does
+  not use the parser in `Spdx-Java-Library`)."
   (:require [clojure.string  :as s]
             [clojure.set     :as set]
             [instaparse.core :as insta]
@@ -35,7 +35,7 @@
    <or>                   = <ws #\"(?i)OR\" ws>
    <with>                 = <ws #\"(?i)WITH\" ws>")
 
-; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/
+; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
@@ -48,13 +48,15 @@
   license-id             = %s
   license-exception-id   = %s
   license-ref            = [<'DocumentRef-'> id-string <':'>] <'LicenseRef-'> id-string
+  addition-ref           = [<'DocumentRef-'> id-string <':'>] <'AdditionRef-'> id-string
 
   (* 'License component' (hashmap) production rules *)
   license-or-later       = license-id or-later
   <license-component>    = license-id | license-or-later | license-ref
-  with-expression        = license-component with license-exception-id
+  <exception-component>  = license-exception-id | addition-ref
+  with-expression        = license-component with exception-component
 
-  (* Composite expression production rules *)
+  (* Composite expression (vector) production rules *)
   <expression-component> = license-component | with-expression | <'('> expression <')'>
   and-expression         = expression-component (and expression-component)*
   or-expression          = and-expression (or and-expression)*
@@ -190,6 +192,17 @@
                                (normalise-gpl-license-map parse-tree)
                                parse-tree)))
 
+(defn- collapse-redundant-clauses
+  "Collapses redundant clauses in `parse-tree`."
+  [parse-tree]
+  (cond
+    (keyword?    parse-tree) parse-tree
+    (sequential? parse-tree) (let [result (some-> (seq (distinct (map collapse-redundant-clauses parse-tree))) vec)]  ; Note: naive (stack consuming) recursion
+                               (if (= 2 (count result))
+                                 (second result)
+                                 result))
+    (map?        parse-tree) parse-tree))
+
 (defn- normalise-nested-operators
   "Normalises nested operators of the same type."
   [type coll]
@@ -204,107 +217,136 @@
         (recur (concat result [f])      (first r) (rest r))))))
 
 (defn parse-with-info
-  "As for parse, but returns an instaparse parse error info if parsing fails,
-  instead of nil. See https://github.com/Engelberg/instaparse#parse-errors
+  "As for [[parse]], but returns an [instaparse parse error](https://github.com/Engelberg/instaparse#parse-errors)
+  if parsing fails, instead of `nil`.
 
-  `opts` are as for parse"
+  `opts` are as for [[parse]]"
   ([s] (parse-with-info s nil))
   ([^String s {:keys [normalise-gpl-ids?
-                      case-sensitive-operators?]
-                 :or {normalise-gpl-ids?        true
-                      case-sensitive-operators? false}}]
+                      case-sensitive-operators?
+                      collapse-redundant-clauses?]
+                 :or {normalise-gpl-ids?          true
+                      case-sensitive-operators?   false
+                      collapse-redundant-clauses? true}}]
    (when-not (s/blank? s)
-     (let [parser           (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
-           raw-parse-result (insta/parse parser s)]
-       (if (insta/failure? raw-parse-result)
-         raw-parse-result
-         (let [transformed-result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                    :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                                    :license-ref           #(case (count %&)
-                                                                              1 {:license-ref  (first %&)}
-                                                                              2 {:document-ref (first %&) :license-ref (second %&)})
-                                                    :license-or-later      #(merge {:or-later? true} (first %&))
-                                                    :with-expression       #(merge (first %&)        (second %&))
-                                                    :and-expression        #(case (count %&)
-                                                                              1 (first %&)
-                                                                              (normalise-nested-operators :and %&))
-                                                    :or-expression         #(case (count %&)
-                                                                              1 (first %&)
-                                                                              (normalise-nested-operators :or %&))
-                                                    :expression            #(case (count %&)
-                                                                              1 (first %&)
-                                                                              (vec %&))}
-                                                   raw-parse-result)]
-             (if normalise-gpl-ids?
-               (normalise-gpl-elements transformed-result)
-               transformed-result)))))))
+     (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
+           result (insta/parse parser s)]
+       (if (insta/failure? result)
+         result
+         (let [result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                        :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                        :license-ref           #(case (count %&)
+                                                                  1 {:license-ref  (first %&)}
+                                                                  2 {:document-ref (first %&) :license-ref (second %&)})
+                                        :addition-ref          #(case (count %&)
+                                                                  1 {:addition-ref  (first %&)}
+                                                                  2 {:addition-document-ref (first %&) :addition-ref (second %&)})
+                                        :license-or-later      #(merge {:or-later? true} (first %&))
+                                        :with-expression       #(merge (first %&)        (second %&))
+                                        :and-expression        #(case (count %&)
+                                                                  1 (first %&)
+                                                                  (normalise-nested-operators :and %&))
+                                        :or-expression         #(case (count %&)
+                                                                  1 (first %&)
+                                                                  (normalise-nested-operators :or %&))
+                                        :expression            #(case (count %&)
+                                                                  1 (first %&)
+                                                                  (vec %&))}
+                                       result)
+               result (if normalise-gpl-ids?          (normalise-gpl-elements result)     result)
+               result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)]
+           result))))))
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
-  "Attempt to parse `s` (a String) as an SPDX license expression, returning a
-  data structure representing the parse tree, or nil if it cannot be parsed.
+  "Attempt to parse `s` (a `String`) as an [SPDX license expression](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/),
+  returning a data structure representing the parse tree, or `nil` if it cannot
+  be parsed.
 
   The optional `opts` map has these keys:
-  * `normalise-gpl-ids?` (boolean, default true) - controls whether
+
+  * `:normalise-gpl-ids?` (`boolean`, default `true`) - controls whether
     deprecated 'historical oddity' GPL family ids in the expression are
     normalised to their non-deprecated replacements as part of the parsing
     process.
-  * `case-sensitive-operators?` (boolean, default false) - controls whether
-    operators in expressions (AND, OR, WITH) are case-sensitive
+  * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
+    operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
+  * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
+    whether redundant clauses (e.g. \"Apache-2.0 AND Apache-2.0\") are
+    collapsed during parsing.
 
   Notes:
+
   * The parser always normalises SPDX ids to their canonical case
-    e.g. aPAcHe-2.0 -> Apache-2.0
-
+    e.g. `aPAcHe-2.0` -> `Apache-2.0`
   * The parser always removes redundant grouping
-    e.g. (((((Apache-2.0)))))) -> Apache-2.0
-
+    e.g. `(((((Apache-2.0))))))` -> `Apache-2.0`
   * The parser synthesises grouping when needed to make SPDX license
-    expressions' precedence rules explicit (see
-    https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
-
-  * The default options result in parsing that is more lenient than the SPDX
-    specification and that is therefore not strictly spec compliant.  You can
-    enable strictly compliant parsing by setting `normalise-gpl-ids?` to `false`
+    expressions' precedence rules explicit (see [the relevant section within
+    annex D of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
+    for details).
+  * The default `opts` result in parsing that is more lenient than the SPDX
+    specification and is therefore not strictly spec compliant.  You can enable
+    strictly spec compliant parsing by setting `normalise-gpl-ids?` to `false`
     and `case-sensitive-operators?` to `true`.
 
   Examples (assuming default options):
 
-  \"Apache-2.0\"
-  -> {:license-id \"Apache-2.0\"}
+  ```clojure
+  (parse \"Apache-2.0\")
+  {:license-id \"Apache-2.0\"}
 
-  \"Apache-2.0+\"
-  -> {:license-id \"Apache-2.0\" :or-later? true}
+  (parse \"apache-2.0+\")
+  {:license-id \"Apache-2.0\" :or-later? true}  ; Note id case correction
 
-  \"GPL-2.0+\"
-  -> {:license-id \"GPL-2.0-or-later\"}
+  (parse \"GPL-2.0+\")
+  {:license-id \"GPL-2.0-or-later\"}  ; Note GPL-family id normalisation
 
-  \"GPL-2.0 WITH Classpath-exception-2.0\"
-  -> {:license-id \"GPL-2.0-only\"
-      :license-exception-id \"Classpath-exception-2.0\"}
+  (parse \"GPL-2.0 WITH Classpath-exception-2.0\")
+  {:license-id \"GPL-2.0-only\"
+   :license-exception-id \"Classpath-exception-2.0\"}
 
-  \"CDDL-1.1 or (GPL-2.0+ with Classpath-exception-2.0)\"
-  -> [:or
-      {:license-id \"CDDL-1.1\"}
-      {:license-id \"GPL-2.0-or-later\"
-       :license-exception-id \"Classpath-exception-2.0\"}]
+  (parse \"CDDL-1.1 or (GPL-2.0+ with Classpath-exception-2.0)\")
+  [:or
+   {:license-id \"CDDL-1.1\"}
+   {:license-id \"GPL-2.0-or-later\"
+    :license-exception-id \"Classpath-exception-2.0\"}]
 
-  \"DocumentRef-foo:LicenseRef-bar\")
-  -> {:document-ref \"foo\"
-      :license-ref \"bar\"}
+  (parse \"DocumentRef-foo:LicenseRef-bar\")
+  {:document-ref \"foo\"
+   :license-ref \"bar\"}
 
-  See SPDX Specification Annex D for more details on SPDX license expressions:
-  https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/"
+  (parse \"Apache-2.0 with DocumentRef-foo:AdditionRef-bar\")
+  {:license-id \"Apache-2.0\"
+   :addition-document-ref \"foo\"
+   :addition-ref \"bar\"}
+  ```"
   ([s] (parse s nil))
   ([s {:keys [normalise-gpl-ids?
-              case-sensitive-operators?]
-         :or {normalise-gpl-ids?           true
-              case-sensitive-operators? false}
+              case-sensitive-operators?
+              collapse-redundant-clauses?]
+         :or {normalise-gpl-ids?          true
+              case-sensitive-operators?   false
+              collapse-redundant-clauses? true}
          :as opts}]
    (when-let [raw-parse-result (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-result)
        raw-parse-result))))
+
+(defn- unparse-license-ref
+  "Unparses a license-ref from map `m`, returning `nil` if there isn't one."
+  [m]
+  (when (and m (:license-ref m))
+    (str (when-let [document-ref (:document-ref m)] (str "DocumentRef-" document-ref ":"))
+         "LicenseRef-" (:license-ref m))))
+
+(defn- unparse-addition-ref
+  "Unparses an addition-ref from map `m`, returning `nil` if there isn't one."
+  [m]
+  (when (and m (:addition-ref m))
+    (str (when-let [addition-document-ref (:addition-document-ref m)] (str "DocumentRef-" addition-document-ref ":"))
+         "AdditionRef-" (:addition-ref m))))
 
 (defn- unparse-internal
   "Internal implementation of unparse."
@@ -319,34 +361,25 @@
                  (when (pos? level) ")"))))
       (map? parse-result)
         (str (:license-id parse-result)
-             (when (:or-later? parse-result) "+")
+             (when (:or-later? parse-result)            "+")
+             (when (:license-ref parse-result)          (unparse-license-ref parse-result))
              (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
-             (when (:license-ref parse-result) (str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
-                                                    "LicenseRef-" (:license-ref parse-result)))))))
+             (when (:addition-ref parse-result)         (str " WITH " (unparse-addition-ref parse-result)))))))
 
 (defn unparse
-  "Turns a valid `parse-result` (i.e. obtained from `parse`) back into a
-  canonicalised SPDX expression (a String).  Results are undefined for invalid
-  parse trees.  Returns nil if `parse-result` is nil.
-
-  Canonicalisation involves:
-  * Converting all SPDX listed identifiers to their official case
-  * Upper casing all operators
-  * Removing redundant grouping (parens)
-  * Adding grouping (parens) to make precedence rules explicit
-  * (with default options) Normalising deprecated 'historical oddity' GPL family
-    ids to their non-deprecated replacements"
+  "Turns a valid `parse-result` (i.e. obtained from [[parse]]) back into an
+  SPDX expression (a `String`), or `nil` if `parse-result` is `nil`.  Results
+  are undefined for invalid parse trees."
   [parse-result]
   (when-let [result (unparse-internal 0 parse-result)]
     (when-not (s/blank? result)
       (s/trim result))))
 
-#_{:clj-kondo/ignore [:unused-binding]}
 (defn normalise
-  "Normalises an SPDX expression, by running it through parse then unparse.
-  Returns nil if `s` is nil or is not a valid SPDX expression.
+  "Normalises an SPDX expression, by running it through [[parse]] then
+  [[unparse]].  Returns `nil` if `s` is not a valid SPDX expression.
 
-  `opts` are as for parse"
+  `opts` are as for [[parse]]"
   ([s] (normalise s nil))
   ([s opts]
    (some-> s
@@ -354,15 +387,16 @@
            unparse)))
 
 (defn valid?
-  "Is `s` (a String) a valid SPDX license expression?
+  "Is `s` (a `String`) a valid SPDX license expression?
 
   Note: if you intend to parse `s` if it's valid, it's more efficient to call
-  parse directly and check for a nil result instead of calling this method
+  [[parse]] directly and check for a `nil` result instead of calling this method
   first (doing so avoids double parsing).
 
   The optional `opts` map has these keys:
-  * `case-sensitive-operators?` (boolean, default false) - controls whether
-    operators in expressions (AND, OR, WITH) are case-sensitive
+
+  * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
+    operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient)."
   ([^String s] (valid? s nil))
   ([^String s {:keys [case-sensitive-operators?]
@@ -371,12 +405,37 @@
      (not (or (s/blank? s)
               (insta/failure? (insta/parse parser s)))))))
 
+(defn simple?
+  "Is `s` (a `String`) a 'simple' SPDX license expression (i.e. one that
+  contains no AND or OR operators, though it may contain a WITH operator)?
+  Returns `nil` if `s` not a valid SPDX expression.
+
+  The optional `opts` map is as for `parse`."
+  ([^String s] (simple? s nil))
+  ([^String s opts]
+   (when-let [p (parse s opts)]
+     (map? p))))
+
+; Note: we can't use complement here, due to the presence of nil results from simple?
+(defn compound?
+  "Is `s` (a `String`) a 'compound' SPDX license expression (i.e. one that
+  contains at least one AND or OR operator)?  Returns `nil` if `s` not a valid
+  SPDX expression.
+
+  The optional `opts` map is as for `parse`."
+  ([^String s] (compound? s nil))
+  ([^String s opts]
+    (let [result (simple? s opts)]
+      (when-not (nil? result)
+        (not result)))))
+
 (defn extract-ids
-  "Extract all SPDX ids (as a set of strings) from the given `parse-result`.
+  "Extract all SPDX ids (as a set of `String`s) from `parse-result`.
 
   The optional `opts` map has these keys:
-  * include-or-later? (boolean, default false) - controls whether the output
-    includes the 'or later' indicator ('+') after license ids that have that
+
+  * `:include-or-later?` (`boolean`, default `false`) - controls whether the output
+    includes the 'or later' indicator (`+`) after license ids that have that
     designation in the parse tree."
   ([parse-result] (extract-ids parse-result nil))
   ([parse-result  {:keys [include-or-later?] :or {include-or-later? false} :as opts}]
@@ -385,16 +444,17 @@
        (sequential? parse-result) (set (mapcat #(extract-ids % opts) parse-result))  ; Note: naive (stack consuming) recursion
        (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later? (:or-later? parse-result)) "+"))})
                                              (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
-                                             (when (:license-ref          parse-result)
-                                               #{(str (when (:document-ref parse-result) (str "DocumentRef-" (:document-ref parse-result) ":"))
-                                                      "LicenseRef-" (:license-ref parse-result))}))
+                                             (when (:license-ref          parse-result) #{(unparse-license-ref parse-result)})
+                                             (when (:addition-ref         parse-result) #{(unparse-addition-ref parse-result)}))
        :else        nil))))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
-  calls), returning nil. Consumers of this namespace are not required to call
+  calls), returning `nil`. Consumers of this namespace are not required to call
   this fn, as initialisation will occur implicitly anyway; it is provided to
-  allow explicit control of the cost of initialisation to callers who need it."
+  allow explicit control of the cost of initialisation to callers who need it.
+
+  Note: this method may have a substantial performance cost."
   []
   (lic/init!)
   (exc/init!)
@@ -403,7 +463,7 @@
   @normalised-spdx-ids-map-d
 ; Note: we always leave these to runtime, since they're not expensive, and doing so
 ; ensures that callers who exclusively use one parsing variant aren't paying an
-; unnecessary cost.
+; unnecessary memory cost.
 ;  @spdx-license-expression-ci-grammar-d
 ;  @spdx-license-expression-cs-grammar-d
 ;  @spdx-license-expression-ci-parser-d
