@@ -21,7 +21,7 @@
 
 (println "\n☔️ Running tests on Clojure" (clojure-version) "/ JVM" (System/getProperty "java.version") (str "(" (System/getProperty "java.vm.name") " v" (System/getProperty "java.vm.version") ")\n"))
 
-(println "ℹ️ These unit tests take at least 4 minutes to complete")
+(println "ℹ️ These unit tests take several minutes to complete, in the best case")
 
 (defn equivalent-colls?
   "Are all of the colls 'equivalent' (same values and occurrences of each value, but in any order and regardless of concrete collection type)?"
