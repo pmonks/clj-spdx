@@ -142,6 +142,69 @@
 
 (def ^:private not-blank? (complement s/blank?))
 
+(defn- license-ref->string
+  "Turns map `m` containing a license-ref into a String, returning `nil` if
+  there isn't one."
+  [m]
+  (when (and m (:license-ref m))
+    (str (when-let [document-ref (:document-ref m)] (str "DocumentRef-" document-ref ":"))
+         "LicenseRef-" (:license-ref m))))
+
+(defn- addition-ref->string
+  "Turns map `m` containing an addition-ref into a String, returning `nil` if
+  there isn't one."
+  [m]
+  (when (and m (:addition-ref m))
+    (str (when-let [addition-document-ref (:addition-document-ref m)] (str "DocumentRef-" addition-document-ref ":"))
+         "AdditionRef-" (:addition-ref m))))
+
+(defn- license-map->string
+  "Turns a license map into a (non-readable) string, primarily for the purposes
+  of comparison."
+  [m]
+  (when m
+    (str (when (:license-id m)           (:license-id m))
+         (when (:or-later? m)            "+")
+         (when (:license-ref m)          (license-ref->string m))
+         (when (:license-exception-id m) (str " WITH " (:license-exception-id m)))
+         (when (:addition-ref m)         (str " WITH " (addition-ref->string m))))))
+
+(defn- unparse-internal
+  "Internal implementation of unparse."
+  [level parse-result]
+  (when parse-result
+    (cond
+      (sequential? parse-result)
+        (when (pos? (count parse-result))
+          (let [op-str (str " " (s/upper-case (name (first parse-result))) " ")]
+            (str (when (pos? level) "(")
+                 (s/join op-str (map (partial unparse-internal (inc level)) (rest parse-result)))  ; Note: naive (stack consuming) recursion
+                 (when (pos? level) ")"))))
+      (map? parse-result)
+        (license-map->string parse-result))))
+
+(defn unparse
+  "Turns a valid `parse-result` (i.e. obtained from [[parse]]) back into an
+  SPDX expression (a `String`), or `nil` if `parse-result` is `nil`.  Results
+  are undefined for invalid parse trees."
+  [parse-result]
+  (when-let [result (unparse-internal 0 parse-result)]
+    (when-not (s/blank? result)
+      (s/trim result))))
+
+(defn- normalise-nested-operators
+  "Normalises nested operators of the same type."
+  [type coll]
+  (loop [result [type]
+         f      (first coll)
+         r      (rest coll)]
+    (if-not f
+      (vec result)
+      (if (and (sequential? f)
+               (= type (first f)))
+        (recur (concat result (rest f)) (first r) (rest r))
+        (recur (concat result [f])      (first r) (rest r))))))
+
 (defn- normalise-gpl-id
   "Normalises a GPL family `license-id` to a tuple (2 element vector) containing
   the non-deprecated equivalent license id in first position, and (optionally -
@@ -187,34 +250,61 @@
   [parse-tree]
   (cond
     (keyword?    parse-tree) parse-tree
-    (sequential? parse-tree) (some-> (seq (map normalise-gpl-elements parse-tree)) vec)  ; Note: naive (stack consuming) recursion
     (map?        parse-tree) (if (contains? gpl-family-ids (:license-id parse-tree))
                                (normalise-gpl-license-map parse-tree)
-                               parse-tree)))
+                               parse-tree)
+    (sequential? parse-tree) (some-> (seq (map normalise-gpl-elements parse-tree)) vec)))  ; Note: naive (stack consuming) recursion
 
 (defn- collapse-redundant-clauses
   "Collapses redundant clauses in `parse-tree`."
   [parse-tree]
   (cond
     (keyword?    parse-tree) parse-tree
+    (map?        parse-tree) parse-tree
     (sequential? parse-tree) (let [result (some-> (seq (distinct (map collapse-redundant-clauses parse-tree))) vec)]  ; Note: naive (stack consuming) recursion
                                (if (= 2 (count result))
                                  (second result)
-                                 result))
-    (map?        parse-tree) parse-tree))
+                                 result))))
 
-(defn- normalise-nested-operators
-  "Normalises nested operators of the same type."
-  [type coll]
-  (loop [result [type]
-         f      (first coll)
-         r      (rest coll)]
-    (if-not f
-      (vec result)
-      (if (and (sequential? f)
-               (= type (first f)))
-        (recur (concat result (rest f)) (first r) (rest r))
-        (recur (concat result [f])      (first r) (rest r))))))
+(defn- compare-license-maps
+  "Compares two license maps, as found in a parse tree."
+  [x y]
+  ; Todo: consider case-insensitive sorting in future, assuming LicenseRefs & AdditionRefs are _not_ case sensitive (awaiting feedback from spdx-tech on that...)
+  (compare (license-map->string x) (license-map->string y)))
+
+(defn- compare-license-sequences
+  "Compares two license sequences, as found in a parse tree.  Comparisons are
+  based on length - first by number of elements, then, for equi-sized sequences,
+  by lexicographical length (which is a little hokey, but ensures that 'longest'
+  sequences go last, for a reasonable definition of 'longest')."
+  [x y]
+  (let [result (compare (count x) (count y))]
+    (if (= 0 result)
+      (compare (unparse x) (unparse y))
+      result)))
+
+(defn- parse-tree-compare
+  "sort-by comparator for parse-trees"
+  [x y]
+  (cond
+    (and (keyword? x) (keyword? y))       (compare x y)
+    (keyword? x)                          -1
+    (keyword? y)                          1
+    (and (map? x) (map? y))               (compare-license-maps x y)       ; Because compare doesn't support maps
+    (map? x)                              -1
+    (and (sequential? x) (sequential? y)) (compare-license-sequences x y)  ; Because compare doesn't support maps (which will be elements inside x and y)
+    :else                                 1))
+
+(defn- sort-parse-tree
+  "Sorts the parse tree so that logically equivalent expressions produce the
+  same parse tree e.g. parsing `Apache-2.0 OR MIT` will produce the same parse
+  tree as parsing `MIT OR Apache-2.0`."
+  [parse-tree]
+  (cond
+    (keyword?    parse-tree) parse-tree
+    (map?        parse-tree) parse-tree
+    (sequential? parse-tree) (let [result (some-> (seq (map sort-parse-tree parse-tree)) vec)]  ; Note: naive (stack consuming) recursion
+                               (some-> (seq (sort-by identity parse-tree-compare result)) vec))))
 
 (defn parse-with-info
   "As for [[parse]], but returns an [instaparse parse error](https://github.com/Engelberg/instaparse#parse-errors)
@@ -224,10 +314,12 @@
   ([s] (parse-with-info s nil))
   ([^String s {:keys [normalise-gpl-ids?
                       case-sensitive-operators?
-                      collapse-redundant-clauses?]
+                      collapse-redundant-clauses?
+                      sort-licenses?]
                  :or {normalise-gpl-ids?          true
                       case-sensitive-operators?   false
-                      collapse-redundant-clauses? true}}]
+                      collapse-redundant-clauses? true
+                      sort-licenses?              true}}]
    (when-not (s/blank? s)
      (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
            result (insta/parse parser s)]
@@ -254,7 +346,8 @@
                                                                   (vec %&))}
                                        result)
                result (if normalise-gpl-ids?          (normalise-gpl-elements result)     result)
-               result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)]
+               result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)
+               result (if sort-licenses?              (sort-parse-tree result)            result)]
            result))))))
 
 #_{:clj-kondo/ignore [:unused-binding]}
@@ -275,6 +368,12 @@
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
     whether redundant clauses (e.g. \"Apache-2.0 AND Apache-2.0\") are
     collapsed during parsing.
+  * `:sort-licenses?` (`boolean`, default `true`) - controls whether licenses
+    that appear at the same level in the parse tree are sorted alphabetically.
+    This means that some parse trees will be identical for different (though
+    logically identical) inputs, which can be useful in many cases.  For example
+    the parse tree for `Apache-2.0 OR MIT` would be identical to the parse tree
+    for `MIT OR Apache-2.0`.
 
   Notes:
 
@@ -325,55 +424,16 @@
   ([s] (parse s nil))
   ([s {:keys [normalise-gpl-ids?
               case-sensitive-operators?
-              collapse-redundant-clauses?]
+              collapse-redundant-clauses?
+              sort-licenses?]
          :or {normalise-gpl-ids?          true
               case-sensitive-operators?   false
-              collapse-redundant-clauses? true}
+              collapse-redundant-clauses? true
+              sort-licenses?              true}
          :as opts}]
    (when-let [raw-parse-result (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-result)
        raw-parse-result))))
-
-(defn- unparse-license-ref
-  "Unparses a license-ref from map `m`, returning `nil` if there isn't one."
-  [m]
-  (when (and m (:license-ref m))
-    (str (when-let [document-ref (:document-ref m)] (str "DocumentRef-" document-ref ":"))
-         "LicenseRef-" (:license-ref m))))
-
-(defn- unparse-addition-ref
-  "Unparses an addition-ref from map `m`, returning `nil` if there isn't one."
-  [m]
-  (when (and m (:addition-ref m))
-    (str (when-let [addition-document-ref (:addition-document-ref m)] (str "DocumentRef-" addition-document-ref ":"))
-         "AdditionRef-" (:addition-ref m))))
-
-(defn- unparse-internal
-  "Internal implementation of unparse."
-  [level parse-result]
-  (when parse-result
-    (cond
-      (sequential? parse-result)
-        (when (pos? (count parse-result))
-          (let [op-str (str " " (s/upper-case (name (first parse-result))) " ")]
-            (str (when (pos? level) "(")
-                 (s/join op-str (map (partial unparse-internal (inc level)) (rest parse-result)))  ; Note: naive (stack consuming) recursion
-                 (when (pos? level) ")"))))
-      (map? parse-result)
-        (str (:license-id parse-result)
-             (when (:or-later? parse-result)            "+")
-             (when (:license-ref parse-result)          (unparse-license-ref parse-result))
-             (when (:license-exception-id parse-result) (str " WITH " (:license-exception-id parse-result)))
-             (when (:addition-ref parse-result)         (str " WITH " (unparse-addition-ref parse-result)))))))
-
-(defn unparse
-  "Turns a valid `parse-result` (i.e. obtained from [[parse]]) back into an
-  SPDX expression (a `String`), or `nil` if `parse-result` is `nil`.  Results
-  are undefined for invalid parse trees."
-  [parse-result]
-  (when-let [result (unparse-internal 0 parse-result)]
-    (when-not (s/blank? result)
-      (s/trim result))))
 
 (defn normalise
   "Normalises an SPDX expression, by running it through [[parse]] then
@@ -444,8 +504,8 @@
        (sequential? parse-result) (set (mapcat #(extract-ids % opts) parse-result))  ; Note: naive (stack consuming) recursion
        (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later? (:or-later? parse-result)) "+"))})
                                              (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
-                                             (when (:license-ref          parse-result) #{(unparse-license-ref parse-result)})
-                                             (when (:addition-ref         parse-result) #{(unparse-addition-ref parse-result)}))
+                                             (when (:license-ref          parse-result) #{(license-ref->string parse-result)})
+                                             (when (:addition-ref         parse-result) #{(addition-ref->string parse-result)}))
        :else        nil))))
 
 (defn init!
