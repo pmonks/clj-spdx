@@ -406,7 +406,7 @@
   {:license-id \"GPL-2.0-only\"
    :license-exception-id \"Classpath-exception-2.0\"}
 
-  (parse \"CDDL-1.1 or (GPL-2.0+ with Classpath-exception-2.0)\")
+  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")  ; Note sorting
   [:or
    {:license-id \"CDDL-1.1\"}
    {:license-id \"GPL-2.0-or-later\"
