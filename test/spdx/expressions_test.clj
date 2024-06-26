@@ -19,7 +19,7 @@
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils]      ; Unused, but we force it to run first
-            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? simple? compound? extract-ids]]))
+            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? simple? compound? extract-ids walk]]))
 
 (deftest parse-tests
   (testing "Nil, empty, etc."
@@ -411,3 +411,20 @@
                                                          #{"Apache-2.0" "GPL-2.0-or-later" "Classpath-exception-2.0"}))
     (is (= (extract-ids (parse "(Apache-2.0 AND MIT) OR (BSD-2-Clause AND (GPL-2.0+ WITH Classpath-exception-2.0))"))
                                                          #{"Apache-2.0" "MIT" "BSD-2-Clause" "GPL-2.0-or-later" "Classpath-exception-2.0"}))))
+
+; We keep these fairly short since other functions are implemented using walk (including unparse), so any bugs in it are highly likely to show up elsewhere
+(deftest walk-tests
+  (testing "Nil, empty, etc."
+    (is (nil? (walk nil nil)))
+    (is (nil? (walk nil (parse nil))))
+    (is (nil? (walk nil (parse ""))))
+    (is (nil? (walk nil (parse "INVALID SPDX EXPRESSION!!!!")))))
+  (testing "No walk functions (i.e. identity semantics)"
+    (is (= (walk nil (parse "Apache-2.0"))        (parse "Apache-2.0")))
+    (is (= (walk nil (parse "MIT OR Apache-2.0")) (parse "MIT OR Apache-2.0")))
+    (is (= (walk nil (parse "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0 AND (Apache-2.0 OR MIT)"))
+           (parse "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0 AND (Apache-2.0 OR MIT)"))))
+  (testing "Walk functions"
+    (is (= (walk {:op-fn      name}        (parse "MIT OR Apache-2.0")) ["or" {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (walk {:license-fn :license-id} (parse "MIT OR Apache-2.0")) [:or "Apache-2.0" "MIT"]))
+    (is (= (walk {:group-fn   #(count %2)} (parse "MIT OR Apache-2.0")) 3))))
