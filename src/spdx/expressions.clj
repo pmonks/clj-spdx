@@ -168,15 +168,15 @@
 
   Keys in the `fns` map are:
 
-  * :op-fn      - function of 1 argument (a keyword) to be called call when an
-                  operator (`:and`, `:or`) is visited
-  * :license-fn - function of 1 argument (a map) to be called when a license map
-                  is visited
-  * :group-fn   - function of **2** arguments (an integer and a sequence) to be
-                  called when a group is visited. The first argument is the
-                  current nesting depth of the walk (starting at 0 for the
-                  outermost level), the second is the value of the group after
-                  its elements have been walked"
+  * `:op-fn`      - function of 1 argument (a keyword) to be called call when an
+                    operator (`:and`, `:or`) is visited
+  * `:license-fn` - function of 1 argument (a map) to be called when a license
+                    map is visited
+  * `:group-fn`   - function of **2** arguments (an integer and a sequence) to
+                    be called when a group is visited. The first argument is the
+                    current nesting depth of the walk (starting at 0 for the
+                    outermost level), the second is the value of the group after
+                    its elements have been walked"
   [{:keys [op-fn license-fn group-fn]
       :or {op-fn      identity
            license-fn identity
