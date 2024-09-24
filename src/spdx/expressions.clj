@@ -142,6 +142,50 @@
 
 (def ^:private not-blank? (complement s/blank?))
 
+#_{:clj-kondo/ignore [:unused-binding]} 
+(defn- walk-internal
+  "Internal implementation of [[walk]]."
+  [depth
+   {:keys [op-fn license-fn group-fn]
+      :or {op-fn      identity
+           license-fn identity
+           group-fn   (fn [depth group] group)}
+      :as fns}
+   parse-tree]
+  (when parse-tree
+    (cond
+      (keyword?    parse-tree) (op-fn parse-tree)
+      (map?        parse-tree) (license-fn parse-tree)
+      (sequential? parse-tree) (let [group (some-> (seq (map (partial walk-internal (inc depth) fns) parse-tree)) vec)]   ; Note: naive (stack consuming) recursion - SPDX expression are rarely very deep
+                                 (group-fn depth group)))))
+
+#_{:clj-kondo/ignore [:unused-binding]}
+(defn walk
+  "Depth-first walk of `parse-tree` (i.e. obtained from [[parse]]), calling the
+  associated functions (or [`clojure.core/identity`](https://clojure.github.io/clojure/clojure.core-api.html#clojure.core/identity)
+  when not provided) for each element in it.  Results are undefined for invalid
+  parse trees.
+
+  Keys in the `fns` map are:
+
+  * :op-fn      - function of 1 argument (a keyword) to be called call when an
+                  operator (`:and`, `:or`) is visited
+  * :license-fn - function of 1 argument (a map) to be called when a license map
+                  is visited
+  * :group-fn   - function of **2** arguments (an integer and a sequence) to be
+                  called when a group is visited. The first argument is the
+                  current nesting depth of the walk (starting at 0 for the
+                  outermost level), the second is the value of the group after
+                  its elements have been walked"
+  [{:keys [op-fn license-fn group-fn]
+      :or {op-fn      identity
+           license-fn identity
+           group-fn   (fn [depth group] group)}
+      :as fns}
+   parse-tree]
+  (when parse-tree
+    (walk-internal 0 fns parse-tree)))
+
 (defn- license-ref->string
   "Turns map `m` containing a license-ref into a String, returning `nil` if
   there isn't one."
@@ -159,38 +203,28 @@
          "AdditionRef-" (:addition-ref m))))
 
 (defn- license-map->string
-  "Turns a license map into a (non-readable) string, primarily for the purposes
-  of comparison."
+  "Turns a license map into a string. Returns `nil` if `m` is empty."
   [m]
-  (when m
+  (when-not (empty? m)
     (str (when (:license-id m)           (:license-id m))
          (when (:or-later? m)            "+")
          (when (:license-ref m)          (license-ref->string m))
          (when (:license-exception-id m) (str " WITH " (:license-exception-id m)))
          (when (:addition-ref m)         (str " WITH " (addition-ref->string m))))))
 
-(defn- unparse-internal
-  "Internal implementation of unparse."
-  [level parse-result]
-  (when parse-result
-    (cond
-      (sequential? parse-result)
-        (when (pos? (count parse-result))
-          (let [op-str (str " " (s/upper-case (name (first parse-result))) " ")]
-            (str (when (pos? level) "(")
-                 (s/join op-str (map (partial unparse-internal (inc level)) (rest parse-result)))  ; Note: naive (stack consuming) recursion
-                 (when (pos? level) ")"))))
-      (map? parse-result)
-        (license-map->string parse-result))))
-
 (defn unparse
-  "Turns a valid `parse-result` (i.e. obtained from [[parse]]) back into an
-  SPDX expression (a `String`), or `nil` if `parse-result` is `nil`.  Results
+  "Turns a valid `parse-tree` (i.e. obtained from [[parse]]) back into an
+  SPDX expression (a `String`), or `nil` if `parse-tree` is `nil`.  Results
   are undefined for invalid parse trees."
-  [parse-result]
-  (when-let [result (unparse-internal 0 parse-result)]
-    (when-not (s/blank? result)
-      (s/trim result))))
+  [parse-tree]
+  (when-let [result (walk {:op-fn      #(s/upper-case (name %))
+                           :license-fn license-map->string
+                           :group-fn   #(when (pos? (count %2))
+                                          (str (when (pos? %1) "(")
+                                               (s/join (str " " (first %2) " ") (rest %2))
+                                               (when (pos? %1) ")")))}
+                          parse-tree)]
+    (s/trim result)))
 
 (defn- normalise-nested-operators
   "Normalises nested operators of the same type."
@@ -248,23 +282,19 @@
 (defn- normalise-gpl-elements
   "Normalises all of the GPL elements in `parse-tree`."
   [parse-tree]
-  (cond
-    (keyword?    parse-tree) parse-tree
-    (map?        parse-tree) (if (contains? gpl-family-ids (:license-id parse-tree))
-                               (normalise-gpl-license-map parse-tree)
-                               parse-tree)
-    (sequential? parse-tree) (some-> (seq (map normalise-gpl-elements parse-tree)) vec)))  ; Note: naive (stack consuming) recursion
+  (walk {:license-fn #(if (contains? gpl-family-ids (:license-id %))
+                        (normalise-gpl-license-map %)
+                        %)}
+        parse-tree))
 
 (defn- collapse-redundant-clauses
   "Collapses redundant clauses in `parse-tree`."
   [parse-tree]
-  (cond
-    (keyword?    parse-tree) parse-tree
-    (map?        parse-tree) parse-tree
-    (sequential? parse-tree) (let [result (some-> (seq (distinct (map collapse-redundant-clauses parse-tree))) vec)]  ; Note: naive (stack consuming) recursion
-                               (if (= 2 (count result))
-                                 (second result)
-                                 result))))
+  (walk {:group-fn #(let [result (distinct %2)]
+                      (if (= 2 (count result))
+                        (second result)
+                        result))}
+        parse-tree))
 
 (defn- compare-license-maps
   "Compares two license maps, as found in a parse tree."
@@ -300,11 +330,8 @@
   same parse tree e.g. parsing `Apache-2.0 OR MIT` will produce the same parse
   tree as parsing `MIT OR Apache-2.0`."
   [parse-tree]
-  (cond
-    (keyword?    parse-tree) parse-tree
-    (map?        parse-tree) parse-tree
-    (sequential? parse-tree) (let [result (some-> (seq (map sort-parse-tree parse-tree)) vec)]  ; Note: naive (stack consuming) recursion
-                               (some-> (seq (sort-by identity parse-tree-compare result)) vec))))
+  (walk {:group-fn #(some-> (seq (sort-by identity parse-tree-compare %2)) vec)}
+        parse-tree))
 
 (defn parse-with-info
   "As for [[parse]], but returns an [instaparse parse error](https://github.com/Engelberg/instaparse#parse-errors)
@@ -345,16 +372,21 @@
                                                                   1 (first %&)
                                                                   (vec %&))}
                                        result)
-               result (if normalise-gpl-ids?          (normalise-gpl-elements result)     result)
+               result (if normalise-gpl-ids?          (normalise-gpl-elements     result) result)
                result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)
-               result (if sort-licenses?              (sort-parse-tree result)            result)]
+               result (if sort-licenses?              (sort-parse-tree            result) result)]
            result))))))
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
   "Attempt to parse `s` (a `String`) as an [SPDX license expression](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/),
   returning a data structure representing the parse tree, or `nil` if it cannot
-  be parsed.
+  be parsed.  Licenses and associated license exceptions / 'or later' markers
+  (if any) are represented as a map, groups of licenses separated by operators
+  are represented as vectors, with the operator represented by a keyword in the
+  first element in the vector and with license maps in the rest of the vector.
+  Groups (vectors) may be nested e.g. when the expression contains nested
+  clauses.
 
   The optional `opts` map has these keys:
 
@@ -406,7 +438,7 @@
   {:license-id \"GPL-2.0-only\"
    :license-exception-id \"Classpath-exception-2.0\"}
 
-  (parse \"CDDL-1.1 or (GPL-2.0+ with Classpath-exception-2.0)\")
+  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")  ; Note sorting
   [:or
    {:license-id \"CDDL-1.1\"}
    {:license-id \"GPL-2.0-or-later\"
@@ -431,9 +463,9 @@
               collapse-redundant-clauses? true
               sort-licenses?              true}
          :as opts}]
-   (when-let [raw-parse-result (parse-with-info s opts)]
-     (when-not (insta/failure? raw-parse-result)
-       raw-parse-result))))
+   (when-let [raw-parse-tree (parse-with-info s opts)]
+     (when-not (insta/failure? raw-parse-tree)
+       raw-parse-tree))))
 
 (defn normalise
   "Normalises an SPDX expression, by running it through [[parse]] then
@@ -490,22 +522,22 @@
         (not result)))))
 
 (defn extract-ids
-  "Extract all SPDX ids (as a set of `String`s) from `parse-result`.
+  "Extract all SPDX ids (as a set of `String`s) from `parse-tree`.
 
   The optional `opts` map has these keys:
 
   * `:include-or-later?` (`boolean`, default `false`) - controls whether the output
     includes the 'or later' indicator (`+`) after license ids that have that
     designation in the parse tree."
-  ([parse-result] (extract-ids parse-result nil))
-  ([parse-result  {:keys [include-or-later?] :or {include-or-later? false} :as opts}]
-   (when parse-result
+  ([parse-tree] (extract-ids parse-tree nil))
+  ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false} :as opts}]
+   (when parse-tree
      (cond
-       (sequential? parse-result) (set (mapcat #(extract-ids % opts) parse-result))  ; Note: naive (stack consuming) recursion
-       (map?        parse-result) (set/union (when (:license-id           parse-result) #{(str (:license-id parse-result) (when (and include-or-later? (:or-later? parse-result)) "+"))})
-                                             (when (:license-exception-id parse-result) #{(:license-exception-id parse-result)})
-                                             (when (:license-ref          parse-result) #{(license-ref->string parse-result)})
-                                             (when (:addition-ref         parse-result) #{(addition-ref->string parse-result)}))
+       (sequential? parse-tree) (set (mapcat #(extract-ids % opts) parse-tree))  ; Note: naive (stack consuming) recursion
+       (map?        parse-tree) (set/union (when (:license-id           parse-tree) #{(str (:license-id parse-tree) (when (and include-or-later? (:or-later? parse-tree)) "+"))})
+                                             (when (:license-exception-id parse-tree) #{(:license-exception-id parse-tree)})
+                                             (when (:license-ref          parse-tree) #{(license-ref->string parse-tree)})
+                                             (when (:addition-ref         parse-tree) #{(addition-ref->string parse-tree)}))
        :else        nil))))
 
 (defn init!
