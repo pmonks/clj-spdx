@@ -44,13 +44,20 @@
   [id]
   (when id (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id))))
 
+#_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
   "Returns SPDX exception list information for `id` as a map, or `nil` if `id`
-  is not a valid SPDX exception id."
-  [^String id]
-  (some-> id
-          im/id->exception
-          im/exception->map))
+  is not a valid SPDX exception id.
+
+  `opts` are:
+  * `:include-large-text-values?` (default `true`) - controls whether the
+    following large text values are included in the result: `:comment :text
+    :text-html :text-template`"
+  ([^String id] (id->info id nil))
+  ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? true} :as opts}]
+   (some-> id
+           im/id->exception
+           (im/exception->map opts))))
 
 (defn deprecated-id?
   "Is `id` deprecated?
