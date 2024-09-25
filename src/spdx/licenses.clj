@@ -42,7 +42,8 @@
 (defn license-ref?
   "Is `id` a `LicenseRef`?"
   [id]
-  (when id (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?LicenseRef-[\p{Alnum}-\.]+" id))))
+  (when id
+    (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?LicenseRef-[\p{Alnum}-\.]+" id))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
@@ -67,7 +68,7 @@
   for details on what this means."
   [^String id]
   (when (listed-id? id)
-    (:deprecated? (id->info id))))
+    (boolean (:deprecated? (id->info id)))))
 
 (defn non-deprecated-ids
   "Returns the set of license ids that identify current (non-deprecated)
@@ -85,7 +86,7 @@
   for details about what 'OSI Approved' means."
   [^String id]
   (when (listed-id? id)
-    (:osi-approved? (id->info id))))
+    (boolean (:osi-approved? (id->info id)))))
 
 (defn osi-approved-ids
   "Returns the set of SPDX license ids that identify OSI Approved licenses
@@ -106,7 +107,7 @@
   for details about what 'FSF Libre' means."
   [^String id]
   (when (listed-id? id)
-    (:fsf-libre? (id->info id))))
+    (boolean (:fsf-libre? (id->info id)))))
 
 (defn fsf-libre-ids
   "Returns the set of SPDX license ids that identify FSF Libre licenses within
