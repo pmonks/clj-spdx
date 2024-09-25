@@ -50,6 +50,7 @@
   not a valid SPDX license id.
 
   `opts` are:
+
   * `:include-large-text-values?` (default `true`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template :header :header-html :header-template`"
