@@ -42,7 +42,8 @@
 (defn addition-ref?
   "Is `id` an `AdditionRef`?"
   [id]
-  (when id (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id))))
+  (when id
+    (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
@@ -50,6 +51,7 @@
   is not a valid SPDX exception id.
 
   `opts` are:
+
   * `:include-large-text-values?` (default `true`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template`"
