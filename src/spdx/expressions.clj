@@ -111,7 +111,7 @@
                                 "LGPL-2.0-only" "LGPL-2.0-or-later" "LGPL-2.1-only" "LGPL-2.1-or-later" "LGPL-3.0-only" "LGPL-3.0-or-later"})
 
 (def ^:private deprecated-simple-gpl-family-ids {
-                                "AGPL-1.0"  "AGPL-1.0-only"
+                                "AGPL-1.0"  "AGPL-1.0-only"    ; NOTE: not technically a GPL family identifier, since it wasn't published by the FSF, but the same logic works
                                 ; Note: AGPL-1.0+ never existed as a listed SPDX license identifier
                                 "AGPL-3.0"  "AGPL-3.0-only"
                                 ; Note: AGPL-3.0+ never existed as a listed SPDX license identifier
@@ -142,14 +142,13 @@
 
 (def ^:private not-blank? (complement s/blank?))
 
-#_{:clj-kondo/ignore [:unused-binding]} 
 (defn- walk-internal
   "Internal implementation of [[walk]]."
   [depth
    {:keys [op-fn license-fn group-fn]
       :or {op-fn      identity
            license-fn identity
-           group-fn   (fn [depth group] group)}
+           group-fn   (fn [_ group] group)}
       :as fns}
    parse-tree]
   (when parse-tree
@@ -279,12 +278,18 @@
              (when (not-blank? license-exception-id)     {:license-exception-id license-exception-id})
              (when (not-blank? new-license-exception-id) {:license-exception-id new-license-exception-id})))))
 
-(defn- normalise-gpl-elements
-  "Normalises all of the GPL elements in `parse-tree`."
+(defn- normalise-deprecated-ids
+  "Normalises deprecated SPDX identifiers, specifically:
+  * GPL family license identifiers
+  * AGPL-1.0 license identifier (which is NOT a GPL identifier, despite the name)
+  * StandardML-NJ license identifier
+  * Nokia-Qt-exception-1.1 license exception identifier"
   [parse-tree]
-  (walk {:license-fn #(if (contains? gpl-family-ids (:license-id %))
-                        (normalise-gpl-license-map %)
-                        %)}
+  (walk {:license-fn #(cond
+                        (contains? gpl-family-ids (:license-id %))             (normalise-gpl-license-map %)  ; Note: for historical reasons this also handles AGPL-1.0, even though it shouldn't have
+                        (= (:license-id %)           "StandardML-NJ")          (assoc % :license-id "SMLNJ")
+                        (= (:license-exception-id %) "Nokia-Qt-exception-1.1") (assoc % :license-exception-id "Qt-LGPL-exception-1.1")
+                        :else %)}
         parse-tree))
 
 (defn- collapse-redundant-clauses
@@ -339,11 +344,11 @@
 
   `opts` are as for [[parse]]"
   ([s] (parse-with-info s nil))
-  ([^String s {:keys [normalise-gpl-ids?
+  ([^String s {:keys [normalise-deprecated-ids?
                       case-sensitive-operators?
                       collapse-redundant-clauses?
                       sort-licenses?]
-                 :or {normalise-gpl-ids?          true
+                 :or {normalise-deprecated-ids?   true
                       case-sensitive-operators?   false
                       collapse-redundant-clauses? true
                       sort-licenses?              true}}]
@@ -372,7 +377,7 @@
                                                                   1 (first %&)
                                                                   (vec %&))}
                                        result)
-               result (if normalise-gpl-ids?          (normalise-gpl-elements     result) result)
+               result (if normalise-deprecated-ids?   (normalise-deprecated-ids   result) result)
                result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)
                result (if sort-licenses?              (sort-parse-tree            result) result)]
            result))))))
@@ -390,10 +395,11 @@
 
   The optional `opts` map has these keys:
 
-  * `:normalise-gpl-ids?` (`boolean`, default `true`) - controls whether
-    deprecated 'historical oddity' GPL family ids in the expression are
-    normalised to their non-deprecated replacements as part of the parsing
-    process.
+  * `:normalise-deprecated-ids?` (`boolean`, default `true`) - controls whether
+    deprecated ids in the expression are normalised to their non-deprecated
+    equivalents (where possible) as part of the parsing process. This applies to
+    the GPL family of license ids, the `AGPL-1.0` and `StandardML-NJ` license
+    ids and the `Nokia-Qt-exception-1.1` license exception id.
   * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
     operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
@@ -407,6 +413,10 @@
     the parse tree for `Apache-2.0 OR MIT` would be identical to the parse tree
     for `MIT OR Apache-2.0`.
 
+  Deprecated & no-longer-supported `opts`:
+
+  * `:normalise-gpl-ids?` - superceded by `:normalise-deprecated-ids?`
+
   Notes:
 
   * The parser always normalises SPDX ids to their canonical case
@@ -419,8 +429,8 @@
     for details).
   * The default `opts` result in parsing that is more lenient than the SPDX
     specification and is therefore not strictly spec compliant.  You can enable
-    strictly spec compliant parsing by setting `normalise-gpl-ids?` to `false`
-    and `case-sensitive-operators?` to `true`.
+    strictly spec compliant parsing by setting `normalise-deprecated-ids?` to
+    `false` and `case-sensitive-operators?` to `true`.
 
   Examples (assuming default options):
 
@@ -432,7 +442,7 @@
   {:license-id \"Apache-2.0\" :or-later? true}  ; Note id case correction
 
   (parse \"GPL-2.0+\")
-  {:license-id \"GPL-2.0-or-later\"}  ; Note GPL-family id normalisation
+  {:license-id \"GPL-2.0-or-later\"}  ; Note deprecated id normalisation
 
   (parse \"GPL-2.0 WITH Classpath-exception-2.0\")
   {:license-id \"GPL-2.0-only\"
@@ -454,11 +464,11 @@
    :addition-ref \"bar\"}
   ```"
   ([s] (parse s nil))
-  ([s {:keys [normalise-gpl-ids?
+  ([s {:keys [normalise-deprecated-ids?
               case-sensitive-operators?
               collapse-redundant-clauses?
               sort-licenses?]
-         :or {normalise-gpl-ids?          true
+         :or {normalise-deprecated-ids?   true
               case-sensitive-operators?   false
               collapse-redundant-clauses? true
               sort-licenses?              true}
