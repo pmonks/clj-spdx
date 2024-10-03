@@ -65,6 +65,10 @@
     (is (instance? java.util.Map (id->info "Apache-2.0"))))
   (testing "Expected keys are present"
     (is (equivalent-colls? (keys (id->info "Apache-2.0"))
+                           [:name :cross-refs :id :fsf-libre? :see-also :osi-approved?]))
+    (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? false}))
+                           [:name :cross-refs :id :fsf-libre? :see-also :osi-approved?]))
+    (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? true}))
                            [:text-template :text-html :header-template :name :cross-refs :header :header-html :id :comment :fsf-libre? :see-also :osi-approved? :text])))
   (testing "Select keys have expected values"
     (let [info (id->info "Apache-2.0")]

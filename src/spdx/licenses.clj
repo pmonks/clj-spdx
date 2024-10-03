@@ -52,11 +52,11 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `true`) - controls whether the
+  * `:include-large-text-values?` (default `false`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template :header :header-html :header-template`"
   ([^String id] (id->info id nil))
-  ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? true} :as opts}]
+  ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
            im/id->license
            (im/license->map opts))))

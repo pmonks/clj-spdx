@@ -106,11 +106,11 @@
   for more information.
 
   `opts` are:
-  * `:include-large-text-values?` (default `true`) - controls whether the
+  * `:include-large-text-values?` (default `false`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template :header :header-html :header-template`"
   ^java.util.Map [^org.spdx.library.model.license.SpdxListedLicense lic
-                  {:keys [include-large-text-values?] :or {include-large-text-values? true}}]
+                  {:keys [include-large-text-values?] :or {include-large-text-values? false}}]
   (when lic
     (merge (value-to-map :id                 (.getLicenseId                     lic))
            (value-to-map :name               (.getName                          lic) nil-blank-string)
@@ -153,11 +153,11 @@
   for more information.
 
   `opts` are:
-  * `:include-large-text-values?` (default `true`) - controls whether the
+  * `:include-large-text-values?` (default `false`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template`"
   ^java.util.Map [^org.spdx.library.model.license.ListedLicenseException exc
-                  {:keys [include-large-text-values?] :or {include-large-text-values? true}}]
+                  {:keys [include-large-text-values?] :or {include-large-text-values? false}}]
 
   (when exc
     (merge (value-to-map :id                 (.getLicenseExceptionId exc))

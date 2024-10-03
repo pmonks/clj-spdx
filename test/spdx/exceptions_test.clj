@@ -63,6 +63,10 @@
     (is (instance? java.util.Map (id->info "Classpath-exception-2.0"))))
   (testing "Expected keys are present"
     (is (equivalent-colls? (keys (id->info "Classpath-exception-2.0"))
+                           [:id :name :see-also]))
+    (is (equivalent-colls? (keys (id->info "Classpath-exception-2.0" {:include-large-text-values? false}))
+                           [:id :name :see-also]))
+    (is (equivalent-colls? (keys (id->info "Classpath-exception-2.0" {:include-large-text-values? true}))
                            [:id :name :see-also :text :text-html :text-template])))
   (testing "Select keys have expected values"
     (let [info (id->info "Classpath-exception-2.0")]
