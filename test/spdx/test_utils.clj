@@ -27,7 +27,8 @@
 (println "ℹ️ These unit tests take several minutes to complete, in the best case")
 
 (defn equivalent-colls?
-  "Are all of the colls 'equivalent' (same values and occurrences of each value, but in any order and regardless of concrete collection type)?"
+  "Are all of the colls 'equivalent' (same values and occurrences of each value,
+  but in any order and regardless of concrete collection type)?"
   [& colls]
   (apply = (map frequencies colls)))
 
