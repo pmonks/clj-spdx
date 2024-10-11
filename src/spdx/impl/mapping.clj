@@ -52,12 +52,12 @@
 (defn listed-license-id?
   "Is the given id one of the listed SPDX license identifiers?"
   [^String id]
-  (when id (.isSpdxListedLicenseId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  (boolean (when id (.isSpdxListedLicenseId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id))))
 
 (defn listed-exception-id?
   "Is the given id one of the listed SPDX exception identifiers?"
   [^String id]
-  (when id (.isSpdxListedExceptionId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  (boolean (when id (.isSpdxListedExceptionId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id))))
 
 (defn cross-ref->map
   "Turns a org.spdx.library.model.license.CrossRef object into a map. All map
