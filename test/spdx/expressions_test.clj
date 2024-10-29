@@ -395,8 +395,7 @@
     (is (nil? (extract-ids nil))))
   (testing "Simple parse results"
     (is (= (extract-ids {:license-id "Apache-2.0"})                               #{"Apache-2.0"}))
-    (is (= (extract-ids [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"}))
-    (is (= (extract-ids [[[[{:license-id "Apache-2.0"}]]]])                       #{"Apache-2.0"})))
+    (is (= (extract-ids [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"})))
   (testing "Include or later"
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? false}) #{"GPL-2.0"}))
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? true})  #{"GPL-2.0+"})))

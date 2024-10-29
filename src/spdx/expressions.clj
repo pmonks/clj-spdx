@@ -532,7 +532,8 @@
         (not result)))))
 
 (defn extract-ids
-  "Extract all SPDX ids (as a set of `String`s) from `parse-tree`.
+  "Extract all SPDX ids (as a set of `String`s) from `parse-tree`.  Results are
+  undefined for invalid parse trees.
 
   The optional `opts` map has these keys:
 
@@ -540,15 +541,13 @@
     includes the 'or later' indicator (`+`) after license ids that have that
     designation in the parse tree."
   ([parse-tree] (extract-ids parse-tree nil))
-  ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false} :as opts}]
-   (when parse-tree
-     (cond
-       (sequential? parse-tree) (set (mapcat #(extract-ids % opts) parse-tree))  ; Note: naive (stack consuming) recursion
-       (map?        parse-tree) (set/union (when (:license-id           parse-tree) #{(str (:license-id parse-tree) (when (and include-or-later? (:or-later? parse-tree)) "+"))})
-                                             (when (:license-exception-id parse-tree) #{(:license-exception-id parse-tree)})
-                                             (when (:license-ref          parse-tree) #{(license-ref->string parse-tree)})
-                                             (when (:addition-ref         parse-tree) #{(addition-ref->string parse-tree)}))
-       :else        nil))))
+  ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false}}]
+   (walk {:license-fn #(into #{} (filter identity [(when (:license-id           %) (str (:license-id %) (when (and include-or-later? (:or-later? %)) "+")))
+                                                   (when (:license-exception-id %) (:license-exception-id %))
+                                                   (when (:license-ref          %) (license-ref->string   %))
+                                                   (when (:addition-ref         %) (addition-ref->string  %))]))
+          :group-fn   #(not-empty (into #{} cat (rest %2)))}  ; Strip leading operator keyword then flatten the rest (%2 is a 2-level nested sequence) and put in a set
+         parse-tree)))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
