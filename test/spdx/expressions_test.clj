@@ -42,6 +42,7 @@
     (is (nil? (parse "DocumentRef-:LicenseRef-")))                    ; DocumentRef and LicenseRef without ids
     (is (nil? (parse "LicenseRef-this:is:invalid")))                  ; Invalid characters in LicenseRef id
     (is (nil? (parse "LicenseRef-also_invalid")))                     ; Invalid characters in LicenseRef id
+    (is (nil? (parse "LicenseRef-foo+")))                             ; Cannot use + with LicenseRefs
     (is (nil? (parse "DocumentRef-also_invalid:LicenseRef-foo")))     ; Invalid characters in DocumentRef id
     (is (nil? (parse "((Apache-2.0")))                                ; Mismatched parens
     (is (nil? (parse "Apache-2.0))")))                                ; Mismatched parens
@@ -54,6 +55,8 @@
     (is (nil? (parse "GPL-2.0 (WITH) Classpath-Exception-2.0")))      ; Bad nesting (parens)
     (is (nil? (parse "GPL-2.0 (WITH Classpath-Exception-2.0)")))      ; Bad nesting (parens)
     (is (nil? (parse "GPL-2.0 WITH (Classpath-Exception-2.0)")))      ; Bad nesting (parens)
+    (is (nil? (parse "GPL-2.0 WITH Classpath-Exception-2.0+")))       ; Cannot use + with license exceptions
+    (is (nil? (parse "GPL-2.0 WITH AdditionRef-foo+")))               ; Cannot use + with AdditionRefs
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
     (is (nil? (parse "AdditionRef-foo")))                             ; AdditionRef without  "<license> WITH " first
     (is (nil? (parse "DocumentRef-foo:AdditionRef-bar")))             ; AdditionRef without  "<license> WITH " first
