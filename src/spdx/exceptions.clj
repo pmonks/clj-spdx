@@ -32,7 +32,7 @@
   (im/listed-exception-id? id))
 
 (defn addition-ref?
-  "Is `id` an `AdditionRef`?"
+  "Is `id` an `AdditionRef`?  Returns `nil` if `id` is `nil`."
   [id]
   (when id
     (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id))))
@@ -54,7 +54,8 @@
            (im/exception->map opts))))
 
 (defn deprecated-id?
-  "Is `id` deprecated?
+  "Is `id` deprecated?  Returns `nil` if `id` is not in the SPDX license
+  exception list.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."

@@ -32,7 +32,7 @@
   (im/listed-license-id? id))
 
 (defn license-ref?
-  "Is `id` a `LicenseRef`?"
+  "Is `id` a `LicenseRef`?  Returns `nil` if `id` is `nil`."
   [id]
   (when id
     (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?LicenseRef-[\p{Alnum}-\.]+" id))))
@@ -54,7 +54,7 @@
            (im/license->map opts))))
 
 (defn deprecated-id?
-  "Is `id` deprecated?
+  "Is `id` deprecated?  Returns `nil` if `id` is not in the SPDX license list.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."
@@ -71,8 +71,7 @@
                  set)))
 
 (defn osi-approved-id?
-  "Is `id` OSI Approved?  Returns `nil` if `id` is unlisted, or OSI Approval is
-  undefined in the SPDX license list for this license id.
+  "Is `id` OSI Approved?  Returns `nil` if `id` is not in the SPDX license list.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'OSI Approved' means."
@@ -92,8 +91,7 @@
                  set)))
 
 (defn fsf-libre-id?
-  "Is `id` FSF Libre?  Returns `nil` if `id` is unlisted, or FSF Libre status is
-  undefined in the SPDX license list.
+  "Is `id` FSF Libre?  Returns `nil` if `id` is not in the SPDX license list.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'FSF Libre' means."
