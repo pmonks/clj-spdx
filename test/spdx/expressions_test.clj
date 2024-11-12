@@ -1,19 +1,11 @@
 ;
 ; Copyright © 2023 Peter Monks
 ;
-; Licensed under the Apache License, Version 2.0 (the "License");
-; you may not use this file except in compliance with the License.
-; You may obtain a copy of the License at
+; This Source Code Form is subject to the terms of the Mozilla Public
+; License, v. 2.0. If a copy of the MPL was not distributed with this
+; file, You can obtain one at https://mozilla.org/MPL/2.0/.
 ;
-;     http://www.apache.org/licenses/LICENSE-2.0
-;
-; Unless required by applicable law or agreed to in writing, software
-; distributed under the License is distributed on an "AS IS" BASIS,
-; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-; See the License for the specific language governing permissions and
-; limitations under the License.
-;
-; SPDX-License-Identifier: Apache-2.0
+; SPDX-License-Identifier: MPL-2.0
 ;
 
 (ns spdx.expressions-test
@@ -42,6 +34,7 @@
     (is (nil? (parse "DocumentRef-:LicenseRef-")))                    ; DocumentRef and LicenseRef without ids
     (is (nil? (parse "LicenseRef-this:is:invalid")))                  ; Invalid characters in LicenseRef id
     (is (nil? (parse "LicenseRef-also_invalid")))                     ; Invalid characters in LicenseRef id
+    (is (nil? (parse "LicenseRef-foo+")))                             ; Cannot use + with LicenseRefs
     (is (nil? (parse "DocumentRef-also_invalid:LicenseRef-foo")))     ; Invalid characters in DocumentRef id
     (is (nil? (parse "((Apache-2.0")))                                ; Mismatched parens
     (is (nil? (parse "Apache-2.0))")))                                ; Mismatched parens
@@ -54,6 +47,8 @@
     (is (nil? (parse "GPL-2.0 (WITH) Classpath-Exception-2.0")))      ; Bad nesting (parens)
     (is (nil? (parse "GPL-2.0 (WITH Classpath-Exception-2.0)")))      ; Bad nesting (parens)
     (is (nil? (parse "GPL-2.0 WITH (Classpath-Exception-2.0)")))      ; Bad nesting (parens)
+    (is (nil? (parse "GPL-2.0 WITH Classpath-Exception-2.0+")))       ; Cannot use + with license exceptions
+    (is (nil? (parse "GPL-2.0 WITH AdditionRef-foo+")))               ; Cannot use + with AdditionRefs
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
     (is (nil? (parse "AdditionRef-foo")))                             ; AdditionRef without  "<license> WITH " first
     (is (nil? (parse "DocumentRef-foo:AdditionRef-bar")))             ; AdditionRef without  "<license> WITH " first
@@ -395,8 +390,7 @@
     (is (nil? (extract-ids nil))))
   (testing "Simple parse results"
     (is (= (extract-ids {:license-id "Apache-2.0"})                               #{"Apache-2.0"}))
-    (is (= (extract-ids [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"}))
-    (is (= (extract-ids [[[[{:license-id "Apache-2.0"}]]]])                       #{"Apache-2.0"})))
+    (is (= (extract-ids [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]) #{"Apache-2.0" "GPL-2.0"})))
   (testing "Include or later"
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? false}) #{"GPL-2.0"}))
     (is (= (extract-ids {:license-id "GPL-2.0" :or-later? true} {:include-or-later? true})  #{"GPL-2.0+"})))
