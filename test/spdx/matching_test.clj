@@ -50,7 +50,7 @@
 
 
 ; 3rd party software with single licenses
-(def clj-spdx-license                (delay (slurp (http-get "https://raw.githubusercontent.com/pmonks/clj-spdx/main/LICENSE"))))                 ; Apache-2.0
+(def clj-spdx-license                (delay (slurp (http-get "https://raw.githubusercontent.com/pmonks/clj-spdx/main/LICENSE"))))                 ; MPL-2.0
 (def commonmark-java-license         (delay (slurp (http-get "https://raw.githubusercontent.com/commonmark/commonmark-java/main/LICENSE.txt"))))  ; BSD-2-Clause
 
 ; Dual license texts
@@ -106,7 +106,7 @@
 ;    (is (true?  (text-is-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
     )
   (testing "Exactly matching 3rd party license texts"
-    (is (true?  (text-is-license? @clj-spdx-license        "Apache-2.0")))
+    (is (true?  (text-is-license? @clj-spdx-license        "MPL-2.0")))
     (is (true?  (text-is-license? @commonmark-java-license "BSD-2-Clause")))))
 
 (deftest text-is-exception?-tests
@@ -164,7 +164,7 @@
 ;    (is (true?  (text-contains-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
     )
   (testing "3rd party license text contains license"
-    (is (true?  (text-contains-license? @clj-spdx-license        "Apache-2.0")))
+    (is (true?  (text-contains-license? @clj-spdx-license        "MPL-2.0")))
     (is (true?  (text-contains-license? @commonmark-java-license "BSD-2-Clause"))))
   (testing "Larger texts with junk characters contain licenses"
     (is (true?  (text-contains-license? (str "ABCD\n" @apache-20-text          "\nEFGH") "Apache-2.0")))
@@ -172,7 +172,7 @@
 ;    (is (true?  (text-contains-license? (str "ABCD\n" @cc-by-40-text           "\nEFGH") "CC-BY-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
     (is (true?  (text-contains-license? (str "ABCD\n" @mpl-20-text             "\nEFGH") "MPL-2.0")))
 ;    (is (true?  (text-contains-license? (str "ABCD\n" @mit-text                "\nEFGH") "MIT")))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
-    (is (true?  (text-contains-license? (str "ABCD\n" @clj-spdx-license        "\nEFGH") "Apache-2.0")))
+    (is (true?  (text-contains-license? (str "ABCD\n" @clj-spdx-license        "\nEFGH") "MPL-2.0")))
     (is (true?  (text-contains-license? @jffi-text                                       "Apache-2.0")))
     (is (true?  (text-contains-license? @jffi-text                                       "LGPL-3.0-or-later")))
     (is (true?  (text-contains-license? (str "ABCD\n" @commonmark-java-license "\nEFGH") "BSD-2-Clause")))))
@@ -205,7 +205,7 @@
     (is (false? (texts-equivalent-licenses? nil @clj-spdx-license)))
     (is (false? (texts-equivalent-licenses? "" @clj-spdx-license))))
   (testing "Equivalent license texts"
-    (is (true?  (texts-equivalent-licenses? @apache-20-text @clj-spdx-license)))))
+    (is (true?  (texts-equivalent-licenses? @mpl-20-text @clj-spdx-license)))))
 
 (deftest texts-equivalent-exceptions?-tests
   (testing "nil, empty string"
@@ -257,7 +257,7 @@
 ;    (is (= (licenses-within-text @mit-text             #{"MIT"})))             ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
     )
   (testing "Matching 3rd party license texts that only contain a single license"
-    (is (= (licenses-within-text @clj-spdx-license)        #{"Apache-2.0"}))
+    (is (= (licenses-within-text @clj-spdx-license)        #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
     (is (= (licenses-within-text @commonmark-java-license) #{"BSD-2-Clause"})))
   (testing "Matching larger texts with junk characters and a single license"
     (is (= (licenses-within-text (str "ABCD\n" @apache-20-text          "\nEFGH")) #{"Apache-2.0"}))
@@ -266,7 +266,7 @@
     (is (= (licenses-within-text (str "ABCD\n" @mpl-20-text             "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
 ;    (is (= (licenses-within-text (str "ABCD\n" @mit-text                "\nEFGH")) #{"MIT"}))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
     (is (= (licenses-within-text (str "ABCD\n" @wtfpl-text              "\nEFGH")) #{"WTFPL"}))
-    (is (= (licenses-within-text (str "ABCD\n" @clj-spdx-license        "\nEFGH")) #{"Apache-2.0"}))
+    (is (= (licenses-within-text (str "ABCD\n" @clj-spdx-license        "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
     (is (= (licenses-within-text (str "ABCD\n" @commonmark-java-license "\nEFGH")) #{"BSD-2-Clause"})))
   (testing "Matching larger texts with multiple licenses and (optionally) other text (e.g. exceptions) that shouldn't match"
     (is (= (licenses-within-text @apache-20-gpl-30-text)              #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))

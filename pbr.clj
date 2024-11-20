@@ -28,4 +28,5 @@
                         :issue-management {:system "github" :url "https://github.com/pmonks/clj-spdx/issues"}}
          :codox        {:namespaces ['spdx.exceptions 'spdx.expressions 'spdx.licenses 'spdx.matching]
                         :metadata   {:doc/format :markdown}}
-         :test-deps    {'com.github.pmonks/urlocal {:mvn/version "RELEASE"}}))
+         :test-deps    {'com.github.pmonks/urlocal {:mvn/version "RELEASE"}
+                        'com.github.pmonks/rencg   {:mvn/version "RELEASE"}}))

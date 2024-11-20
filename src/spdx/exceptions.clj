@@ -11,7 +11,8 @@
 (ns spdx.exceptions
   "Exception list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
   (:require [spdx.impl.state   :as is]
-            [spdx.impl.mapping :as im]))
+            [spdx.impl.mapping :as im]
+            [spdx.impl.regexes :as ir]))
 
 (defn version
   "The version of the exception list (a `String` in major.minor format).
@@ -31,11 +32,12 @@
   [^String id]
   (im/listed-exception-id? id))
 
+(def ^:private addition-ref-re-d (delay (ir/re-concat #"(?i)\A" @ir/addition-ref-re-d #"\z")))
+
 (defn addition-ref?
-  "Is `id` an `AdditionRef`?  Returns `nil` if `id` is `nil`."
+  "Is `id` an `AdditionRef`?"
   [id]
-  (when id
-    (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?AdditionRef-[\p{Alnum}-\.]+" id))))
+  (boolean (when id (re-matches @addition-ref-re-d id))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
@@ -54,14 +56,13 @@
            (im/exception->map opts))))
 
 (defn deprecated-id?
-  "Is `id` deprecated?  Returns `nil` if `id` is not in the SPDX license
+  "Is `id` deprecated?  Also returns `false` if `id` is not in the SPDX license
   exception list.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."
   [^String id]
-  (when (listed-id? id)
-    (boolean (:deprecated? (id->info id)))))
+  (boolean (when (listed-id? id) (:deprecated? (id->info id)))))
 
 (defn non-deprecated-ids
   "Returns the set of exception ids that identify current (non-deprecated)
@@ -80,7 +81,9 @@
   Note: this method may have a substantial performance cost."
   []
   (is/init!)
+  (ir/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
   ; Note: using embroidery's pmap* function has been found to be counter-productive here
   (doall (pmap id->info (ids)))
+  @addition-ref-re-d
   nil)
