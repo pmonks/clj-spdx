@@ -26,6 +26,7 @@
                                            :developer-connection "scm:git:ssh://git@github.com/pmonks/clj-spdx.git"
                                            :tag                  (tc/git-tag-or-hash)}
                         :issue-management {:system "github" :url "https://github.com/pmonks/clj-spdx/issues"}}
-         :codox        {:namespaces ['spdx.exceptions 'spdx.expressions 'spdx.licenses 'spdx.matching]
+         :codox        {:namespaces ['spdx.exceptions 'spdx.expressions 'spdx.licenses 'spdx.matching 'spdx.regexes]
                         :metadata   {:doc/format :markdown}}
-         :test-deps    {'com.github.pmonks/urlocal {:mvn/version "RELEASE"}}))
+         :test-deps    {'com.github.pmonks/urlocal {:mvn/version "RELEASE"}
+                        'com.github.pmonks/rencg   {:mvn/version "RELEASE"}}))
