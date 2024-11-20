@@ -11,7 +11,8 @@
 (ns spdx.licenses
   "License list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
   (:require [spdx.impl.state   :as is]
-            [spdx.impl.mapping :as im]))
+            [spdx.impl.mapping :as im]
+            [spdx.impl.regexes :as ir]))
 
 (defn version
   "The version of the license list (a `String` in major.minor format).
@@ -31,11 +32,12 @@
   [^String id]
   (im/listed-license-id? id))
 
+(def ^:private license-ref-re-d (delay (ir/re-concat #"(?i)\A" @ir/license-ref-re-d #"\z")))
+
 (defn license-ref?
   "Is `id` a `LicenseRef`?"
   [id]
-  (when id
-    (boolean (re-matches #"(DocumentRef-[\p{Alnum}-\.]+:)?LicenseRef-[\p{Alnum}-\.]+" id))))
+  (boolean (when id (re-matches @license-ref-re-d id))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
@@ -54,13 +56,12 @@
            (im/license->map opts))))
 
 (defn deprecated-id?
-  "Is `id` deprecated?
+  "Is `id` deprecated?  Also returns `false` if `id` is not in the SPDX license list.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."
   [^String id]
-  (when (listed-id? id)
-    (boolean (:deprecated? (id->info id)))))
+  (boolean (when (listed-id? id) (:deprecated? (id->info id)))))
 
 (defn non-deprecated-ids
   "Returns the set of license ids that identify current (non-deprecated)
@@ -71,14 +72,12 @@
                  set)))
 
 (defn osi-approved-id?
-  "Is `id` OSI Approved?  Returns `nil` if `id` is unlisted, or OSI Approval is
-  undefined in the SPDX license list for this license id.
+  "Is `id` OSI Approved?  Also returns `false` if `id` is not in the SPDX license list.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'OSI Approved' means."
   [^String id]
-  (when (listed-id? id)
-    (boolean (:osi-approved? (id->info id)))))
+  (boolean (when (listed-id? id) (:osi-approved? (id->info id)))))
 
 (defn osi-approved-ids
   "Returns the set of SPDX license ids that identify OSI Approved licenses
@@ -92,14 +91,12 @@
                  set)))
 
 (defn fsf-libre-id?
-  "Is `id` FSF Libre?  Returns `nil` if `id` is unlisted, or FSF Libre status is
-  undefined in the SPDX license list.
+  "Is `id` FSF Libre?  Also returns `false` if `id` is not in the SPDX license list.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'FSF Libre' means."
   [^String id]
-  (when (listed-id? id)
-    (boolean (:fsf-libre? (id->info id)))))
+  (boolean (when (listed-id? id) (:fsf-libre? (id->info id)))))
 
 (defn fsf-libre-ids
   "Returns the set of SPDX license ids that identify FSF Libre licenses within
@@ -121,7 +118,9 @@
   Note: this method may have a substantial performance cost."
   []
   (is/init!)
+  (ir/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
   ; Note: using embroidery's pmap* function has been found to be counter-productive here
   (doall (pmap id->info (ids)))
+  @license-ref-re-d
   nil)

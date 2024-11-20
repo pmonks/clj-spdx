@@ -28,21 +28,25 @@
 
 (deftest listed-id?-tests
   (testing "Common ids are present"
-    (is (listed-id? "Classpath-exception-2.0"))
-    (is (listed-id? "GPL-3.0-linking-exception"))
-    (is (listed-id? "Linux-syscall-note")))
+    (is (true? (listed-id? "Classpath-exception-2.0")))
+    (is (true? (listed-id? "GPL-3.0-linking-exception")))
+    (is (true? (listed-id? "Linux-syscall-note"))))
   (testing "Made up ids are not present"
-    (is (not (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))))
+    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))))
 
 (deftest addition-ref?-tests
-  (testing "Invalid AdditionRefs return nil"
-    (is (not (addition-ref? nil)))
-    (is (not (addition-ref? "")))
-    (is (not (addition-ref? "INVALID-ADDITION-REF"))))
+  (testing "Invalid AdditionRefs return false"
+    (is (false? (addition-ref? nil)))
+    (is (false? (addition-ref? "")))
+    (is (false? (addition-ref? "INVALID-ADDITION-REF")))
+    (is (false? (addition-ref? " AdditionRef-foo")))                   ; Leading whitespace
+    (is (false? (addition-ref? "AdditionRef-foo ")))                   ; Trailing whitespace
+    (is (false? (addition-ref? "AdditionRef-%#^*")))                   ; Invalid characters in AdditionRef tag
+    (is (false? (addition-ref? "DocumentRef-%#^*:AdditionRef-bar"))))  ; Invalid characters in DocumentRef tag
   (testing "Valid AdditionRefs"
-    (is (addition-ref? "AdditionRef-foo"))
-    (is (addition-ref? "DocumentRef-foo:AdditionRef-bar"))
-    (is (addition-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:AdditionRef-0123456789-.abcdefgABCDEFG"))))
+    (is (true? (addition-ref? "AdditionRef-foo")))
+    (is (true? (addition-ref? "DocumentRef-foo:AdditionRef-bar")))
+    (is (true? (addition-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:AdditionRef-0123456789-.abcdefgABCDEFG")))))
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"
@@ -63,14 +67,14 @@
   (testing "Select keys have expected values"
     (let [info (id->info "Classpath-exception-2.0")]
       (is (=           (:name        info) "Classpath exception 2.0"))
-      (is (not         (:deprecated? info)))
+      (is (nil?        (:deprecated? info)))
       (is (pos? (count (:see-also    info)))))))
 
 (deftest deprecated-id?-tests
   (testing "Invalid ids return nil"
-    (is (nil? (deprecated-id? nil)))
-    (is (nil? (deprecated-id? "")))
-    (is (nil? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (deprecated-id? nil)))
+    (is (false? (deprecated-id? "")))
+    (is (false? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Deprecated ids"
     (is (true? (deprecated-id? "Nokia-Qt-exception-1.1"))))
   (testing "Non-deprecated ids"
