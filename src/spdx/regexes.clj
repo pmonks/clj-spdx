@@ -26,23 +26,23 @@
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn build-re
-  "Returns a regex (`Pattern`) that will match the given `ids`, or `nil` if
-  `ids` is `nil` or empty.  `ids` appear sorted longest to shortest in the regex,
-  so that more specific values are preferentially matched - this avoids
-  mismatches when one id is a subset of another id (e.g. `GPL-2.0` and
-  `GPL-2.0-or-later`).
+  "Returns a regex (`Pattern`) that will match the given `ids` (a sequence of
+  `String`s), or `nil` if `ids` is `nil` or empty.  `ids` appear in the regex
+  sorted from longest to shortest, so that more specific values are
+  preferentially matched first - this avoids mismatches when one id is a subset
+  of another id (e.g. `GPL-2.0` and `GPL-2.0-or-later`).
 
   `opts` are:
 
-  * `match-license-refs?` (default `false`) - controls whether LicenseRef
+  * `match-license-refs?` (default `false`) - controls whether `LicenseRef`
     matching is also included in the regex
-  * `match-addition-refs?` (default `false`) - controls whether AdditionRef
+  * `match-addition-refs?` (default `false`) - controls whether `AdditionRef`
     matching is also included in the regex
 
   Note:
 
-  * unlike other fns in this ns, this one returns a new `Pattern` object on
-    every invocation, even if the args are the same as a previous one"
+  * _unlike_ other fns in this ns, this one returns a new `Pattern` object on
+    every invocation, even if the arguments are the same"
   ([ids] (build-re ids nil))
   ([ids {:keys [match-license-refs? match-addition-refs?]
          :or   {match-license-refs?  false
@@ -61,16 +61,18 @@
 
 (defn ids-re
   "Returns a regex (`Pattern`) that matches any SPDX license identifier,
-  exception identifier, LicenseRef, or AdditionRef.  The regex provides these
-  named capturing groups:
+  exception identifier, `LicenseRef`, or `AdditionRef`.  The regex provides
+  these named capturing groups:
 
-  * `Identifier` (always present) - matches the entire identifier
-  * `DocumentRef` (optional) - matches the DocumentRef tag of a LicenseRef, if
-    it contains one
-  * `LicenseRef` (optional) - matches the LicenseRef tag of a LicenseRef
-  * `AdditionDocumentRef` (optional) - matches the DocumentRef tag of an
-    AdditionRef, if it contains one
-  * `AdditionRef` (optional) - matches the AdditionRef tag of an AdditionRef
+  * `Identifier` (always present) - captures the entire identifier, `LicenseRef`
+    or `AdditionRef`
+  * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
+    if it contains one
+  * `LicenseRef` (optional) - captures the `LicenseRef` tag of a `LicenseRef`
+  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
+    `AdditionRef`, if it contains one
+  * `AdditionRef` (optional) - captures the `AdditionRef` tag of an
+    `AdditionRef`
 
   Notes:
 
@@ -83,12 +85,13 @@
 
 (defn license-ids-re
   "Returns a regex (`Pattern`) that matches any SPDX license identifier or
-  LicenseRef.  The regex provides these named capturing groups:
+  `LicenseRef`.  The regex provides these named capturing groups:
 
-  * `Identifier` (always present) - matches the entire identifier
-  * `DocumentRef` (optional) - matches the DocumentRef tag of a LicenseRef, if
-    it contains one
-  * `LicenseRef` (optional) - matches the LicenseRef tag of a LicenseRef
+  * `Identifier` (always present) - captures the entire identifier or
+    `LicenseRef`
+  * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
+    if it contains one
+  * `LicenseRef` (optional) - captures the `LicenseRef` tag of a `LicenseRef`
 
   Notes:
 
@@ -103,10 +106,11 @@
   "Returns a regex (`Pattern`) that matches any SPDX exception identifier or
   AdditionRef.  The regex provides these named capturing groups:
 
-  * `Identifier` (always present) - matches the entire identifier
-  * `AdditionDocumentRef` (optional) - matches the DocumentRef tag of an
-    AdditionRef, if it contains one
-  * `AdditionRef` (optional) - matches the AdditionRef tag of an AdditionRef
+  * `Identifier` (always present) - captures the entire identifier or
+    `AdditionRef`
+  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
+    `AdditionRef`, if it contains one
+  * `AdditionRef` (optional) - captures the `AdditionRef` tag of an `AdditionRef`
 
   Notes:
 
@@ -120,12 +124,13 @@
                                                      #"(\b|\z)")))
 
 (defn license-ref-re
-  "Returns a regex (`Pattern`) that matches any SPDX LicenseRef.  The regex
+  "Returns a regex (`Pattern`) that matches any SPDX `LicenseRef`.  The regex
   provides these named capturing groups:
 
-  * `DocumentRef` (optional) - matches the DocumentRef tag of a LicenseRef, if
-    it contains one
-  * `LicenseRef` (always present) - matches the LicenseRef tag of a LicenseRef
+  * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
+    if it contains one
+  * `LicenseRef` (always present) - captures the `LicenseRef` tag of a
+    `LicenseRef`
 
   Notes:
 
@@ -139,15 +144,16 @@
                                                       #"(\b|\z)")))
 
 (defn addition-ref-re
- "Returns a regex (`Pattern`) that matches any SPDX AdditionRef.  The regex
+ "Returns a regex (`Pattern`) that matches any SPDX `AdditionRef`.  The regex
  provides these named capturing groups:
 
-  * `AdditionDocumentRef` (optional) - matches the DocumentRef tag of an
-    AdditionRef, if it contains one
-  * `AdditionRef` (always present) - matches the AdditionRef tag of an
-    AdditionRef
+  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
+    `AdditionRef`, if it contains one
+  * `AdditionRef` (always present) - captures the `AdditionRef` tag of an
+    `AdditionRef`
 
   Notes:
+
   * returns the same `Pattern` object on subsequent calls, so is efficient when
     called many times"
   []

@@ -120,7 +120,12 @@
     (is (= 0 (count (re-seq (ids-re) "foobar"))))
     (is (= 1 (count (re-seq (ids-re) "MIT"))))
     (is (= 2 (count (re-seq (ids-re) "foo MIT bar X11 blah"))))
-    (is (= 4 (count (re-seq (ids-re) "foo;Apache-2.0 bar DocumentRef-foo:LicenseRef-bar Beerware blah DocumentRef-foo:AdditionRef-bar blahblah"))))))
+    (is (= 4 (count (re-seq (ids-re) "foo;Apache-2.0 bar DocumentRef-foo:LicenseRef-bar Beerware blah DocumentRef-foo:AdditionRef-bar blahblah")))))
+  (testing "Matches for identifiers that are supersets of other identifiers"
+    (let [m (rencg/re-matches-ncg (ids-re) "GPL-2.0-or-later")]
+      (is (= "GPL-2.0-or-later" (get m "Identifier"))))
+    (let [m (rencg/re-matches-ncg (ids-re) "CC-BY-3.0-AU")]
+      (is (= "CC-BY-3.0-AU" (get m "Identifier"))))))
 
 ; We keep these short as most variations are exercised via build-re-test
 (deftest license-ids-re-tests
