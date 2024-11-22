@@ -23,7 +23,7 @@
                  \{ "\\{"
                  \\ "\\\\"
                  \^ "\\^"
-                 \- "\\-"
+                 \- "\\-"  ; Technically hyphen only needs to be escaped inside a class (#"[...]"), but there's no harm in (redundantly) escaping it outside a class
                  \= "\\="
                  \$ "\\$"
                  \! "\\!"
@@ -41,7 +41,7 @@
 (defn re-concat
   "Concatenate all of the given `Pattern`s or `String`s into a single `Pattern`."
   [& res]
-  (re-pattern (s/join res)))
+  (re-pattern (s/join (filter identity res))))
 
 (defn re-alternation
   "Builds a regex group containing alternations of value of everything in

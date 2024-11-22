@@ -26,43 +26,10 @@
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn build-re
-  "Returns a regex (`Pattern`) that will match the given `ids` (a sequence of
-  `String`s), or `nil` if `ids` is `nil` or empty.  `ids` appear in the regex
-  sorted from longest to shortest, so that more specific values are
-  preferentially matched first - this avoids mismatches when one id is a subset
-  of another id (e.g. `GPL-2.0` and `GPL-2.0-or-later`).
+  "Returns a regex (`Pattern`) that can find or match the given SPDX `ids` (a
+  sequence of `String`s) in a source text. Returns `nil` if `ids` is `nil` or empty.
 
-  `opts` are:
-
-  * `match-license-refs?` (default `false`) - controls whether `LicenseRef`
-    matching is also included in the regex
-  * `match-addition-refs?` (default `false`) - controls whether `AdditionRef`
-    matching is also included in the regex
-
-  Note:
-
-  * _unlike_ other fns in this ns, this one returns a new `Pattern` object on
-    every invocation, even if the arguments are the same"
-  ([ids] (build-re ids nil))
-  ([ids {:keys [match-license-refs? match-addition-refs?]
-         :or   {match-license-refs?  false
-                match-addition-refs? false}
-         :as   opts}]
-   (when (seq ids)
-     (ir/re-concat #"(?i)(\A|\b)"
-                   "(?<Identifier>"
-                   (when match-license-refs? (str @ir/license-ref-re-d "|"))
-                   (when match-addition-refs? (str @ir/addition-ref-re-d "|"))
-                   (s/join "|" (map ir/re-escape (sort-by-count-desc ids)))
-                   ")"
-                   #"(\b|\z)"))))
-
-(def ^:private ids-re-d (delay (build-re (concat (slic/ids) (sexc/ids)) {:match-license-refs? true :match-addition-refs? true})))
-
-(defn ids-re
-  "Returns a regex (`Pattern`) that matches any SPDX license identifier,
-  exception identifier, `LicenseRef`, or `AdditionRef`.  The regex provides
-  these named capturing groups:
+  The regex provides these named capturing groups:
 
   * `Identifier` (always present) - captures the entire identifier, `LicenseRef`
     or `AdditionRef`
@@ -74,54 +41,98 @@
   * `AdditionRef` (optional) - captures the `AdditionRef` tag of an
     `AdditionRef`
 
+  Groups should _not_ be accessed by index, as the groups in the returned
+  regexes are not part of the public contract of this API, and are liable to
+  change over time.  You may choose to use something like
+  [rencg](https://github.com/pmonks/rencg) to ensure your code is future proof
+  in this regard.
+
+  `ids` will appear in the regex sorted from longest to shortest, so that more
+  specific values are preferentially found or matched first - this avoids
+  mismatches when one id is a subset of another id (e.g. `GPL-2.0` and
+  `GPL-2.0-or-later`).
+
+  `opts` are:
+
+  * `case-sensitive?` (`boolean`, default `false`) - controls whether SPDX
+    identifier matching is case sensitive or not. The [spec explicitly states
+    that SPDX identifiers are _not_ case sensitive](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity),
+    but there may be cases where case sensitive matching is preferred.  Note
+    that regardless of this setting, LicenseRefs and AdditionRefs are _always_
+    matched case sensitively - this is required by the spec.
+  * `include-license-refs?` (`boolean`, default `false`) - controls whether
+    `LicenseRef` support is also included in the regex
+  * `include-addition-refs?` (`boolean`, default `false`) - controls whether
+    `AdditionRef` support is also included in the regex"
+  ([ids] (build-re ids nil))
+  ([ids {:keys [case-sensitive?
+                include-license-refs?
+                include-addition-refs?]
+         :or   {case-sensitive?        false
+                include-license-refs?  false
+                include-addition-refs? false}
+         :as   opts}]
+   (when (seq ids)
+     (ir/re-concat #"(?<!\w)"
+                   "(?<Identifier>"
+                   (when include-license-refs? (str @ir/license-ref-re-d "|"))
+                   (when include-addition-refs? (str @ir/addition-ref-re-d "|"))
+                   (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+                   (s/join "|" (map ir/re-escape (sort-by-count-desc ids)))
+                   ")"
+                   #"(?!\w)"))))
+
+(def ^:private ids-re-d (delay (build-re (concat (slic/ids) (sexc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
+
+(defn ids-re
+  "Returns a regex (`Pattern`) that can find or match any SPDX license
+  identifier, SPDX exception identifier, `LicenseRef`, or `AdditionRef` in
+  a source text.
+
+  Specifics of the regex are as for [[build-re]].
+
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @ids-re-d)
 
-(def ^:private license-ids-re-d (delay (build-re (slic/ids) {:match-license-refs? true})))
+(def ^:private license-ids-re-d (delay (build-re (slic/ids) {:case-sensitive? false :include-license-refs? true :include-addition-refs? false})))
 
 (defn license-ids-re
-  "Returns a regex (`Pattern`) that matches any SPDX license identifier or
-  `LicenseRef`.  The regex provides these named capturing groups:
+  "Returns a regex (`Pattern`) that can find or match any SPDX license
+  identifier, or `LicenseRef` in a source text.
 
-  * `Identifier` (always present) - captures the entire identifier or
-    `LicenseRef`
-  * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
-    if it contains one
-  * `LicenseRef` (optional) - captures the `LicenseRef` tag of a `LicenseRef`
+  Specifics of the regex are as for [[build-re]].
 
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @license-ids-re-d)
 
-(def ^:private exception-ids-re-d (delay (build-re (sexc/ids) {:match-addition-refs? true})))
+(def ^:private exception-ids-re-d (delay (build-re (sexc/ids) {:case-sensitive? false :include-license-refs? false :include-addition-refs? true})))
 
 (defn exception-ids-re
-  "Returns a regex (`Pattern`) that matches any SPDX exception identifier or
-  AdditionRef.  The regex provides these named capturing groups:
+  "Returns a regex (`Pattern`) that can find or match any SPDX license exception
+  identifier, or `AdditionRef` in a source text.
 
-  * `Identifier` (always present) - captures the entire identifier or
-    `AdditionRef`
-  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
-    `AdditionRef`, if it contains one
-  * `AdditionRef` (optional) - captures the `AdditionRef` tag of an `AdditionRef`
+  Specifics of the regex are as for [[build-re]].
 
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @exception-ids-re-d)
 
-(def ^:private license-ref-re-d (delay (ir/re-concat #"(?i)(\A|\b)"
+
+; Note: the DocumentRef and LicenseRef portions of a LicenseRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+(def ^:private license-ref-re-d (delay (ir/re-concat #"(?<!\w)"
                                                      @ir/license-ref-re-d
-                                                     #"(\b|\z)")))
+                                                     #"(?!\w)")))
 
 (defn license-ref-re
   "Returns a regex (`Pattern`) that matches any SPDX `LicenseRef`.  The regex
@@ -139,9 +150,10 @@
   []
   @license-ref-re-d)
 
-(def ^:private addition-ref-re-d (delay (ir/re-concat #"(?i)(\A|\b)"
+; Note: the DocumentRef and AdditionRef portions of an AdditionRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+(def ^:private addition-ref-re-d (delay (ir/re-concat #"(?<!\w)"
                                                       @ir/addition-ref-re-d
-                                                      #"(\b|\z)")))
+                                                      #"(?!\w)")))
 
 (defn addition-ref-re
  "Returns a regex (`Pattern`) that matches any SPDX `AdditionRef`.  The regex
@@ -170,9 +182,6 @@
   (slic/init!)
   (sexc/init!)
   (ir/init!)
-  @ids-re-d
-  @license-ids-re-d
-  @exception-ids-re-d
-  @license-ref-re-d
-  @addition-ref-re-d
+  ; Note: we always lazy-initialise all of the regexes, as they're quick to
+  ;       construct but consume some memory.
   nil)
