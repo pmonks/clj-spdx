@@ -135,8 +135,8 @@
                                                      #"(?!\w)")))
 
 (defn license-ref-re
-  "Returns a regex (`Pattern`) that matches any SPDX `LicenseRef`.  The regex
-  provides these named capturing groups:
+  "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
+  The regex provides these named capturing groups:
 
   * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
     if it contains one
@@ -145,8 +145,8 @@
 
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @license-ref-re-d)
 
@@ -156,8 +156,8 @@
                                                       #"(?!\w)")))
 
 (defn addition-ref-re
- "Returns a regex (`Pattern`) that matches any SPDX `AdditionRef`.  The regex
- provides these named capturing groups:
+ "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.
+ The regex provides these named capturing groups:
 
   * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
     `AdditionRef`, if it contains one
@@ -166,8 +166,8 @@
 
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @addition-ref-re-d)
 
@@ -182,6 +182,7 @@
   (slic/init!)
   (sexc/init!)
   (ir/init!)
-  ; Note: we always lazy-initialise all of the regexes, as they're quick to
-  ;       construct but consume some memory.
+  ; Note: we always lazy-initialise all of the regexes, as it's unlikely that
+  ; a caller will use all of them, and they're quick to construct. This saves
+  ; callers unecessary memory consumption.
   nil)
