@@ -16,14 +16,6 @@
             [spdx.exceptions   :as sexc]
             [spdx.impl.regexes :as ir]))
 
-(defn- sort-by-count-desc
-  "Sorts `coll`, a sequence of `String`s, by the length of each entry, in
-  descending order (so longer values come first).  Returns `nil` if `coll` is
-  `nil` or `empty`."
-  [coll]
-  (when (seq coll)
-    (reverse (sort-by count coll))))
-
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn build-re
   "Returns a regex (`Pattern`) that can find or match the given SPDX `ids` (a
@@ -78,7 +70,7 @@
                    (when include-license-refs? (str @ir/license-ref-re-d "|"))
                    (when include-addition-refs? (str @ir/addition-ref-re-d "|"))
                    (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-                   (s/join "|" (map ir/re-escape (sort-by-count-desc ids)))
+                   (s/join "|" (map ir/re-escape (sort-by #(* -1 (count %)) ids)))  ; Sort longest to shortest
                    ")"
                    #"(?!\w)"))))
 
