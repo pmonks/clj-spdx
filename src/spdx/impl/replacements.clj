@@ -58,9 +58,9 @@
 
 (def ^:private deprecated-license-id-replacements-d (delay {
   "AGPL-1.0"                          {:license-ids ["AGPL-1.0-only"]}
-  ; Note: AGPL-1.0+ never existed as a listed SPDX license identifier
+  "AGPL-1.0+"                         {:license-ids ["AGPL-1.0-or-later"]}    ; Note: AGPL-1.0+ never existed as a listed SPDX license identifier, but we still (optionally) replace it
   "AGPL-3.0"                          {:license-ids ["AGPL-3.0-only"]}
-  ; Note: AGPL-3.0+ never existed as a listed SPDX license identifier
+  "AGPL-3.0+"                         {:license-ids ["AGPL-3.0-or-later"]}    ; Note: AGPL-3.0+ never existed as a listed SPDX license identifier, but we still (optionally) replace it
   "GPL-1.0"                           {:license-ids ["GPL-1.0-only"]}
   "GPL-1.0+"                          {:license-ids ["GPL-1.0-or-later"]}
   "GPL-2.0"                           {:license-ids ["GPL-2.0-only"]}

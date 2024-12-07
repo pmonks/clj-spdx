@@ -182,10 +182,10 @@
                          m))}
         parse-tree))
 
-(defn- normalise-using-replacements
-  "Normalises a deprecated :license-id entry in a license map, or returns the
-  map unchanged if it doesn't contain a deprecated license id that has a
-  replacement."
+(defn- replace-license-id-in-license-map
+  "Replaces a deprecated :license-id entry in a license map if it has a
+  replacement. Note that this replacement may result in a new nested `:and`
+  clause, since license id replacements aren't always 1:1."
   [{:keys [license-id license-exception-id or-later?] :as m}]
   (if-let [license-replacement (sir/replacement-for-deprecated-license-id license-id or-later?)]
     (let [replacement-license-ids   (:license-ids license-replacement)
@@ -200,31 +200,28 @@
                                                [(merge {:license-id %} (when replacement-or-later? {:or-later? true}))])
                                             replacement-license-ids)]
           (case (count result)
-            0 nil
+            0 nil   ; This should never happen, but just in case we return nil so we don't fall through to the default case and get weird results...
             1 (first result)
             (vec (concat [:and] result))))
     m))
 
-(defn- normalise-deprecated-entries-in-license-map
-  "Normalises any deprecated entries in a license map."
-  [{:keys [license-id license-exception-id or-later?] :as m}]
-  ; We perform exception id replacement here, as it's a simple 1:1
-  (let [license-exception-id (or (sir/replacement-for-deprecated-exception-id license-exception-id) license-exception-id)]
+(defn- replace-deprecated-entries-in-license-map
+  "Replaces any deprecated entries in a license map that have replacements."
+  [{:keys [license-id license-exception-id] :as m}]
+  ; We perform license exception id replacement first, as it's a simple 1:1
+  (let [replacement-exception-id (or (sir/replacement-for-deprecated-exception-id license-exception-id) license-exception-id)
+        result                   (merge m (when replacement-exception-id {:license-exception-id replacement-exception-id}))]
     (if license-id
-      ; It's a listed license
-      (if (and or-later? (or (= license-id "AGPL-1.0") (= license-id "AGPL-3.0")))
-        ; We special case AGPL-1.0+ and AGPL-3.0+, as neither of those are ids
-        (merge {:license-id (str license-id "-or-later")} (when license-exception-id {:license-exception-id license-exception-id}))
-        ; General replacements (provided by spdx.impl.replacements)
-        (normalise-using-replacements (merge m (when license-exception-id {:license-exception-id license-exception-id}))))
-      ; It's a LicenseRef
-      (merge m (when license-exception-id {:license-exception-id license-exception-id})))))
+      ; It's a listed license, so perform license id replacement too
+      (replace-license-id-in-license-map result)
+      ; It's a LicenseRef, so skip license id replacement
+      result)))
 
 (defn- normalise-deprecated-ids
-  "Normalises deprecated SPDX identifiers, based on the replacements in
-  spdx.impl.replacements."
+  "Normalises deprecated SPDX identifiers, based on the replacement rules
+  provided by [[spdx.impl.replacements]]."
   [parse-tree]
-  (walk {:license-fn normalise-deprecated-entries-in-license-map
+  (walk {:license-fn replace-deprecated-entries-in-license-map
          :group-fn   (fn [_ [operator & entries]] (normalise-nested-operators operator entries))}
         parse-tree))
 
