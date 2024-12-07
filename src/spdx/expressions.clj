@@ -327,7 +327,7 @@
   returning a data structure representing the parse tree, or `nil` if it cannot
   be parsed.  Licenses and associated license exceptions / 'or later' markers
   (if any) are represented as a map, groups of licenses separated by operators
-  are represented as vectors, with the operator represented by a keyword in the
+  are represented as vectors with the operator represented by a keyword in the
   first element in the vector and with license maps in the rest of the vector.
   Groups (vectors) may be nested e.g. when the expression contains nested
   clauses.
@@ -337,13 +337,14 @@
   * `:normalise-deprecated-ids?` (`boolean`, default `true`) - controls whether
     deprecated ids in the expression are normalised to their non-deprecated
     equivalents (where possible) as part of the parsing process.  Note that not
-    all deprecated identifiers have non-deprecated equivalents.
+    all deprecated identifiers have non-deprecated equivalents, and those will
+    be left unchanged in the parse tree.
   * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
     operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
-    whether redundant clauses (e.g. \"Apache-2.0 AND Apache-2.0\") are
-    collapsed during parsing.  Note: disabled sorting (`:sort-licenses?`) may
+    whether redundant clauses (e.g. `\"Apache-2.0 AND Apache-2.0\"`) are
+    collapsed during parsing.  Note: disabling sorting (`:sort-licenses?`) may
     cause redundant clauses to remain in the parse tree.
   * `:sort-licenses?` (`boolean`, default `true`) - controls whether licenses
     that appear at the same level in the parse tree are sorted alphabetically.
@@ -384,7 +385,10 @@
   {:license-id \"Apache-2.0\" :or-later? true}  ; Note id case correction
 
   (parse \"GPL-2.0+\")
-  {:license-id \"GPL-2.0-or-later\"}  ; Note deprecated id normalisation
+  {:license-id \"GPL-2.0-or-later\"}  ; Note GNU family normalisation
+
+  (parse \"StandardML-NJ\")
+  {:license-id \"SMLNJ\"}  ; Note deprecated id normalisation
 
   (parse \"GPL-2.0 WITH Classpath-exception-2.0\")
   {:license-id \"GPL-2.0-only\"
