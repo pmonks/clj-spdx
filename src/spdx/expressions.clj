@@ -356,6 +356,9 @@
     e.g. `aPAcHe-2.0` -> `Apache-2.0`
   * The parser always removes redundant grouping
     e.g. `(((((Apache-2.0))))))` -> `Apache-2.0`
+  * The parser always corrects nonsensical combinations of GNU family
+    license identifiers with the 'or later' marker
+    e.g. `GPL-3.0-only+` -> `GPL-3.0-or-later`
   * The parser synthesises grouping when needed to make SPDX license
     expressions' precedence rules explicit (see [the relevant section within
     annex D of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
