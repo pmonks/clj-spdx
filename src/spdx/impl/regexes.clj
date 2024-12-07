@@ -9,8 +9,8 @@
 ;
 
 (ns spdx.impl.regexes
-  "Regex related functionality.  This functionality is bespoke (it does not use
-  any logic from `Spdx-Java-Library`)."
+  "Regex utility namespace. Note: this namespace is not part of the public
+  API of clj-spdx and may change without notice."
   (:require [clojure.string :as s]))
 
 (defn re-escape
