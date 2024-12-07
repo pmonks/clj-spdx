@@ -31,6 +31,7 @@
 
   Throws on exceptions."
   [url]
-  (url/input-stream url {:follow-redirects?     true
-                         :retry-when-throttled? true
-                         :request-headers       {"User-Agent" "https://github.com/pmonks/clj-spdx"}}))
+  (url/input-stream url {:follow-redirects?                   true
+                         :retry-when-throttled?               true
+                         :return-cached-content-on-exception? true
+                         :request-headers                     {"User-Agent" "https://github.com/pmonks/clj-spdx"}}))

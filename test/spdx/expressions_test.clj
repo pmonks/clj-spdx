@@ -122,13 +122,84 @@
                                                                {:license-id "GPL-2.0-only"}
                                                                {:license-id "MIT"}
                                                                {:license-id "Unlicense"}])))
-  (testing "Expressions that exercise GPL identifier normalisation"
-    (is (= (parse "AGPL-1.0-or-later")                        {:license-id "AGPL-1.0-or-later"}))
-    (is (= (parse "AGPL-1.0+")                                {:license-id "AGPL-1.0-or-later"}))
+  (testing "Expressions that exercise license id replacement (deprecated and/or weirdo GNU family replacements)"
+    ; 1:1 replacements
+    (is (= (parse "AGPL-1.0")                                 {:license-id "AGPL-1.0-only"}))
+    (is (= (parse "AGPL-1.0+")                                {:license-id "AGPL-1.0-or-later"}))   ; Note: AGPL-1.0+ is not a listed identifier - it's an expression, but still needs to be replaced
+    (is (= (parse "AGPL-3.0")                                 {:license-id "AGPL-3.0-only"}))
+    (is (= (parse "AGPL-3.0+")                                {:license-id "AGPL-3.0-or-later"}))   ; Note: AGPL-3.0+ is not a listed identifier - it's an expression, but still needs to be replaced
+    (is (= (parse "GPL-1.0")                                  {:license-id "GPL-1.0-only"}))
+    (is (= (parse "GPL-1.0+")                                 {:license-id "GPL-1.0-or-later"}))
+    (is (= (parse "GPL-2.0")                                  {:license-id "GPL-2.0-only"}))
     (is (= (parse "GPL-2.0+")                                 {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "GPL-3.0")                                  {:license-id "GPL-3.0-only"}))
+    (is (= (parse "LGPL-2.0" )                                {:license-id "LGPL-2.0-only"}))
+    (is (= (parse "LGPL-2.0+")                                {:license-id "LGPL-2.0-or-later"}))
+    (is (= (parse "LGPL-2.1" )                                {:license-id "LGPL-2.1-only"}))
+    (is (= (parse "LGPL-2.1+")                                {:license-id "LGPL-2.1-or-later"}))
+    (is (= (parse "LGPL-3.0" )                                {:license-id "LGPL-3.0-only"}))
+    (is (= (parse "LGPL-3.0+")                                {:license-id "LGPL-3.0-or-later"}))
+    (is (= (parse "StandardML-NJ")                            {:license-id "SMLNJ"}))
+    (is (= (parse "StandardML-NJ+")                           {:license-id "SMLNJ" :or-later? true}))   ; Note: StandardML-NJ+ is not a listed identifier - it's an expression, but still needs to be replaced, preserving the or-later? flag
+    (is (= (parse "BSD-2-Clause-FreeBSD")                     {:license-id "BSD-2-Clause-Views"}))
+    (is (= (parse "BSD-2-Clause-NetBSD")                      {:license-id "BSD-2-Clause"}))
+    (is (= (parse "bzip2-1.0.5")                              {:license-id "bzip2-1.0.6"}))
+    (is (= (parse "LGPL-2.1-only WITH Nokia-Qt-exception-1.1") {:license-id "LGPL-2.1-only" :license-exception-id "Qt-LGPL-exception-1.1"}))
+    (is (= (parse "LicenseRef-foo WITH Nokia-Qt-exception-1.1") {:license-ref "foo" :license-exception-id "Qt-LGPL-exception-1.1"}))
+    ; 1:2 replacements
+    (is (= (parse "Net-SNMP")                                 [:and
+                                                               {:license-id "BSD-3-Clause"}
+                                                               {:license-id "MIT-CMU"}]))
+    (is (= (parse "Net-SNMP+")                                [:and    ; Nonsensical, but confirms that the or-later? flag is preserved
+                                                               {:license-id "BSD-3-Clause" :or-later? true}
+                                                               {:license-id "MIT-CMU"      :or-later? true}]))
+    ; Cursed expressions with +
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
-    ; These next couple are pretty cursed...
+    (is (= (parse "GPL-2.0-only+" {:normalise-deprecated-ids? false})   ; This should always be normalised, regardless of deprecation normalisation
+                                                              {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "GPL-2.0-or-later+" {:normalise-deprecated-ids? false})   ; This should always be normalised, regardless of deprecation normalisation
+                                                              {:license-id "GPL-2.0-or-later"}))
+    ; Cursed eCos-2.0 and wxWindows cases (these two changed type - license ids replaced by exception ids 😬)
+    (is (= (parse "eCos-2.0")                                 {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}))
+    (is (= (parse "eCos-2.0+")                                {:license-id "GPL-2.0-or-later" :license-exception-id "eCos-exception-2.0"}))
+    (is (= (parse "eCos-2.0 OR Apache-2.0")                   [:or  {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 AND Apache-2.0 AND MIT")          [:and {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "Apache-2.0 AND eCos-2.0")                  [:and {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 AND Apache-2.0")                  [:and {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0+ AND Apache-2.0")                 [:and {:license-id "Apache-2.0"} {:license-id "GPL-2.0-or-later" :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 AND (Apache-2.0)")                [:and {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "GPL-2.0-only WITH Classpath-exception-2.0 AND eCos-2.0")
+                                                              [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "GPL-2.0-with-classpath-exception AND eCos-2.0")
+                                                              [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 WITH Classpath-exception-2.0")    [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 WITH eCos-exception-2.0")         {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}))
+    (is (= (parse "MIT AND eCos-2.0" {:normalise-deprecated-ids? false})
+                                                              [:and
+                                                               {:license-id "MIT"}
+                                                               {:license-id "eCos-2.0"}]))
+    (is (= (parse "wxWindows")                                {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}))
+    (is (= (parse "MIT AND wxWindows")                        [:and {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"} {:license-id "MIT"}]))
+    (is (= (parse "wxWindows AND MIT")                        [:and {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"} {:license-id "MIT"}]))
+    (is (= (parse "wxWindows WITH WxWindows-exception-3.1")   {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}))
+    (is (= (parse "BSD-2-Clause AND wxWindows" {:normalise-deprecated-ids? false})
+                                                              [:and
+                                                               {:license-id "BSD-2-Clause"}
+                                                               {:license-id "wxWindows"}]))
+    (is (= (parse "eCos-2.0 AND wxWindows")                   [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "wxWindows AND eCos-2.0")                   [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+    ; Cursed "double license exception" cases
     (is (= (parse "GPL-2.0-with-classpath-exception WITH Classpath-exception-2.0")
                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0")
@@ -138,7 +209,20 @@
     (is (= (parse "GPL-2.0-with-GCC-exception+ WITH Classpath-exception-2.0")
                                                               [:and
                                                                {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
-                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "GCC-exception-2.0"}])))
+                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "GCC-exception-2.0"}]))
+    (is (= (parse "Net-SNMP WITH Classpath-exception-2.0")    [:and
+                                                               {:license-id "BSD-3-Clause" :license-exception-id "Classpath-exception-2.0"}
+                                                               {:license-id "MIT-CMU"      :license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 WITH GCC-exception-2.0 AND Apache-2.0")
+                                                              [:and
+                                                               {:license-id "Apache-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+    (is (= (parse "eCos-2.0 WITH GCC-exception-2.0 AND MIT WITH WxWindows-exception-3.1")
+                                                              [:and
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}
+                                                               {:license-id "MIT" :license-exception-id "WxWindows-exception-3.1"}])))
   (testing "Expressions that exercise collapsing redundant clauses"
     (is (= (parse "Apache-2.0 OR Apache-2.0")                 {:license-id "Apache-2.0"}))
     (is (= (parse "Apache-2.0 AND Apache-2.0" {:collapse-redundant-clauses? true})
@@ -151,6 +235,7 @@
     (is (= (parse "Apache-2.0 AND Apache-2.0 OR MIT")         [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 OR MIT OR Apache-2.0")          [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 AND MIT AND Apache-2.0")        [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "(Apache-2.0 OR MIT) AND (MIT OR Apache-2.0)") [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 AND Apache-2.0 OR Apache-2.0 AND Apache-2.0")
                                                               {:license-id "Apache-2.0"}))
     (is (= (parse "Apache-2.0 AND (Apache-2.0 OR (Apache-2.0 AND Apache-2.0))")
@@ -185,7 +270,7 @@
     (is (= (parse "GPL-2.0+" {:normalise-deprecated-ids? false})
            {:license-id "GPL-2.0" :or-later? true}))
     (is (= (parse "GPL-2.0-only+" {:normalise-deprecated-ids? false})
-           {:license-id "GPL-2.0-only" :or-later? true}))
+           {:license-id "GPL-2.0-or-later"}))  ; This is a mandatory replacement, not controllable via the :normalise-deprecated-ids? flag
     (is (= (parse "Apache-2.0 OR GPL-2.0" {:normalise-deprecated-ids? false})
            [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+" {:normalise-deprecated-ids? false})
