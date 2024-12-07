@@ -16,14 +16,6 @@
             [spdx.exceptions   :as sexc]
             [spdx.impl.regexes :as ir]))
 
-(defn- sort-by-count-desc
-  "Sorts `coll`, a sequence of `String`s, by the length of each entry, in
-  descending order (so longer values come first).  Returns `nil` if `coll` is
-  `nil` or `empty`."
-  [coll]
-  (when (seq coll)
-    (reverse (sort-by count coll))))
-
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn build-re
   "Returns a regex (`Pattern`) that can find or match the given SPDX `ids` (a
@@ -78,7 +70,7 @@
                    (when include-license-refs? (str @ir/license-ref-re-d "|"))
                    (when include-addition-refs? (str @ir/addition-ref-re-d "|"))
                    (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-                   (s/join "|" (map ir/re-escape (sort-by-count-desc ids)))
+                   (s/join "|" (map ir/re-escape (sort-by #(* -1 (count %)) ids)))  ; Sort longest to shortest
                    ")"
                    #"(?!\w)"))))
 
@@ -135,8 +127,8 @@
                                                      #"(?!\w)")))
 
 (defn license-ref-re
-  "Returns a regex (`Pattern`) that matches any SPDX `LicenseRef`.  The regex
-  provides these named capturing groups:
+  "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
+  The regex provides these named capturing groups:
 
   * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
     if it contains one
@@ -145,8 +137,8 @@
 
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @license-ref-re-d)
 
@@ -156,8 +148,8 @@
                                                       #"(?!\w)")))
 
 (defn addition-ref-re
- "Returns a regex (`Pattern`) that matches any SPDX `AdditionRef`.  The regex
- provides these named capturing groups:
+ "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.
+ The regex provides these named capturing groups:
 
   * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
     `AdditionRef`, if it contains one
@@ -166,8 +158,8 @@
 
   Notes:
 
-  * returns the same `Pattern` object on subsequent calls, so is efficient when
-    called many times"
+  * caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
   []
   @addition-ref-re-d)
 
@@ -182,6 +174,7 @@
   (slic/init!)
   (sexc/init!)
   (ir/init!)
-  ; Note: we always lazy-initialise all of the regexes, as they're quick to
-  ;       construct but consume some memory.
+  ; Note: we always lazy-initialise all of the regexes, as it's unlikely that
+  ; a caller will use all of them, and they're quick to construct. This saves
+  ; callers unecessary memory consumption.
   nil)

@@ -11,11 +11,12 @@
 (ns spdx.expressions
   "SPDX license expression functionality. This functionality is bespoke (it does
   not use the parser in `Spdx-Java-Library`)."
-  (:require [clojure.string  :as s]
-            [clojure.set     :as set]
-            [instaparse.core :as insta]
-            [spdx.licenses   :as lic]
-            [spdx.exceptions :as exc]))
+  (:require [clojure.string         :as s]
+            [instaparse.core        :as insta]
+            [spdx.licenses          :as lic]
+            [spdx.exceptions        :as exc]
+            [spdx.impl.regexes      :as ir]
+            [spdx.impl.replacements :as sir]))
 
 (def ^:private case-sensitive-operators-fragment
   "<and>                  = <ws 'AND' ws>
@@ -54,33 +55,8 @@
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(defn- escape-re
-  "Escapes the given string for use in a regex."
-  [s]
-  (when s
-    (s/escape s {\< "\\<"
-                 \( "\\("
-                 \[ "\\["
-                 \{ "\\{"
-                 \\ "\\\\"
-                 \^ "\\^"
-                 \- "\\-"
-                 \= "\\="
-                 \$ "\\$"
-                 \! "\\!"
-                 \| "\\|"
-                 \] "\\]"
-                 \} "\\}"
-                 \) "\\)"
-                 \? "\\?"
-                 \* "\\*"
-                 \+ "\\+"
-                 \. "\\."
-                 \> "\\>"
-                 })))
-
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated ids that end in "+", since they break the parser)
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (escape-re %) "\"") (exc/ids)))))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (ir/re-escape %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (ir/re-escape %) "\"") (exc/ids)))))
 
 (def ^:private spdx-license-expression-cs-grammar-d (delay (format spdx-license-expression-grammar-format
                                                                    case-sensitive-operators-fragment
@@ -96,43 +72,6 @@
 
 (def ^:private normalised-spdx-ids-map-d (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
                                                        (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
-
-(def ^:private current-gpl-family-ids #{
-                                "AGPL-1.0-only" "AGPL-1.0-or-later" "AGPL-3.0-only" "AGPL-3.0-or-later"
-                                "GPL-1.0-only" "GPL-1.0-or-later" "GPL-2.0-only" "GPL-2.0-or-later" "GPL-3.0-only" "GPL-3.0-or-later"
-                                "LGPL-2.0-only" "LGPL-2.0-or-later" "LGPL-2.1-only" "LGPL-2.1-or-later" "LGPL-3.0-only" "LGPL-3.0-or-later"})
-
-(def ^:private deprecated-simple-gpl-family-ids {
-                                "AGPL-1.0"  "AGPL-1.0-only"    ; NOTE: not technically a GPL family identifier, since it wasn't published by the FSF, but the same logic works
-                                ; Note: AGPL-1.0+ never existed as a listed SPDX license identifier
-                                "AGPL-3.0"  "AGPL-3.0-only"
-                                ; Note: AGPL-3.0+ never existed as a listed SPDX license identifier
-                                "GPL-1.0"   "GPL-1.0-only"
-                                "GPL-1.0+"  "GPL-1.0-or-later"
-                                "GPL-2.0"   "GPL-2.0-only"
-                                "GPL-2.0+"  "GPL-2.0-or-later"
-                                "GPL-3.0"   "GPL-3.0-only"
-                                "GPL-3.0+"  "GPL-3.0-or-later"
-                                "LGPL-2.0"  "LGPL-2.0-only"
-                                "LGPL-2.0+" "LGPL-2.0-or-later"
-                                "LGPL-2.1"  "LGPL-2.1-only"
-                                "LGPL-2.1+" "LGPL-2.1-or-later"
-                                "LGPL-3.0"  "LGPL-3.0-only"
-                                "LGPL-3.0+" "LGPL-3.0-or-later"})
-
-(def ^:private deprecated-compound-gpl-family-ids {
-                                "GPL-2.0-with-autoconf-exception"  ["GPL-2.0-only" "Autoconf-exception-2.0"]
-                                "GPL-2.0-with-bison-exception"     ["GPL-2.0-only" "Bison-exception-2.2"]
-                                "GPL-2.0-with-classpath-exception" ["GPL-2.0-only" "Classpath-exception-2.0"]
-                                "GPL-2.0-with-font-exception"      ["GPL-2.0-only" "Font-exception-2.0"]
-                                "GPL-2.0-with-GCC-exception"       ["GPL-2.0-only" "GCC-exception-2.0"]
-                                "GPL-3.0-with-autoconf-exception"  ["GPL-3.0-only" "Autoconf-exception-3.0"]
-                                "GPL-3.0-with-GCC-exception"       ["GPL-3.0-only" "GCC-exception-3.1"]})
-
-(def ^:private deprecated-gpl-family-ids (set/union (set (keys deprecated-simple-gpl-family-ids)) (set (keys deprecated-compound-gpl-family-ids))))
-(def ^:private gpl-family-ids            (set/union current-gpl-family-ids deprecated-gpl-family-ids))
-
-(def ^:private not-blank? (complement s/blank?))
 
 (defn- walk-internal
   "Internal implementation of [[walk]]."
@@ -154,8 +93,8 @@
 (defn walk
   "Depth-first walk of `parse-tree` (i.e. obtained from [[parse]]), calling the
   associated functions (or [`clojure.core/identity`](https://clojure.github.io/clojure/clojure.core-api.html#clojure.core/identity)
-  when not provided) for each element in it.  Results are undefined for invalid
-  parse trees.
+  when not provided) for each element in it.  Returns `nil` if `parse-tree` is
+  `nil`.  Results are undefined for invalid parse trees.
 
   Keys in the `fns` map are:
 
@@ -208,89 +147,82 @@
   SPDX expression (a `String`), or `nil` if `parse-tree` is `nil`.  Results
   are undefined for invalid parse trees."
   [parse-tree]
-  (when-let [result (walk {:op-fn      #(s/upper-case (name %))
-                           :license-fn license-map->string
-                           :group-fn   #(when (pos? (count %2))
-                                          (str (when (pos? %1) "(")
-                                               (s/join (str " " (first %2) " ") (rest %2))
-                                               (when (pos? %1) ")")))}
-                          parse-tree)]
-    (s/trim result)))
+  (some-> (walk {:op-fn      #(s/upper-case (name %))
+                 :license-fn license-map->string
+                 :group-fn   #(when (pos? (count %2))
+                                (str (when (pos? %1) "(")
+                                     (s/join (str " " (first %2) " ") (rest %2))
+                                     (when (pos? %1) ")")))}
+                parse-tree)
+          s/trim))
 
 (defn- normalise-nested-operators
-  "Normalises nested operators of the same type."
-  [type coll]
-  (loop [result [type]
+  "Normalises nested operators that are the same."
+  [operator coll]
+  (loop [result [operator]
          f      (first coll)
          r      (rest coll)]
     (if-not f
       (vec result)
       (if (and (sequential? f)
-               (= type (first f)))
+               (= operator (first f)))
         (recur (concat result (rest f)) (first r) (rest r))
         (recur (concat result [f])      (first r) (rest r))))))
 
-(defn- normalise-gpl-id
-  "Normalises a GPL family `license-id` to a tuple (2 element vector) containing
-  the non-deprecated equivalent license id in first position, and (optionally -
-  may be nil) a license-exception-id in second position if `license-id` was a
-  compound id (an id that also identifies an exception, such as
-  \"GPL-2.0-with-classpath-exception\").
-
-  If `license-id` is not deprecated, returns it as-is (in the first position in
-  the tuple)."
-  [license-id]
-  (get deprecated-compound-gpl-family-ids
-       license-id
-       [(get deprecated-simple-gpl-family-ids
-             license-id
-             license-id)
-        nil]))
-
-(defn- normalise-gpl-license-map
-  "Normalises a license map that is known to contain a GPL family `license-id`.
-  This involves:
-  1. Replacing deprecated GPL family license ids with their non-deprecated
-     equivalent
-  2. Turning `:or-later?` flags into the '-or-later' variant of the `license-id`
-  3. Expanding 'compound' license ids (e.g. GPL-2.0-with-classpath-exception)"
-  [{:keys [license-id or-later? license-exception-id]}]
-  (let [[new-license-id new-license-exception-id] (normalise-gpl-id license-id)
-        new-license-id                            (let [or-later-variant (s/replace new-license-id "-only" "-or-later")]
-                                                    (if (and or-later? (lic/listed-id? or-later-variant))
-                                                      or-later-variant
-                                                      new-license-id))]
-    ; Check if we have two license exception ids after expanding the license-id (e.g. from a valid but weird expression such as "GPL-2.0-with-autoconf-exception WITH Classpath-exception-2.0")
-    (if (and (not-blank? license-exception-id)
-             (not-blank? new-license-exception-id)
-             (not= license-exception-id new-license-exception-id))
-      [:and {:license-id new-license-id :license-exception-id new-license-exception-id}
-            {:license-id new-license-id :license-exception-id license-exception-id}]
-      (merge {:license-id new-license-id}
-             (when (not-blank? license-exception-id)     {:license-exception-id license-exception-id})
-             (when (not-blank? new-license-exception-id) {:license-exception-id new-license-exception-id})))))
-
-(defn- normalise-deprecated-ids
-  "Normalises deprecated SPDX identifiers, specifically:
-  * GPL family license identifiers
-  * AGPL-1.0 license identifier (which is NOT a GPL identifier, despite the name)
-  * StandardML-NJ license identifier
-  * Nokia-Qt-exception-1.1 license exception identifier"
+(defn- mandatory-license-id-replacements
+  "Performs mandatory license id replacements on the parse tree (i.e. nonsensical GNU
+  family ids that also contain +)."
   [parse-tree]
-  (walk {:license-fn #(cond
-                        (contains? gpl-family-ids (:license-id %))             (normalise-gpl-license-map %)  ; Note: for historical reasons this also handles AGPL-1.0, even though it shouldn't have
-                        (= (:license-id %)           "StandardML-NJ")          (assoc % :license-id "SMLNJ")
-                        (= (:license-exception-id %) "Nokia-Qt-exception-1.1") (assoc % :license-exception-id "Qt-LGPL-exception-1.1")
-                        :else %)}
+  (walk {:license-fn (fn [{:keys [license-id or-later?] :as m}]
+                       (if-let [replacement (sir/replacement-for-license-id license-id or-later?)]
+                         (let [result (assoc m :license-id (:license-id replacement))]
+                           (if (:or-later? replacement)
+                             (assoc result  :or-later? true)
+                             (dissoc result :or-later?)))
+                         m))}
         parse-tree))
 
-(defn- collapse-redundant-clauses
-  "Collapses redundant clauses in `parse-tree`."
+(defn- replace-license-id-in-license-map
+  "Replaces a deprecated :license-id entry in a license map if it has a
+  replacement. Note that this replacement may result in a new nested `:and`
+  clause, since license id replacements aren't always 1:1."
+  [{:keys [license-id license-exception-id or-later?] :as m}]
+  (if-let [license-replacement (sir/replacement-for-deprecated-license-id license-id or-later?)]
+    (let [replacement-license-ids   (:license-ids license-replacement)
+          replacement-or-later?     (:or-later?   license-replacement)
+          replacement-exception-id  (:license-exception-id license-replacement)
+          replacement-exception-ids (seq (filter identity [license-exception-id replacement-exception-id]))
+          result                    (mapcat #(if replacement-exception-ids
+                                               (map (fn [replacement-exception-id]
+                                                      (merge {:license-id % :license-exception-id replacement-exception-id}
+                                                             (when replacement-or-later? {:or-later? true})))
+                                                    replacement-exception-ids)
+                                               [(merge {:license-id %} (when replacement-or-later? {:or-later? true}))])
+                                            replacement-license-ids)]
+          (case (count result)
+            0 nil   ; This should never happen, but just in case we return nil so we don't fall through to the default case and get weird results...
+            1 (first result)
+            (vec (concat [:and] result))))
+    m))
+
+(defn- replace-deprecated-entries-in-license-map
+  "Replaces any deprecated entries in a license map that have replacements."
+  [{:keys [license-id license-exception-id] :as m}]
+  ; We perform license exception id replacement first, as it's a simple 1:1
+  (let [replacement-exception-id (or (sir/replacement-for-deprecated-exception-id license-exception-id) license-exception-id)
+        result                   (merge m (when replacement-exception-id {:license-exception-id replacement-exception-id}))]
+    (if license-id
+      ; It's a listed license, so perform license id replacement too
+      (replace-license-id-in-license-map result)
+      ; It's a LicenseRef, so skip license id replacement
+      result)))
+
+(defn- normalise-deprecated-ids
+  "Normalises deprecated SPDX identifiers, based on the replacement rules
+  provided by [[spdx.impl.replacements]]."
   [parse-tree]
-  (walk {:group-fn #(let [result (distinct %2)]
-                      (if (= 2 (count result))
-                        (second result)
-                        result))}
+  (walk {:license-fn replace-deprecated-entries-in-license-map
+         :group-fn   (fn [_ [operator & entries]] (normalise-nested-operators operator entries))}
         parse-tree))
 
 (defn- compare-license-maps
@@ -314,11 +246,14 @@
   "sort-by comparator for parse-trees"
   [x y]
   (cond
+    ; Keywords (operators) always come first
     (and (keyword? x) (keyword? y))       (compare x y)
     (keyword? x)                          -1
     (keyword? y)                          1
+    ; Then maps (licenses)
     (and (map? x) (map? y))               (compare-license-maps x y)       ; Because compare doesn't support maps
     (map? x)                              -1
+    ; And sequences (sub-clauses) last
     (and (sequential? x) (sequential? y)) (compare-license-sequences x y)  ; Because compare doesn't support maps (which will be elements inside x and y)
     :else                                 1))
 
@@ -328,6 +263,15 @@
   tree as parsing `MIT OR Apache-2.0`."
   [parse-tree]
   (walk {:group-fn #(some-> (seq (sort-by identity parse-tree-compare %2)) vec)}
+        parse-tree))
+
+(defn- collapse-redundant-clauses
+  "Collapses redundant clauses in `parse-tree`."
+  [parse-tree]
+  (walk {:group-fn #(let [result (vec (distinct %2))]
+                      (if (= 2 (count result))
+                        (second result)
+                        result))}
         parse-tree))
 
 (defn parse-with-info
@@ -345,34 +289,37 @@
                       collapse-redundant-clauses? true
                       sort-licenses?              true}}]
    (when-not (s/blank? s)
-     (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
-           result (insta/parse parser s)]
-       (if (insta/failure? result)
-         result
-         (let [result (insta/transform {:license-id            #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                        :license-exception-id  #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                        :license-ref           #(case (count %&)
-                                                                  1 {:license-ref  (first %&)}
-                                                                  2 {:document-ref (first %&) :license-ref (second %&)})
-                                        :addition-ref          #(case (count %&)
-                                                                  1 {:addition-ref  (first %&)}
-                                                                  2 {:addition-document-ref (first %&) :addition-ref (second %&)})
-                                        :license-or-later      #(merge {:or-later? true} (first %&))
-                                        :with-expression       #(merge (first %&)        (second %&))
-                                        :and-expression        #(case (count %&)
-                                                                  1 (first %&)
-                                                                  (normalise-nested-operators :and %&))
-                                        :or-expression         #(case (count %&)
-                                                                  1 (first %&)
-                                                                  (normalise-nested-operators :or %&))
-                                        :expression            #(case (count %&)
-                                                                  1 (first %&)
-                                                                  (vec %&))}
-                                       result)
-               result (if normalise-deprecated-ids?   (normalise-deprecated-ids   result) result)
-               result (if collapse-redundant-clauses? (collapse-redundant-clauses result) result)
-               result (if sort-licenses?              (sort-parse-tree            result) result)]
-           result))))))
+     (let [parser     (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
+           parse-tree (insta/parse parser s)]
+       (if (insta/failure? parse-tree)
+         parse-tree
+         (as-> parse-tree parse-tree
+               (insta/transform {:license-id           #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                 :license-exception-id #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+                                 :license-ref          #(case (count %&)
+                                                          1 {:license-ref  (first %&)}
+                                                          2 {:document-ref (first %&) :license-ref (second %&)})
+                                 :addition-ref         #(case (count %&)
+                                                          1 {:addition-ref  (first %&)}
+                                                          2 {:addition-document-ref (first %&) :addition-ref (second %&)})
+                                 :license-or-later     #(merge {:or-later? true} (first %&))
+                                 :with-expression      #(merge (first %&)        (second %&))
+                                 :and-expression       #(case (count %&)
+                                                          1 (first %&)
+                                                          (normalise-nested-operators :and %&))
+                                 :or-expression        #(case (count %&)
+                                                          1 (first %&)
+                                                          (normalise-nested-operators :or %&))
+                                 :expression           #(case (count %&)
+                                                          1 (first %&)
+                                                          (vec %&))}
+                                parse-tree)
+               (mandatory-license-id-replacements parse-tree)
+               (if normalise-deprecated-ids?   (normalise-deprecated-ids   parse-tree) parse-tree)
+               (if sort-licenses?              (sort-parse-tree            parse-tree) parse-tree)
+               (if collapse-redundant-clauses? (collapse-redundant-clauses parse-tree) parse-tree)
+               (if (and collapse-redundant-clauses?
+                        sort-licenses?)        (sort-parse-tree            parse-tree) parse-tree)))))))  ; Post-sort, to ensure results of collapsing redundant clauses get sorted
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
@@ -380,7 +327,7 @@
   returning a data structure representing the parse tree, or `nil` if it cannot
   be parsed.  Licenses and associated license exceptions / 'or later' markers
   (if any) are represented as a map, groups of licenses separated by operators
-  are represented as vectors, with the operator represented by a keyword in the
+  are represented as vectors with the operator represented by a keyword in the
   first element in the vector and with license maps in the rest of the vector.
   Groups (vectors) may be nested e.g. when the expression contains nested
   clauses.
@@ -389,15 +336,16 @@
 
   * `:normalise-deprecated-ids?` (`boolean`, default `true`) - controls whether
     deprecated ids in the expression are normalised to their non-deprecated
-    equivalents (where possible) as part of the parsing process. This applies to
-    the GPL family of license ids, the `AGPL-1.0` and `StandardML-NJ` license
-    ids and the `Nokia-Qt-exception-1.1` license exception id.
+    equivalents (where possible) as part of the parsing process.  Note that not
+    all deprecated identifiers have non-deprecated equivalents, and those will
+    be left unchanged in the parse tree.
   * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
     operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
-    whether redundant clauses (e.g. \"Apache-2.0 AND Apache-2.0\") are
-    collapsed during parsing.
+    whether redundant clauses (e.g. `\"Apache-2.0 AND Apache-2.0\"`) are
+    collapsed during parsing.  Note: disabling sorting (`:sort-licenses?`) may
+    cause redundant clauses to remain in the parse tree.
   * `:sort-licenses?` (`boolean`, default `true`) - controls whether licenses
     that appear at the same level in the parse tree are sorted alphabetically.
     This means that some parse trees will be identical for different (though
@@ -415,6 +363,9 @@
     e.g. `aPAcHe-2.0` -> `Apache-2.0`
   * The parser always removes redundant grouping
     e.g. `(((((Apache-2.0))))))` -> `Apache-2.0`
+  * The parser always corrects nonsensical combinations of GNU family
+    license identifiers with the 'or later' marker
+    e.g. `GPL-3.0-only+` -> `GPL-3.0-or-later`
   * The parser synthesises grouping when needed to make SPDX license
     expressions' precedence rules explicit (see [the relevant section within
     annex D of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
@@ -434,7 +385,10 @@
   {:license-id \"Apache-2.0\" :or-later? true}  ; Note id case correction
 
   (parse \"GPL-2.0+\")
-  {:license-id \"GPL-2.0-or-later\"}  ; Note deprecated id normalisation
+  {:license-id \"GPL-2.0-or-later\"}  ; Note GNU family normalisation
+
+  (parse \"StandardML-NJ\")
+  {:license-id \"SMLNJ\"}  ; Note deprecated id normalisation
 
   (parse \"GPL-2.0 WITH Classpath-exception-2.0\")
   {:license-id \"GPL-2.0-only\"
