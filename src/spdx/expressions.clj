@@ -225,15 +225,6 @@
          :group-fn   (fn [_ [operator & entries]] (normalise-nested-operators operator entries))}
         parse-tree))
 
-(defn- collapse-redundant-clauses
-  "Collapses redundant clauses in `parse-tree`."
-  [parse-tree]
-  (walk {:group-fn #(let [result (distinct %2)]
-                      (if (= 2 (count result))
-                        (second result)
-                        result))}
-        parse-tree))
-
 (defn- compare-license-maps
   "Compares two license maps, as found in a parse tree."
   [x y]
@@ -255,11 +246,14 @@
   "sort-by comparator for parse-trees"
   [x y]
   (cond
+    ; Keywords (operators) always come first
     (and (keyword? x) (keyword? y))       (compare x y)
     (keyword? x)                          -1
     (keyword? y)                          1
+    ; Then maps (licenses)
     (and (map? x) (map? y))               (compare-license-maps x y)       ; Because compare doesn't support maps
     (map? x)                              -1
+    ; And sequences (sub-clauses) last
     (and (sequential? x) (sequential? y)) (compare-license-sequences x y)  ; Because compare doesn't support maps (which will be elements inside x and y)
     :else                                 1))
 
@@ -269,6 +263,15 @@
   tree as parsing `MIT OR Apache-2.0`."
   [parse-tree]
   (walk {:group-fn #(some-> (seq (sort-by identity parse-tree-compare %2)) vec)}
+        parse-tree))
+
+(defn- collapse-redundant-clauses
+  "Collapses redundant clauses in `parse-tree`."
+  [parse-tree]
+  (walk {:group-fn #(let [result (vec (distinct %2))]
+                      (if (= 2 (count result))
+                        (second result)
+                        result))}
         parse-tree))
 
 (defn parse-with-info
@@ -313,8 +316,10 @@
                                 parse-tree)
                (mandatory-license-id-replacements parse-tree)
                (if normalise-deprecated-ids?   (normalise-deprecated-ids   parse-tree) parse-tree)
+               (if sort-licenses?              (sort-parse-tree            parse-tree) parse-tree)
                (if collapse-redundant-clauses? (collapse-redundant-clauses parse-tree) parse-tree)
-               (if sort-licenses?              (sort-parse-tree            parse-tree) parse-tree)))))))
+               (if (and collapse-redundant-clauses?
+                        sort-licenses?)        (sort-parse-tree            parse-tree) parse-tree)))))))  ; Post-sort, to ensure results of collapsing redundant clauses get sorted
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
@@ -338,7 +343,8 @@
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
     whether redundant clauses (e.g. \"Apache-2.0 AND Apache-2.0\") are
-    collapsed during parsing.
+    collapsed during parsing.  Note: disabled sorting (`:sort-licenses?`) may
+    cause redundant clauses to remain in the parse tree.
   * `:sort-licenses?` (`boolean`, default `true`) - controls whether licenses
     that appear at the same level in the parse tree are sorted alphabetically.
     This means that some parse trees will be identical for different (though

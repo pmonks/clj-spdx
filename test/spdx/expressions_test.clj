@@ -235,6 +235,7 @@
     (is (= (parse "Apache-2.0 AND Apache-2.0 OR MIT")         [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 OR MIT OR Apache-2.0")          [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 AND MIT AND Apache-2.0")        [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "(Apache-2.0 OR MIT) AND (MIT OR Apache-2.0)") [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "Apache-2.0 AND Apache-2.0 OR Apache-2.0 AND Apache-2.0")
                                                               {:license-id "Apache-2.0"}))
     (is (= (parse "Apache-2.0 AND (Apache-2.0 OR (Apache-2.0 AND Apache-2.0))")
