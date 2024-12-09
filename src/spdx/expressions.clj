@@ -413,39 +413,48 @@
   Examples (assuming default options):
 
   ```clojure
+  ; Simple SPDX expression (single license identifier)
   (parse \"Apache-2.0\")
   {:license-id \"Apache-2.0\"}
 
+  ; Identifier case correction, or-later? flag
   (parse \"apache-2.0+\")
-  {:license-id \"Apache-2.0\" :or-later? true}  ; Note id case correction
+  {:license-id \"Apache-2.0\" :or-later? true}
 
+  ; GNU family identifier normalisation
   (parse \"GPL-2.0+\")
-  {:license-id \"GPL-2.0-or-later\"}  ; Note GNU family normalisation
+  {:license-id \"GPL-2.0-or-later\"}
 
+  ; Deprecated identifier normalisation
   (parse \"StandardML-NJ\")
-  {:license-id \"SMLNJ\"}  ; Note deprecated id normalisation
+  {:license-id \"SMLNJ\"}
 
+  ; License exceptions
   (parse \"GPL-2.0 WITH Classpath-exception-2.0\")
   {:license-id \"GPL-2.0-only\"
    :license-exception-id \"Classpath-exception-2.0\"}
 
-  (parse \"(MIT OR BSD-2-Clause) AND Apache-2.0\")  ; Note nesting and sorting
-  [:and
-   {:license-id \"Apache-2.0\"}
-   [:or
-    {:license-id \"BSD-2-Clause\"}
-    {:license-id \"MIT\"}]]
+  ; Nesting (due to operator precedence), and sorting
+  (parse \"MIT OR BSD-2-Clause AND Apache-2.0\")
+  [:or
+   {:license-id \"MIT\"}
+   [:and
+    {:license-id \"Apache-2.0\"}
+    {:license-id \"BSD-2-Clause\"}]]
 
-  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")  ; Note case insensitivity of operators
+  ; Case insensitive operators
+  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")
   [:or
    {:license-id \"CDDL-1.1\"}
    {:license-id \"GPL-2.0-or-later\"
     :license-exception-id \"Classpath-exception-2.0\"}]
 
+  ; LicenseRefs (custom license identifiers)
   (parse \"DocumentRef-foo:LicenseRef-bar\")
   {:document-ref \"foo\"
    :license-ref \"bar\"}
 
+  ; AdditionRefs (custom license exception identifiers, added in SPDX 3.0)
   (parse \"Apache-2.0 with DocumentRef-foo:AdditionRef-bar\")
   {:license-id \"Apache-2.0\"
    :addition-document-ref \"foo\"
