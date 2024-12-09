@@ -270,7 +270,11 @@
     (is (= (parse "(GPL-2.0-only OR Apache-2.0) AND LicenseRef-foo")                                                                                      ; Sub-clauses after LicenseRefs
                                                               [:and {:license-ref "foo"} [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]]))
     (is (= (parse "MIT WITH AdditionRef-foo AND MIT WITH AdditionRef-FOO")                                                                                ; Case *in*sensitive license id sorting, with case sensitive AdditionRef sorting
-                                                              [:and {:license-id "MIT" :addition-ref "FOO"} {:license-id "MIT" :addition-ref "foo"}]))))
+                                                              [:and {:license-id "MIT" :addition-ref "FOO"} {:license-id "MIT" :addition-ref "foo"}]))
+    (is (= (parse "GPL-2.0-only WITH AdditionRef-foo AND GPL-2.0-only WITH Classpath-exception-2.0")                                                      ; AdditionRefs sort after license exceptions
+                                                              [:and {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"} {:license-id "GPL-2.0-only" :addition-ref "foo"}]))
+    (is (= (parse "LicenseRef-foo WITH AdditionRef-foo AND LicenseRef-foo WITH Classpath-exception-2.0")                                                  ; AdditionRefs sort after license exceptions (LicenseRef variant)
+                                                              [:and {:license-ref "foo" :license-exception-id "Classpath-exception-2.0"} {:license-ref "foo" :addition-ref "foo"}]))))
 
 (deftest unnormalised-parse-tests
   (testing "Simple expressions - normalisation"
