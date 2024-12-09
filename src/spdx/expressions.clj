@@ -407,8 +407,8 @@
     for details).
   * The default `opts` result in parsing that is more lenient than the SPDX
     specification and is therefore not strictly spec compliant.  You can enable
-    strictly spec compliant parsing by setting `normalise-deprecated-ids?` to
-    `false` and `case-sensitive-operators?` to `true`.
+    strictly spec compliant parsing by setting `case-sensitive-operators?` to
+    `true`.
 
   Examples (assuming default options):
 
