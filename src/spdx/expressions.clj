@@ -227,7 +227,7 @@
 
 (defn- license-map->sortable-string
   "Turns a license map into a string suitable for sorting (but NOT suitable for
-  display or any other purpose. Returns `nil` if `m` is empty."
+  display or any other purpose). Returns `nil` if `m` is empty."
   [m]
   (when-not (empty? m)
     (str (when (:license-id m)           (s/lower-case (:license-id m)))
