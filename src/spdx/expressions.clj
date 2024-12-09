@@ -240,12 +240,28 @@
   "Compares two license maps, as found in a parse tree."
   [x y]
   (cond
-    ; License-ids first
-    (and (:license-id x) (:license-id y))   (compare (license-map->sortable-string x) (license-map->sortable-string y))
+    ; license-ids first
+    (and (:license-id x) (:license-id y))   (if (and (= (s/lower-case (:license-id x)) (s/lower-case (:license-id y)))
+                                                     (= (:or-later? x) (:or-later? y)))
+                                              (cond
+                                                ; exception-ids first
+                                                (and (:license-exception-id x) (:addition-ref         y)) -1
+                                                ; then AdditionRefs
+                                                (and (:addition-ref         x) (:license-exception-id y)) 1
+                                                :else                          (compare (license-map->sortable-string x) (license-map->sortable-string y)))
+                                              (compare (license-map->sortable-string x) (license-map->sortable-string y)))
     (:license-id x)                         -1
     (:license-id y)                         1
     ; then LicenseRefs
-    (and (:license-ref x) (:license-ref y)) (compare (license-map->sortable-string x) (license-map->sortable-string y))
+    (and (:license-ref x) (:license-ref y)) (if (and (= (:license-ref x)  (:license-ref y))
+                                                     (= (:document-ref x) (:document-ref y)))
+                                              (cond
+                                                ; exception-ids first
+                                                (and (:license-exception-id x) (:addition-ref         y)) -1
+                                                ; then AdditionRefs
+                                                (and (:addition-ref         x) (:license-exception-id y)) 1
+                                                :else                          (compare (license-map->sortable-string x) (license-map->sortable-string y)))
+                                              (compare (license-map->sortable-string x) (license-map->sortable-string y)))
     (:license-ref x)                        -1
     (:license-ref y)                        1
     :else                                   1))
