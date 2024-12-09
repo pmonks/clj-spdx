@@ -91,8 +91,8 @@
                                                                 :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")
                                                               [:or
-                                                               {:license-ref "bar" :document-ref "foo"}
                                                                {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}
+                                                               {:license-ref "bar" :document-ref "foo"}
                                                                [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))
     (is (= (parse "LicenseRef-foo WITH AdditionRef-bar")      {:license-ref "foo" :addition-ref "bar"}))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")
@@ -183,8 +183,8 @@
     (is (= (parse "eCos-2.0 WITH eCos-exception-2.0")         {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}))
     (is (= (parse "MIT AND eCos-2.0" {:normalise-deprecated-ids? false})
                                                               [:and
-                                                               {:license-id "MIT"}
-                                                               {:license-id "eCos-2.0"}]))
+                                                               {:license-id "eCos-2.0"}
+                                                               {:license-id "MIT"}]))
     (is (= (parse "wxWindows")                                {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}))
     (is (= (parse "MIT AND wxWindows")                        [:and {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"} {:license-id "MIT"}]))
     (is (= (parse "wxWindows AND MIT")                        [:and {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"} {:license-id "MIT"}]))
@@ -194,11 +194,11 @@
                                                                {:license-id "BSD-2-Clause"}
                                                                {:license-id "wxWindows"}]))
     (is (= (parse "eCos-2.0 AND wxWindows")                   [:and
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}]))
     (is (= (parse "wxWindows AND eCos-2.0")                   [:and
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}]))
     ; Cursed "double license exception" cases
     (is (= (parse "GPL-2.0-with-classpath-exception WITH Classpath-exception-2.0")
                                                               {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}))
@@ -216,13 +216,13 @@
     (is (= (parse "eCos-2.0 WITH GCC-exception-2.0 AND Apache-2.0")
                                                               [:and
                                                                {:license-id "Apache-2.0"}
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}]))
     (is (= (parse "eCos-2.0 WITH GCC-exception-2.0 AND MIT WITH WxWindows-exception-3.1")
                                                               [:and
-                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
                                                                {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}
-                                                               {:license-id "MIT" :license-exception-id "WxWindows-exception-3.1"}])))
+                                                               {:license-id "GPL-2.0-only" :license-exception-id "GCC-exception-2.0"}
+                                                               {:license-id "MIT"          :license-exception-id "WxWindows-exception-3.1"}])))
   (testing "Expressions that exercise collapsing redundant clauses"
     (is (= (parse "Apache-2.0 OR Apache-2.0")                 {:license-id "Apache-2.0"}))
     (is (= (parse "Apache-2.0 AND Apache-2.0" {:collapse-redundant-clauses? true})
@@ -253,7 +253,24 @@
     (is (= (parse "Apache-2.0 OR MIT")                        [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "MIT OR Apache-2.0")                        [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "MIT OR Apache-2.0" {:sort-licenses? true}) [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
-    (is (= (parse "MIT OR Apache-2.0" {:sort-licenses? false}) [:or {:license-id "MIT"} {:license-id "Apache-2.0"}]))))
+    (is (= (parse "MIT OR Apache-2.0" {:sort-licenses? false}) [:or {:license-id "MIT"} {:license-id "Apache-2.0"}]))
+    (is (= (parse "EPL-2.0 OR EPL-1.0")                       [:or {:license-id "EPL-1.0"} {:license-id "EPL-2.0"}]))                                     ; Sorting by version
+    (is (= (parse "MIT AND dtoa AND CDDL-1.0")                [:and {:license-id "CDDL-1.0"} {:license-id "dtoa"} {:license-id "MIT"}]))                  ; Case-insensitive sorting
+    (is (= (parse "Apache-2.0+ OR Apache-2.0")                [:or {:license-id "Apache-2.0"} {:license-id "Apache-2.0" :or-later? true}]))               ; Licenses with or-later flag after licenses alone (even when same license id)
+    (is (= (parse "GPL-2.0-only WITH Classpath-exception-2.0 OR GPL-2.0-only")                                                                            ; Licenses with exceptions after licenses alone (even when same license id)
+                                                              [:or {:license-id "GPL-2.0-only"} {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "GPL-2.0-only WITH AdditionRef-foo OR GPL-2.0-only")                                                                                    ; Licenses with AdditionRefs after licenses alone (even when same license id)
+                                                              [:or {:license-id "GPL-2.0-only"} {:license-id "GPL-2.0-only" :addition-ref "foo"}]))
+    (is (= (parse "LicenseRef-foo WITH Classpath-exception-2.0 OR LicenseRef-foo")                                                                        ; LicenseRefs with exceptions after LicenseRefs alone (even when same LicenseRef)
+                                                              [:or {:license-ref "foo"} {:license-ref "foo" :license-exception-id "Classpath-exception-2.0"}]))
+    (is (= (parse "LicenseRef-foo WITH AdditionRef-foo OR LicenseRef-foo")                                                                                ; LicenseRefs with AdditionRefs after LicenseRefs alone (even when same LicenseRef)
+                                                              [:or {:license-ref "foo"} {:license-ref "foo" :addition-ref "foo"}]))
+    (is (= (parse "LicenseRef-foo OR MIT")                    [:or {:license-id "MIT"} {:license-ref "foo"}]))                                            ; LicenseRefs after licenses
+    (is (= (parse "(GPL-2.0-only OR Apache-2.0) AND MIT")     [:and {:license-id "MIT"} [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]]))  ; Sub-clauses after licenses
+    (is (= (parse "(GPL-2.0-only OR Apache-2.0) AND LicenseRef-foo")                                                                                      ; Sub-clauses after LicenseRefs
+                                                              [:and {:license-ref "foo"} [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]]))
+    (is (= (parse "MIT WITH AdditionRef-foo AND MIT WITH AdditionRef-FOO")                                                                                ; Case *in*sensitive license id sorting, with case sensitive AdditionRef sorting
+                                                              [:and {:license-id "MIT" :addition-ref "FOO"} {:license-id "MIT" :addition-ref "foo"}]))))
 
 (deftest unnormalised-parse-tests
   (testing "Simple expressions - normalisation"
@@ -291,8 +308,8 @@
              :license-exception-id "Classpath-exception-2.0"}]))
     (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar" {:normalise-deprecated-ids? false})
            [:or
-            {:license-ref "bar" :document-ref "foo"}
             {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"}
+            {:license-ref "bar" :document-ref "foo"}
             [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))
     (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0" {:normalise-deprecated-ids? false})
            {:license-id "GPL-2.0-with-GCC-exception" :license-exception-id "Classpath-exception-2.0"}))))
@@ -399,11 +416,11 @@
     (is (= (normalise "Apache-2.0 OR (MIT and BSD-3-Clause OR Unlicense)")
                                                                "Apache-2.0 OR Unlicense OR (BSD-3-Clause AND MIT)"))
     (is (= (normalise "mit or bsd-3-clause AND apache-2.0 and beerware OR epl-2.0 and mpl-2.0 OR unlicense and lgpl-3.0 OR wtfpl or glwtpl OR hippocratic-2.1")
-                                                               "GLWTPL OR Hippocratic-2.1 OR MIT OR WTFPL OR (EPL-2.0 AND MPL-2.0) OR (LGPL-3.0-only AND Unlicense) OR (Apache-2.0 AND BSD-3-Clause AND Beerware)"))
+                                                               "GLWTPL OR Hippocratic-2.1 OR MIT OR WTFPL OR (EPL-2.0 AND MPL-2.0) OR (LGPL-3.0-only AND Unlicense) OR (Apache-2.0 AND Beerware AND BSD-3-Clause)"))
     (is (= (normalise "MIT or (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
-                                                               "Apache-2.0 OR BSD-3-Clause OR Beerware OR EPL-2.0 OR GLWTPL OR Hippocratic-2.1 OR LGPL-3.0-only OR MIT OR MPL-2.0 OR Unlicense OR WTFPL"))
+                                                               "Apache-2.0 OR Beerware OR BSD-3-Clause OR EPL-2.0 OR GLWTPL OR Hippocratic-2.1 OR LGPL-3.0-only OR MIT OR MPL-2.0 OR Unlicense OR WTFPL"))
     (is (= (normalise "MIT and (BSD-3-Clause AND (Apache-2.0 and (Beerware AND (EPL-2.0 and (MPL-2.0 AND (Unlicense and (LGPL-3.0-only AND (WTFPL and (GLWTPL AND (Hippocratic-2.1))))))))))")
-                                                               "Apache-2.0 AND BSD-3-Clause AND Beerware AND EPL-2.0 AND GLWTPL AND Hippocratic-2.1 AND LGPL-3.0-only AND MIT AND MPL-2.0 AND Unlicense AND WTFPL"))
+                                                               "Apache-2.0 AND Beerware AND BSD-3-Clause AND EPL-2.0 AND GLWTPL AND Hippocratic-2.1 AND LGPL-3.0-only AND MIT AND MPL-2.0 AND Unlicense AND WTFPL"))
     (is (= (normalise "MIT and (BSD-3-Clause or (Apache-2.0 and (Beerware or (EPL-2.0 and (MPL-2.0 or (Unlicense and (LGPL-3.0-only or (WTFPL and (GLWTPL or Hippocratic-2.1)))))))))")
                                                                "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
     (is (= (normalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
