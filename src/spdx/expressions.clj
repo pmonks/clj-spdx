@@ -225,11 +225,30 @@
          :group-fn   (fn [_ [operator & entries]] (normalise-nested-operators operator entries))}
         parse-tree))
 
+(defn- license-map->sortable-string
+  "Turns a license map into a string suitable for sorting (but NOT suitable for
+  display or any other purpose. Returns `nil` if `m` is empty."
+  [m]
+  (when-not (empty? m)
+    (str (when (:license-id m)           (s/lower-case (:license-id m)))
+         (when (:or-later? m)            "+")
+         (when (:license-ref m)          (license-ref->string m))
+         (when (:license-exception-id m) (s/lower-case (str " " (:license-exception-id m))))
+         (when (:addition-ref m)         (str " " (addition-ref->string m))))))
+
 (defn- compare-license-maps
   "Compares two license maps, as found in a parse tree."
   [x y]
-  ; Todo: consider case-insensitive sorting in future, assuming LicenseRefs & AdditionRefs are _not_ case sensitive (awaiting feedback from spdx-tech on that...)
-  (compare (license-map->string x) (license-map->string y)))
+  (cond
+    ; License-ids first
+    (and (:license-id x) (:license-id y))   (compare (license-map->sortable-string x) (license-map->sortable-string y))
+    (:license-id x)                         -1
+    (:license-id y)                         1
+    ; then LicenseRefs
+    (and (:license-ref x) (:license-ref y)) (compare (license-map->sortable-string x) (license-map->sortable-string y))
+    (:license-ref x)                        -1
+    (:license-ref y)                        1
+    :else                                   1))
 
 (defn- compare-license-sequences
   "Compares two license sequences, as found in a parse tree.  Comparisons are
