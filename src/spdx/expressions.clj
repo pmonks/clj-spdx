@@ -429,7 +429,14 @@
   {:license-id \"GPL-2.0-only\"
    :license-exception-id \"Classpath-exception-2.0\"}
 
-  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")  ; Note sorting
+  (parse \"(MIT OR BSD-2-Clause) AND Apache-2.0\")  ; Note nesting and sorting
+  [:and
+   {:license-id \"Apache-2.0\"}
+   [:or
+    {:license-id \"BSD-2-Clause\"}
+    {:license-id \"MIT\"}]]
+
+  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")  ; Note case insensitivity of operators
   [:or
    {:license-id \"CDDL-1.1\"}
    {:license-id \"GPL-2.0-or-later\"
