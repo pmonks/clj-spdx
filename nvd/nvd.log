@@ -1,63 +1,63 @@
 Downloading: nvd-clojure/nvd-clojure/maven-metadata.xml from clojars
-[2025-02-18 02:45:29.836] INFO nvd-clojure - User-provided config: {:delete-config? false, :group "com.github.pmonks", :name "clj-spdx", :version "1.0.226-SNAPSHOT", :nvd {:output-dir "../target/nvd"}}
-Feb 18, 2025 2:45:29 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+[2025-02-25 02:52:08.005] INFO nvd-clojure - User-provided config: {:delete-config? false, :group "com.github.pmonks", :name "clj-spdx", :version "1.0.226-SNAPSHOT", :nvd {:output-dir "../target/nvd"}}
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
 INFO: Instance is null, returning unconfigured instance
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
 INFO: Setting default auxiliaries to "ODC"
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
 INFO: setting defaultCompositeCacheAttributes to [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
-INFO: setting defaultElementAttributes to [ IS_LATERAL = false, IS_SPOOL = true, IS_REMOTE = false, IS_ETERNAL = false, MaxLifeSeconds = 86400, IdleTime = 1800, CreateTime = 1739846730160, LastAccessTime = 1739846730160, getTimeToLiveSeconds() = 86399, createTime = 1739846730160 ]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+INFO: setting defaultElementAttributes to [ IS_LATERAL = false, IS_SPOOL = true, IS_REMOTE = false, IS_ETERNAL = false, MaxLifeSeconds = 86400, IdleTime = 1800, CreateTime = 1740451928732, LastAccessTime = 1740451928732, getTimeToLiveSeconds() = 86399, createTime = 1740451928732 ]
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
 INFO: initialized MemoryCache for CENTRAL
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: Constructed cache with name [CENTRAL] and cache attributes [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: No cache event logger defined for auxiliary [jcs.auxiliary.ODC]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: Using standard serializer [org.apache.commons.jcs3.utils.serialization.StandardSerializer@5934153e] for auxiliary [jcs.auxiliary.ODC]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Set maxKeySize to: "1,000,000"
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Cache file root directory: /home/runner/.m2/repository/org/owasp/dependency-check-utils/12.0.2/data/11.0/cache
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Indexed Disk Cache is alive.
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
 INFO: initialized MemoryCache for POM
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: Constructed cache with name [POM] and cache attributes [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: No cache event logger defined for auxiliary [jcs.auxiliary.ODC]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: Using standard serializer [org.apache.commons.jcs3.utils.serialization.StandardSerializer@4d4436d0] for auxiliary [jcs.auxiliary.ODC]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Set maxKeySize to: "1,000,000"
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Cache file root directory: /home/runner/.m2/repository/org/owasp/dependency-check-utils/12.0.2/data/11.0/cache
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Indexed Disk Cache is alive.
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
 INFO: initialized MemoryCache for NODEAUDIT
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: Constructed cache with name [NODEAUDIT] and cache attributes [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: No cache event logger defined for auxiliary [jcs.auxiliary.ODC]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: Using standard serializer [org.apache.commons.jcs3.utils.serialization.StandardSerializer@39da5e49] for auxiliary [jcs.auxiliary.ODC]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Set maxKeySize to: "1,000,000"
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Cache file root directory: /home/runner/.m2/repository/org/owasp/dependency-check-utils/12.0.2/data/11.0/cache
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Indexed Disk Cache is alive.
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCacheConfigurator 
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCacheConfigurator 
 INFO: Parsed regions [CENTRAL, POM, NODEAUDIT]
-Feb 18, 2025 2:45:30 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
-INFO: Finished configuration in 52 ms.
-[2025-02-18 02:45:30.195] WARN NexusAnalyzer - Disabling Nexus analyzer - please specify the URL to a Nexus Server
-[2025-02-18 02:45:30.951] INFO Engine - Checking for updates
-[2025-02-18 02:46:27.124] INFO NvdApiDataSource - NVD API has 2,560 records in this update
-[2025-02-18 02:46:47.563] ERROR Engine - Error updating the NVD Data
+Feb 25, 2025 2:52:08 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+INFO: Finished configuration in 109 ms.
+[2025-02-25 02:52:08.780] WARN NexusAnalyzer - Disabling Nexus analyzer - please specify the URL to a Nexus Server
+[2025-02-25 02:52:09.553] INFO Engine - Checking for updates
+[2025-02-25 02:52:40.411] INFO NvdApiDataSource - NVD API has 4,371 records in this update
+[2025-02-25 02:52:57.048] ERROR Engine - Error updating the NVD Data
 org.owasp.dependencycheck.data.update.exception.UpdateException: Error updating the NVD Data
 	at org.owasp.dependencycheck.data.update.NvdApiDataSource.processApi(NvdApiDataSource.java:399)
 	at org.owasp.dependencycheck.data.update.NvdApiDataSource.update(NvdApiDataSource.java:117)
@@ -87,7 +87,7 @@ Caused by: io.github.jeremylong.openvulnerability.client.nvd.NvdApiException: Fa
 	at org.owasp.dependencycheck.data.update.NvdApiDataSource.processApi(NvdApiDataSource.java:355)
 	... 21 more
 Caused by: com.fasterxml.jackson.databind.exc.ValueInstantiationException: Cannot construct instance of `io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data$ModifiedCiaType`, problem: SAFETY
- at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 993198] (through reference chain: io.github.jeremylong.openvulnerability.client.nvd.CveApiJson20["vulnerabilities"]->java.util.ArrayList[464]->io.github.jeremylong.openvulnerability.client.nvd.DefCveItem["cve"]->io.github.jeremylong.openvulnerability.client.nvd.CveItem["metrics"]->io.github.jeremylong.openvulnerability.client.nvd.Metrics["cvssMetricV40"]->java.util.ArrayList[0]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4["cvssData"]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data["modifiedSubsequentSystemIntegrity"])
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 4286346] (through reference chain: io.github.jeremylong.openvulnerability.client.nvd.CveApiJson20["vulnerabilities"]->java.util.ArrayList[1599]->io.github.jeremylong.openvulnerability.client.nvd.DefCveItem["cve"]->io.github.jeremylong.openvulnerability.client.nvd.CveItem["metrics"]->io.github.jeremylong.openvulnerability.client.nvd.Metrics["cvssMetricV40"]->java.util.ArrayList[0]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4["cvssData"]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data["modifiedSubsequentSystemIntegrity"])
 	at com.fasterxml.jackson.databind.exc.ValueInstantiationException.from(ValueInstantiationException.java:47)
 	at com.fasterxml.jackson.databind.DeserializationContext.instantiationException(DeserializationContext.java:2015)
 	at com.fasterxml.jackson.databind.DeserializationContext.handleInstantiationProblem(DeserializationContext.java:1426)
@@ -129,84 +129,84 @@ Caused by: java.lang.IllegalArgumentException: SAFETY
 	at com.fasterxml.jackson.databind.introspect.AnnotatedMethod.callOnWith(AnnotatedMethod.java:118)
 	at com.fasterxml.jackson.databind.deser.std.FactoryBasedEnumDeserializer.deserialize(FactoryBasedEnumDeserializer.java:198)
 	... 52 more
-[2025-02-18 02:46:47.698] INFO KnownExploitedDataSource - Updating CISA Known Exploited Vulnerability list: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
-[2025-02-18 02:46:47.993] INFO CveDB - Begin database defrag
-[2025-02-18 02:46:52.772] INFO CveDB - End database defrag (4782 ms)
-[2025-02-18 02:46:52.774] WARN Engine - Unable to update 1 or more Cached Web DataSource, using local data instead. Results may not include recent vulnerabilities.
-[2025-02-18 02:46:52.774] ERROR Engine - Unable to continue dependency-check analysis.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.event.ElementEventQueue 
-INFO: Element event queue destroyed: org.apache.commons.jcs3.engine.control.event.ElementEventQueue@2e4ecdf8
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+[2025-02-25 02:52:57.177] INFO KnownExploitedDataSource - Updating CISA Known Exploited Vulnerability list: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+[2025-02-25 02:52:57.533] INFO CveDB - Begin database defrag
+[2025-02-25 02:53:02.122] INFO CveDB - End database defrag (4591 ms)
+[2025-02-25 02:53:02.124] WARN Engine - Unable to update 1 or more Cached Web DataSource, using local data instead. Results may not include recent vulnerabilities.
+[2025-02-25 02:53:02.124] ERROR Engine - Unable to continue dependency-check analysis.
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.event.ElementEventQueue 
+INFO: Element event queue destroyed: org.apache.commons.jcs3.engine.control.event.ElementEventQueue@342a1f84
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [NODEAUDIT] fromRemote [false]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [NODEAUDIT] auxiliary [NODEAUDIT]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [NODEAUDIT] put 0 into auxiliary [NODEAUDIT]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
 INFO: In dispose, destroying event queue.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
-INFO: Cache event queue destroyed: CacheEventQueue [listenerId=384942535, cacheName=NODEAUDIT]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
+INFO: Cache event queue destroyed: CacheEventQueue [listenerId=990141118, cacheName=NODEAUDIT]
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Saving keys to: NODEAUDIT, key count: 0
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Finished saving keys.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Shutdown complete.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [NODEAUDIT] disposing of memory cache.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
 INFO: Memory Cache dispose called.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [CENTRAL] fromRemote [false]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [CENTRAL] auxiliary [CENTRAL]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [CENTRAL] put 0 into auxiliary [CENTRAL]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
 INFO: In dispose, destroying event queue.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
-INFO: Cache event queue destroyed: CacheEventQueue [listenerId=384942535, cacheName=CENTRAL]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
+INFO: Cache event queue destroyed: CacheEventQueue [listenerId=990141118, cacheName=CENTRAL]
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Saving keys to: CENTRAL, key count: 0
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Finished saving keys.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Shutdown complete.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [CENTRAL] disposing of memory cache.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
 INFO: Memory Cache dispose called.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [POM] fromRemote [false]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [POM] auxiliary [POM]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [POM] put 0 into auxiliary [POM]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
 INFO: In dispose, destroying event queue.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
-INFO: Cache event queue destroyed: CacheEventQueue [listenerId=384942535, cacheName=POM]
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
+INFO: Cache event queue destroyed: CacheEventQueue [listenerId=990141118, cacheName=POM]
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Saving keys to: POM, key count: 0
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Finished saving keys.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Shutdown complete.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [POM] disposing of memory cache.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
 INFO: Memory Cache dispose called.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
 INFO: In dispose, destroying event queue.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 SEVERE: Region [NODEAUDIT] : Not alive and dispose was called, filename: NODEAUDIT
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
 INFO: In dispose, destroying event queue.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 SEVERE: Region [CENTRAL] : Not alive and dispose was called, filename: CENTRAL
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
 INFO: In dispose, destroying event queue.
-Feb 18, 2025 2:46:52 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Feb 25, 2025 2:53:02 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 SEVERE: Region [POM] : Not alive and dispose was called, filename: POM
 {:clojure.main/message
  "Execution error (ExceptionInfo) at nvd.task.check/scan-and-analyze$fn (check.clj:57).\norg.owasp.dependencycheck.exception.ExceptionCollection\n",
@@ -232,7 +232,7 @@ SEVERE: Region [POM] : Not alive and dispose was called, filename: POM
    :message "Failed to parse NVD data"
    :at [io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient _next "NvdCveClient.java" 389]}
   {:type com.fasterxml.jackson.databind.exc.ValueInstantiationException
-   :message "Cannot construct instance of `io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data$ModifiedCiaType`, problem: SAFETY\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 993198] (through reference chain: io.github.jeremylong.openvulnerability.client.nvd.CveApiJson20[\"vulnerabilities\"]->java.util.ArrayList[464]->io.github.jeremylong.openvulnerability.client.nvd.DefCveItem[\"cve\"]->io.github.jeremylong.openvulnerability.client.nvd.CveItem[\"metrics\"]->io.github.jeremylong.openvulnerability.client.nvd.Metrics[\"cvssMetricV40\"]->java.util.ArrayList[0]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4[\"cvssData\"]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data[\"modifiedSubsequentSystemIntegrity\"])"
+   :message "Cannot construct instance of `io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data$ModifiedCiaType`, problem: SAFETY\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 4286346] (through reference chain: io.github.jeremylong.openvulnerability.client.nvd.CveApiJson20[\"vulnerabilities\"]->java.util.ArrayList[1599]->io.github.jeremylong.openvulnerability.client.nvd.DefCveItem[\"cve\"]->io.github.jeremylong.openvulnerability.client.nvd.CveItem[\"metrics\"]->io.github.jeremylong.openvulnerability.client.nvd.Metrics[\"cvssMetricV40\"]->java.util.ArrayList[0]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4[\"cvssData\"]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data[\"modifiedSubsequentSystemIntegrity\"])"
    :at [com.fasterxml.jackson.databind.exc.ValueInstantiationException from "ValueInstantiationException.java" 47]}
   {:type java.lang.IllegalArgumentException
    :message "SAFETY"
@@ -351,7 +351,7 @@ SEVERE: Region [POM] : Not alive and dispose was called, filename: POM
    :message "Failed to parse NVD data"
    :at [io.github.jeremylong.openvulnerability.client.nvd.NvdCveClient _next "NvdCveClient.java" 389]}
   {:type com.fasterxml.jackson.databind.exc.ValueInstantiationException
-   :message "Cannot construct instance of `io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data$ModifiedCiaType`, problem: SAFETY\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 993198] (through reference chain: io.github.jeremylong.openvulnerability.client.nvd.CveApiJson20[\"vulnerabilities\"]->java.util.ArrayList[464]->io.github.jeremylong.openvulnerability.client.nvd.DefCveItem[\"cve\"]->io.github.jeremylong.openvulnerability.client.nvd.CveItem[\"metrics\"]->io.github.jeremylong.openvulnerability.client.nvd.Metrics[\"cvssMetricV40\"]->java.util.ArrayList[0]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4[\"cvssData\"]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data[\"modifiedSubsequentSystemIntegrity\"])"
+   :message "Cannot construct instance of `io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data$ModifiedCiaType`, problem: SAFETY\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 4286346] (through reference chain: io.github.jeremylong.openvulnerability.client.nvd.CveApiJson20[\"vulnerabilities\"]->java.util.ArrayList[1599]->io.github.jeremylong.openvulnerability.client.nvd.DefCveItem[\"cve\"]->io.github.jeremylong.openvulnerability.client.nvd.CveItem[\"metrics\"]->io.github.jeremylong.openvulnerability.client.nvd.Metrics[\"cvssMetricV40\"]->java.util.ArrayList[0]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4[\"cvssData\"]->io.github.jeremylong.openvulnerability.client.nvd.CvssV4Data[\"modifiedSubsequentSystemIntegrity\"])"
    :at [com.fasterxml.jackson.databind.exc.ValueInstantiationException from "ValueInstantiationException.java" 47]}
   {:type java.lang.IllegalArgumentException
    :message "SAFETY"
