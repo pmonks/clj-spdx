@@ -9,11 +9,12 @@
 ;
 
 (ns spdx.licenses-test
-  (:require [clojure.test    :refer [deftest testing is]]
-            [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.licenses   :refer [version ids listed-id? license-ref? license-ref license-ref-map->string
-                                     string->license-ref-map equivalent-license-refs? id->info deprecated-id?
-                                     non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids]]))
+  (:require [clojure.test     :refer [deftest testing is]]
+            [spdx.test-utils  :refer [equivalent-colls?]]
+            [spdx.licenses    :refer [version ids listed-id? license-ref? license-ref license-ref-map->string
+                                      string->license-ref-map equivalent-license-refs? id->info deprecated-id?
+                                      non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids]]
+            [spdx.expressions :as exp]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -181,33 +182,39 @@
     (is (map? (string->license-ref-map "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))  ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG")))))
 
+(def roundtrip-license-refs [
+  ; Invalid LicenseRef strings that round trip (no other invalid values round trip)
+  nil
+  ; Valid LicenseRef strings
+  "LicenseRef-foo"
+  "LicenseRef-FOO"
+  "LicenseRef-42"
+  "LicenseRef-foo42"
+  "LicenseRef-42foo"
+  "LicenseRef-foo-v2.1"
+  "LicenseRef--"
+  "LicenseRef-."
+  "LicenseRef-.-.-.-.-.-.-.-."
+  "DocumentRef-foo:LicenseRef-bar"
+  "DocumentRef-FOO:LicenseRef-BAR"
+  "DocumentRef-42:LicenseRef-42"
+  "DocumentRef-foo42:LicenseRef-bar42"
+  "DocumentRef-42foo:LicenseRef-42bar"
+  "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7"
+  "DocumentRef--:LicenseRef-bar"
+  "DocumentRef-.:LicenseRef-bar"
+  "DocumentRef----:LicenseRef----"
+  "DocumentRef-.-.:LicenseRef-.-."
+  "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar"
+  "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG"])
+
+(deftest parsing-equivalence-tests
+  (testing "Equivalence of parsing methods"
+    (run! #(is (= (string->license-ref-map %) (exp/parse %)) %) roundtrip-license-refs)))
+
 (deftest license-ref-roundtrip-tests
   (testing "Starting with LicenseRef string"
-    (let [license-refs [; Invalid LicenseRef strings that round trip (no other invalid values round trip)
-                        nil
-                        ; Valid LicenseRef strings
-                        "LicenseRef-foo"
-                        "LicenseRef-FOO"
-                        "LicenseRef-42"
-                        "LicenseRef-foo42"
-                        "LicenseRef-42foo"
-                        "LicenseRef-foo-v2.1"
-                        "LicenseRef--"
-                        "LicenseRef-."
-                        "LicenseRef-.-.-.-.-.-.-.-."
-                        "DocumentRef-foo:LicenseRef-bar"
-                        "DocumentRef-FOO:LicenseRef-BAR"
-                        "DocumentRef-42:LicenseRef-42"
-                        "DocumentRef-foo42:LicenseRef-bar42"
-                        "DocumentRef-42foo:LicenseRef-42bar"
-                        "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7"
-                        "DocumentRef--:LicenseRef-bar"
-                        "DocumentRef-.:LicenseRef-bar"
-                        "DocumentRef----:LicenseRef----"
-                        "DocumentRef-.-.:LicenseRef-.-."
-                        "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar"
-                        "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG"]]
-      (run! #(is (= % (license-ref-map->string (string->license-ref-map %))) %) license-refs)))
+    (run! #(is (= % (license-ref-map->string (string->license-ref-map %))) %) roundtrip-license-refs))
   (testing "Starting with LicenseRef map"
     (let [license-ref-maps [; Invalid LicenseRef maps that round trip (no other invalid values round trip)
                             nil
