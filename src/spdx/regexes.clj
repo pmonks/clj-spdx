@@ -19,31 +19,34 @@
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn build-re
-  "Returns a regex (`Pattern`) that can find or match the given SPDX `ids` (a
-  sequence of `String`s) in a source text. Returns `nil` if `ids` is `nil` or empty.
+  "Returns a regex (`Pattern`) that can find or match any one of the given SPDX
+  `ids` (a sequence of `String`s) in a source text. Returns `nil` if `ids` is
+  `nil` or empty.
 
-  The regex provides these named capturing groups:
+  The regex includes these named capturing groups:
 
   * `Identifier` (always present) - captures the entire identifier, `LicenseRef`
     or `AdditionRef`
   * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
-    if it contains one
-  * `LicenseRef` (optional) - captures the `LicenseRef` tag of a `LicenseRef`
+    if that's what's matched and it contains one
+  * `LicenseRef` (optional) - captures the `LicenseRef` tag of a `LicenseRef`,
+    if that's what's matched
   * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
-    `AdditionRef`, if it contains one
+    `AdditionRef`, if that's what's matched and it contains one
   * `AdditionRef` (optional) - captures the `AdditionRef` tag of an
-    `AdditionRef`
+    `AdditionRef`, if that's what's matched
 
   Groups should _not_ be accessed by index, as the groups in the returned
   regexes are not part of the public contract of this API, and are liable to
   change over time.  You may choose to use something like
-  [rencg](https://github.com/pmonks/rencg) to ensure your code is future proof
-  in this regard.
+  [rencg](https://github.com/pmonks/rencg) (a library that clj-spdx has a
+  dependency upon, so is already available to your code) to ensure your code is
+  future proof in this regard.
 
   `ids` will appear in the regex sorted from longest to shortest, so that more
   specific values are preferentially found or matched first - this avoids
-  mismatches when one id is a subset of another id (e.g. `GPL-2.0` and
-  `GPL-2.0-or-later`).
+  mismatches when one id is a subset of another id (e.g. `GPL-2.0-or-later` and
+  `GPL-2.0`).
 
   `opts` are:
 
@@ -51,8 +54,9 @@
     identifier matching is case sensitive or not. The [spec explicitly states
     that SPDX identifiers are _not_ case sensitive](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity),
     but there may be cases where case sensitive matching is preferred.  Note
-    that regardless of this setting, LicenseRefs and AdditionRefs are _always_
-    matched case sensitively - this is required by the spec.
+    that regardless of this setting, LicenseRefs and AdditionRefs (if included)
+    are _always_ matched as required by the spec (i.e. the 'tags' are matched
+    case-sensitively, and the 'variable sections' are not)
   * `include-license-refs?` (`boolean`, default `false`) - controls whether
     `LicenseRef` support is also included in the regex
   * `include-addition-refs?` (`boolean`, default `false`) - controls whether
