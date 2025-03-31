@@ -32,24 +32,25 @@
           set))
 
 (defn listed-id?
-  "Is `id` one of the listed SPDX exception ids?"
+  "Is `id` (a `String`) one of the listed SPDX exception ids?"
   [^String id]
   (im/listed-exception-id? id))
 
 (def ^:private addition-ref-re-d (delay (re/join #"\A" @ir/addition-ref-re-d #"\z")))
 
 (defn addition-ref?
-  "Is `id` an `AdditionRef`?"
-  [id]
-  (boolean (when id (re-matches @addition-ref-re-d id))))
+  "Is `s` (a `String`) a valid `AdditionRef`? See
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  for specifics."
+  [^String s]
+  (boolean (when s (re-matches @addition-ref-re-d s))))
 
 (defn addition-ref
-  "Constructs a AdditionRef (as a `String`) from individual 'variable
+  "Constructs an AdditionRef (as a `String`) from individual 'variable
   section' `String`s. Returns `nil` if `addition-ref` is blank, or the resulting
-  value is not a valid AdditionRef (see
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/))."
-  ([addition-ref-var-section] (addition-ref nil addition-ref-var-section))
-  ([document-ref-var-section addition-ref-var-section]
+  value is not a valid AdditionRef."
+  ([^String addition-ref-var-section] (addition-ref nil addition-ref-var-section))
+  ([^String document-ref-var-section ^String addition-ref-var-section]
     (when-not (s/blank? addition-ref-var-section)
       (let [result (str (when document-ref-var-section (str "DocumentRef-" document-ref-var-section ":"))
                         "AdditionRef-" addition-ref-var-section)]
@@ -57,22 +58,25 @@
           result)))))
 
 (defn addition-ref-map->string
-  "Turns map `m` representing a AdditionRef into a `String`, returning `nil` if
-  `m` is `nil` or the resulting value is not a valid AdditionRef (see
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/))."
+  "Turns map `m` representing an AdditionRef into a `String`, returning `nil` if
+  `m` is `nil` or the resulting value is not a valid AdditionRef.
+
+  Note:
+
+  * This fn is the inverse of [[string->addition-ref-map]]."
   [m]
   (when m
     (addition-ref (:addition-document-ref m) (:addition-ref m))))
 
 (defn string->addition-ref-map
-  "Turns `s` (a `String`) into a `map` representing a AdditionRef.  Returns `nil`
-  if `s` is `nil` or not a valid AdditionRef (see
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)).
+  "Turns `s` (a `String` containing an AdditionRef) into a `map` representing
+  that same AdditionRef.  Returns `nil` if `s` is `nil` or not a valid
+  AdditionRef.
 
-  Notes:
+  Note:
 
-  * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
-  [s]
+  * This fn is the inverse of [[addition-ref-map->string]]."
+  [^String s]
   (when s
     (when-let [m (rencg/re-matches-ncg @addition-ref-re-d s)]
       (merge {:addition-ref (get m "AdditionRef")}
@@ -80,13 +84,13 @@
 
 (defn equivalent-addition-refs?
   "Are `s1` and `s2` (`String`s) equivalent AdditionRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
 
-  * Returns `false` if either `s1` or `s2` are not valid AdditionRefs"
-  [s1 s2]
+  * Returns `false` if `s1` or `s2` are not valid AdditionRefs"
+  [^String s1 ^String s2]
   (boolean
     (when-let [addition-ref-1 (string->addition-ref-map s1)]
       (when-let [addition-ref-2 (string->addition-ref-map s2)]
@@ -95,8 +99,8 @@
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
-  "Returns SPDX exception list information for `id` as a map, or `nil` if `id`
-  is not a valid SPDX exception id.
+  "Returns SPDX exception list information for `id` (a `String`) as a map, or
+  `nil` if `id` is not a valid SPDX exception id.
 
   `opts` are:
 
@@ -110,8 +114,8 @@
            (im/exception->map opts))))
 
 (defn deprecated-id?
-  "Is `id` deprecated?  Also returns `false` if `id` is not in the SPDX license
-  exception list.
+  "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not in the
+  SPDX license exception list.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."
