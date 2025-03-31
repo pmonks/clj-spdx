@@ -10,53 +10,53 @@
 
 (ns spdx.matching-test
   (:require [clojure.test    :refer [deftest testing is]]
-            [spdx.test-utils :refer [http-get]]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
-                                     texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text exceptions-within-text]]))
+                                     texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text
+                                     exceptions-within-text]]))
 
 ; Official single license texts
-(def apache-10-text                  (delay (slurp (http-get "https://www.apache.org/licenses/LICENSE-1.0.txt"))))
-(def apache-11-text                  (delay (slurp (http-get "https://www.apache.org/licenses/LICENSE-1.1.txt"))))
-(def apache-20-text                  (delay (slurp (http-get "https://www.apache.org/licenses/LICENSE-2.0.txt"))))
+(def apache-10-text                  (delay (slurp "./test/data/apache-1.0.txt")))
+(def apache-11-text                  (delay (slurp "./test/data/apache-1.1.txt")))
+(def apache-20-text                  (delay (slurp "./test/data/apache-2.0.txt")))
 
-(def epl-10-text                     (delay (slurp (http-get "https://www.eclipse.org/org/documents/epl-1.0/EPL-1.0.txt"))))
-(def epl-20-text                     (delay (slurp (http-get "https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt"))))
+(def epl-10-text                     (delay (slurp "./test/data/epl-1.0.txt")))
+(def epl-20-text                     (delay (slurp "./test/data/epl-2.0.txt")))
 
-(def cddl-10-text                    (delay (slurp (http-get "https://spdx.org/licenses/CDDL-1.0.txt"))))
-(def cddl-11-text                    (delay (slurp (http-get "https://spdx.org/licenses/CDDL-1.1.txt"))))
+(def cddl-10-text                    (delay (slurp "./test/data/cddl-1.0.txt")))
+(def cddl-11-text                    (delay (slurp "./test/data/cddl-1.1.txt")))
 
-(def gpl-10-text                     (delay (slurp (http-get "https://www.gnu.org/licenses/gpl-1.0.txt"))))
-(def gpl-20-text                     (delay (slurp (http-get "https://www.gnu.org/licenses/gpl-2.0.txt"))))
-(def gpl-30-text                     (delay (slurp (http-get "https://www.gnu.org/licenses/gpl-3.0.txt"))))
-(def lgpl-20-text                    (delay (slurp (http-get "https://www.gnu.org/licenses/lgpl-2.0.txt"))))
-(def lgpl-21-text                    (delay (slurp (http-get "https://www.gnu.org/licenses/lgpl-2.1.txt"))))
-(def lgpl-30-text                    (delay (slurp (http-get "https://www.gnu.org/licenses/lgpl-3.0.txt"))))
-(def agpl-30-text                    (delay (slurp (http-get "https://www.gnu.org/licenses/agpl-3.0.txt"))))
+(def gpl-10-text                     (delay (slurp "./test/data/gpl-1.0.txt")))
+(def gpl-20-text                     (delay (slurp "./test/data/gpl-2.0.txt")))
+(def gpl-30-text                     (delay (slurp "./test/data/gpl-3.0.txt")))
+(def lgpl-20-text                    (delay (slurp "./test/data/lgpl-2.0.txt")))
+(def lgpl-21-text                    (delay (slurp "./test/data/lgpl-2.1.txt")))
+(def lgpl-30-text                    (delay (slurp "./test/data/lgpl-3.0.txt")))
+(def agpl-30-text                    (delay (slurp "./test/data/agpl-3.0.txt")))
 
 ; Note: none of these are readable on JVM 1.8 - it seems to be a CloudFlare encryption problem
-(def cc0-10-text                     (delay (slurp (http-get "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt"))))
-(def cc-by-30-text                   (delay (slurp (http-get "https://creativecommons.org/licenses/by/3.0/legalcode.txt"))))
-(def cc-by-40-text                   (delay (slurp (http-get "https://creativecommons.org/licenses/by/4.0/legalcode.txt"))))
-(def cc-by-sa-40-text                (delay (slurp (http-get "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt"))))
-(def cc-by-nc-40-text                (delay (slurp (http-get "https://creativecommons.org/licenses/by-nc/4.0/legalcode.txt"))))
-(def cc-by-nc-sa-40-text             (delay (slurp (http-get "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt"))))
-(def cc-by-nd-40-text                (delay (slurp (http-get "https://creativecommons.org/licenses/by-nd/4.0/legalcode.txt"))))
-(def cc-by-nc-nd-40-text             (delay (slurp (http-get "https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.txt"))))
+(def cc0-10-text                     (delay (slurp "./test/data/cc0.txt")))
+(def cc-by-30-text                   (delay (slurp "./test/data/cc-by-3.0.txt")))
+(def cc-by-40-text                   (delay (slurp "./test/data/cc-by-4.0.txt")))
+(def cc-by-sa-40-text                (delay (slurp "./test/data/cc-by-sa-4.0.txt")))
+(def cc-by-nc-40-text                (delay (slurp "./test/data/cc-by-nc-4.0.txt")))
+(def cc-by-nc-sa-40-text             (delay (slurp "./test/data/cc-by-nc-sa-4.0.txt")))
+(def cc-by-nd-40-text                (delay (slurp "./test/data/cc-by-nd-4.0.txt")))
+(def cc-by-nc-nd-40-text             (delay (slurp "./test/data/cc-by-nc-nd-4.0.txt")))
 
-(def wtfpl-text                      (delay (slurp (http-get "http://www.wtfpl.net/txt/copying/"))))
+(def wtfpl-text                      (delay (slurp "./test/data/wtfpl.txt")))
 
-(def mpl-20-text                     (delay (slurp (http-get "https://www.mozilla.org/media/MPL/2.0/index.txt"))))
-(def mit-text                        (delay (slurp (http-get "https://mit-license.org/license.txt"))))
+(def mpl-20-text                     (delay (slurp "./test/data/mpl-2.0.txt")))
+(def mit-text                        (delay (slurp "./test/data/mit.txt")))
 
 
 ; 3rd party software with single licenses
-(def clj-spdx-license                (delay (slurp (http-get "https://raw.githubusercontent.com/pmonks/clj-spdx/main/LICENSE"))))                 ; MPL-2.0
-(def commonmark-java-license         (delay (slurp (http-get "https://raw.githubusercontent.com/commonmark/commonmark-java/main/LICENSE.txt"))))  ; BSD-2-Clause
+(def clj-spdx-license                (delay (slurp "./test/data/clj-spdx.txt")))
+(def commonmark-java-license         (delay (slurp "./test/data/commonmark.txt")))  ; BSD-2-Clause
 
 ; Dual license texts
 (def apache-20-gpl-30-text           (delay (str "THIS WORK IS DUAL-LICENSED, UNDER:\n\n" @apache-20-text "\n\nOR, AT YOUR DISCRETION:\n\n" @gpl-30-text)))
-(def jffi-text                       (delay (slurp (http-get "https://raw.githubusercontent.com/jnr/jffi/master/LICENSE"))))                      ; Apache-2.0 OR LGPL-3.0+
-(def javamail-license                (delay (slurp (http-get "https://raw.githubusercontent.com/javaee/javamail/master/LICENSE.txt"))))           ; CDDL-1.1 OR GPL-2.0 WITH Classpath-exception-2.0
+(def jffi-text                       (delay (slurp "./test/data/jffi.txt")))  ; Apache-2.0 OR LGPL-3.0+
+(def javamail-license                (delay (slurp "./test/data/javamail.txt")))  ; CDDL-1.1 OR GPL-2.0 WITH Classpath-exception-2.0
 
 ; Exception texts
 (def classpath-20-text               (delay (slurp "./test/data/Classpath-exception-2.0.txt")))

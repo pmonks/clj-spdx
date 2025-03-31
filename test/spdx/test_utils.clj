@@ -8,13 +8,9 @@
 ; SPDX-License-Identifier: MPL-2.0
 ;
 
-(ns spdx.test-utils
-  (:require [urlocal.api :as url]))
+(ns spdx.test-utils)
 
 (println "\n☔️ Running tests on Clojure" (clojure-version) "/ JVM" (System/getProperty "java.version") (str "(" (System/getProperty "java.vm.name") " v" (System/getProperty "java.vm.version") ")\n"))
-
-(url/set-cache-name! "clj-spdx-tests")
-(url/set-cache-check-interval-secs! 604800)  ; 1 week
 
 (println "ℹ️ These unit tests take several minutes to complete, in the best case")
 
@@ -23,15 +19,3 @@
   but in any order and regardless of concrete collection type)?"
   [& colls]
   (apply = (map frequencies colls)))
-
-(defn http-get
-  "HTTP GET the given URL (a `String`, `java.netURL` or `java.net.URI`),
-  returning an `InputStream` for the content at that location. Utilises caching
-  and efficient HTTP requests internally to minimise network I/O.
-
-  Throws on exceptions."
-  [url]
-  (url/input-stream url {:follow-redirects?                   true
-                         :retry-when-throttled?               true
-                         :return-cached-content-on-exception? true
-                         :request-headers                     {"User-Agent" "https://github.com/pmonks/clj-spdx"}}))

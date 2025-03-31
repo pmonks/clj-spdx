@@ -10,9 +10,13 @@
 
 (ns spdx.licenses
   "License list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
-  (:require [spdx.impl.state   :as is]
+  (:require [clojure.string    :as s]
+            [rencg.api         :as rencg]
+            [wreck.api         :as re]
+            [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
-            [spdx.impl.regexes :as ir]))
+            [spdx.impl.regexes :as ir]
+            [spdx.impl.utils   :as u]))
 
 (defn version
   "The version of the license list (a `String` in major.minor format).
@@ -28,16 +32,70 @@
           set))
 
 (defn listed-id?
-  "Is `id` one of the listed SPDX license identifiers?"
+  "Is `id` (a `String`) one of the listed SPDX license identifiers?"
   [^String id]
   (im/listed-license-id? id))
 
-(def ^:private license-ref-re-d (delay (ir/re-concat #"(?i)\A" @ir/license-ref-re-d #"\z")))
+(def ^:private license-ref-re-d (delay (re/join #"\A" @ir/license-ref-re-d #"\z")))
 
 (defn license-ref?
-  "Is `id` a `LicenseRef`?"
-  [id]
-  (boolean (when id (re-matches @license-ref-re-d id))))
+  "Is `s` (a `String`) a valid `LicenseRef`? See
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  for specifics."
+  [s]
+  (boolean (when s (re-matches @license-ref-re-d s))))
+
+(defn license-ref
+  "Constructs a LicenseRef (as a `String`) from individual 'variable
+  section' `String`s. Returns `nil` if `license-ref` is blank, or the resulting
+  value is not a valid LicenseRef."
+  ([^String license-ref-var-section] (license-ref nil license-ref-var-section))
+  ([^String document-ref-var-section ^String license-ref-var-section]
+    (when-not (s/blank? license-ref-var-section)
+      (let [result (str (when document-ref-var-section (str "DocumentRef-" document-ref-var-section ":"))
+                        "LicenseRef-" license-ref-var-section)]
+        (when (license-ref? result)
+          result)))))
+
+(defn license-ref-map->string
+  "Turns map `m` representing a LicenseRef into a `String`, returning `nil` if
+  `m` is `nil` or the resulting value is not a valid LicenseRef.
+
+  Notes:
+
+  * This fn is the inverse of [[string->license-ref-map]]."
+  [m]
+  (when m
+    (license-ref (:document-ref m) (:license-ref m))))
+
+(defn string->license-ref-map
+  "Turns `s` (a `String` containing a LicenseRef) into a `map` representing that
+  same LicenseRef.  Returns `nil` if `s` is `nil` or not a valid LicenseRef.
+
+  Notes:
+
+  * This fn is the inverse of [[license-ref-map->string]].
+  * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
+  [^String s]
+  (when s
+    (when-let [m (rencg/re-matches-ncg @license-ref-re-d s)]
+      (merge {:license-ref (get m "LicenseRef")}
+             (when-let [document-ref (get m "DocumentRef")] {:document-ref document-ref})))))
+
+(defn equivalent-license-refs?
+  "Are `s1` and `s2` (`String`s) equivalent LicenseRefs (i.e. taking the SPDX
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if `s1` or `s2` are not valid LicenseRefs"
+  [^String s1 ^String s2]
+  (boolean
+    (when-let [license-ref-1 (string->license-ref-map s1)]
+      (when-let [license-ref-2 (string->license-ref-map s2)]
+        (and (= (u/safe-lower-case (:document-ref license-ref-1)) (u/safe-lower-case (:document-ref license-ref-2)))
+             (= (s/lower-case      (:license-ref  license-ref-1)) (s/lower-case      (:license-ref  license-ref-2))))))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
@@ -56,7 +114,8 @@
            (im/license->map opts))))
 
 (defn deprecated-id?
-  "Is `id` deprecated?  Also returns `false` if `id` is not in the SPDX license list.
+  "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not in the
+  SPDX license list.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."
@@ -72,7 +131,8 @@
                  set)))
 
 (defn osi-approved-id?
-  "Is `id` OSI Approved?  Also returns `false` if `id` is not in the SPDX license list.
+  "Is `id` (a `String`) OSI Approved?  Also returns `false` if `id` is not in
+  the SPDX license list.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'OSI Approved' means."
@@ -91,7 +151,8 @@
                  set)))
 
 (defn fsf-libre-id?
-  "Is `id` FSF Libre?  Also returns `false` if `id` is not in the SPDX license list.
+  "Is `id` (a `String`) FSF Libre?  Also returns `false` if `id` is not in the
+  SPDX license list.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'FSF Libre' means."

@@ -13,9 +13,9 @@
   not use the parser in `Spdx-Java-Library`)."
   (:require [clojure.string         :as s]
             [instaparse.core        :as insta]
+            [wreck.api              :as re]
             [spdx.licenses          :as lic]
             [spdx.exceptions        :as exc]
-            [spdx.impl.regexes      :as ir]
             [spdx.impl.replacements :as sir]))
 
 (def ^:private case-sensitive-operators-fragment
@@ -55,8 +55,8 @@
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (ir/re-escape %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (ir/re-escape %) "\"") (exc/ids)))))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (exc/ids)))))
 
 (def ^:private spdx-license-expression-cs-grammar-d (delay (format spdx-license-expression-grammar-format
                                                                    case-sensitive-operators-fragment
@@ -116,31 +116,15 @@
   (when parse-tree
     (walk-internal 0 fns parse-tree)))
 
-(defn- license-ref->string
-  "Turns map `m` containing a license-ref into a String, returning `nil` if
-  there isn't one."
-  [m]
-  (when (and m (:license-ref m))
-    (str (when-let [document-ref (:document-ref m)] (str "DocumentRef-" document-ref ":"))
-         "LicenseRef-" (:license-ref m))))
-
-(defn- addition-ref->string
-  "Turns map `m` containing an addition-ref into a String, returning `nil` if
-  there isn't one."
-  [m]
-  (when (and m (:addition-ref m))
-    (str (when-let [addition-document-ref (:addition-document-ref m)] (str "DocumentRef-" addition-document-ref ":"))
-         "AdditionRef-" (:addition-ref m))))
-
 (defn- license-map->string
   "Turns a license map into a string. Returns `nil` if `m` is empty."
   [m]
   (when-not (empty? m)
     (str (when (:license-id m)           (:license-id m))
          (when (:or-later? m)            "+")
-         (when (:license-ref m)          (license-ref->string m))
+         (when (:license-ref m)          (lic/license-ref-map->string m))
          (when (:license-exception-id m) (str " WITH " (:license-exception-id m)))
-         (when (:addition-ref m)         (str " WITH " (addition-ref->string m))))))
+         (when (:addition-ref m)         (str " WITH " (exc/addition-ref-map->string m))))))
 
 (defn unparse
   "Turns a valid `parse-tree` (i.e. obtained from [[parse]]) back into an
@@ -232,9 +216,9 @@
   (when-not (empty? m)
     (str (when (:license-id m)           (s/lower-case (:license-id m)))
          (when (:or-later? m)            "+")
-         (when (:license-ref m)          (license-ref->string m))
+         (when (:license-ref m)          (lic/license-ref-map->string m))
          (when (:license-exception-id m) (s/lower-case (str " " (:license-exception-id m))))
-         (when (:addition-ref m)         (str " " (addition-ref->string m))))))
+         (when (:addition-ref m)         (str " " (exc/addition-ref-map->string m))))))
 
 (defn- compare-license-maps
   "Compares two license maps, as found in a parse tree."
@@ -407,38 +391,54 @@
     for details).
   * The default `opts` result in parsing that is more lenient than the SPDX
     specification and is therefore not strictly spec compliant.  You can enable
-    strictly spec compliant parsing by setting `normalise-deprecated-ids?` to
-    `false` and `case-sensitive-operators?` to `true`.
+    strictly spec compliant parsing by setting `case-sensitive-operators?` to
+    `true`.
 
   Examples (assuming default options):
 
   ```clojure
+  ; Simple SPDX expression (single license identifier)
   (parse \"Apache-2.0\")
   {:license-id \"Apache-2.0\"}
 
+  ; Identifier case correction, or-later? flag
   (parse \"apache-2.0+\")
-  {:license-id \"Apache-2.0\" :or-later? true}  ; Note id case correction
+  {:license-id \"Apache-2.0\" :or-later? true}
 
+  ; GNU family identifier normalisation
   (parse \"GPL-2.0+\")
-  {:license-id \"GPL-2.0-or-later\"}  ; Note GNU family normalisation
+  {:license-id \"GPL-2.0-or-later\"}
 
+  ; Deprecated identifier normalisation
   (parse \"StandardML-NJ\")
-  {:license-id \"SMLNJ\"}  ; Note deprecated id normalisation
+  {:license-id \"SMLNJ\"}
 
+  ; License exceptions
   (parse \"GPL-2.0 WITH Classpath-exception-2.0\")
   {:license-id \"GPL-2.0-only\"
    :license-exception-id \"Classpath-exception-2.0\"}
 
-  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")  ; Note sorting
+  ; Nesting (due to operator precedence), and sorting
+  (parse \"MIT OR BSD-2-Clause AND Apache-2.0\")
+  [:or
+   {:license-id \"MIT\"}
+   [:and
+    {:license-id \"Apache-2.0\"}
+    {:license-id \"BSD-2-Clause\"}]]
+
+  ; Case insensitive operators
+  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")
   [:or
    {:license-id \"CDDL-1.1\"}
    {:license-id \"GPL-2.0-or-later\"
     :license-exception-id \"Classpath-exception-2.0\"}]
 
+  ; LicenseRefs (custom license identifiers)
   (parse \"DocumentRef-foo:LicenseRef-bar\")
   {:document-ref \"foo\"
    :license-ref \"bar\"}
 
+  ; AdditionRefs (custom license exception identifiers, added in SPDX 3.0)
   (parse \"Apache-2.0 with DocumentRef-foo:AdditionRef-bar\")
   {:license-id \"Apache-2.0\"
    :addition-document-ref \"foo\"
@@ -524,9 +524,9 @@
   ([parse-tree] (extract-ids parse-tree nil))
   ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false}}]
    (walk {:license-fn #(into #{} (filter identity [(when (:license-id           %) (str (:license-id %) (when (and include-or-later? (:or-later? %)) "+")))
-                                                   (when (:license-exception-id %) (:license-exception-id %))
-                                                   (when (:license-ref          %) (license-ref->string   %))
-                                                   (when (:addition-ref         %) (addition-ref->string  %))]))
+                                                   (when (:license-exception-id %) (:license-exception-id        %))
+                                                   (when (:license-ref          %) (lic/license-ref-map->string  %))
+                                                   (when (:addition-ref         %) (exc/addition-ref-map->string %))]))
           :group-fn   #(not-empty (into #{} cat (rest %2)))}  ; Strip leading operator keyword then flatten the rest (%2 is a 2-level nested sequence) and put in a set
          parse-tree)))
 
