@@ -11,44 +11,44 @@
 <ul>
 <li>caches the generated <code>Pattern</code> object and returns it on subsequent calls, so is efficient when called many times</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L150">view source</a></div></div><div class="public anchor" id="var-build-re"><h3>build-re</h3><div class="usage"><code>(build-re ids)</code><code>(build-re ids {:keys [case-sensitive? include-license-refs? include-addition-refs?], :or {case-sensitive? false, include-license-refs? false, include-addition-refs? false}, :as opts})</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match the given SPDX <code>ids</code> (a sequence of <code>String</code>s) in a source text. Returns <code>nil</code> if <code>ids</code> is <code>nil</code> or empty.</p>
-<p>The regex provides these named capturing groups:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L155">view source</a></div></div><div class="public anchor" id="var-build-re"><h3>build-re</h3><div class="usage"><code>(build-re ids)</code><code>(build-re ids {:keys [case-sensitive? include-license-refs? include-addition-refs?], :or {case-sensitive? false, include-license-refs? false, include-addition-refs? false}, :as opts})</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any one of the given SPDX <code>ids</code> (a sequence of <code>String</code>s) in a source text. Returns <code>nil</code> if <code>ids</code> is <code>nil</code> or empty.</p>
+<p>The regex includes these named capturing groups:</p>
 <ul>
 <li><code>Identifier</code> (always present) - captures the entire identifier, <code>LicenseRef</code> or <code>AdditionRef</code></li>
-<li><code>DocumentRef</code> (optional) - captures the <code>DocumentRef</code> tag of a <code>LicenseRef</code>, if it contains one</li>
-<li><code>LicenseRef</code> (optional) - captures the <code>LicenseRef</code> tag of a <code>LicenseRef</code></li>
-<li><code>AdditionDocumentRef</code> (optional) - captures the <code>DocumentRef</code> tag of an <code>AdditionRef</code>, if it contains one</li>
-<li><code>AdditionRef</code> (optional) - captures the <code>AdditionRef</code> tag of an <code>AdditionRef</code></li>
+<li><code>DocumentRef</code> (optional) - captures the <code>DocumentRef</code> tag of a <code>LicenseRef</code>, if that’s what’s matched and it contains one</li>
+<li><code>LicenseRef</code> (optional) - captures the <code>LicenseRef</code> tag of a <code>LicenseRef</code>, if that’s what’s matched</li>
+<li><code>AdditionDocumentRef</code> (optional) - captures the <code>DocumentRef</code> tag of an <code>AdditionRef</code>, if that’s what’s matched and it contains one</li>
+<li><code>AdditionRef</code> (optional) - captures the <code>AdditionRef</code> tag of an <code>AdditionRef</code>, if that’s what’s matched</li>
 </ul>
-<p>Groups should <em>not</em> be accessed by index, as the groups in the returned regexes are not part of the public contract of this API, and are liable to change over time.  You may choose to use something like <a href="https://github.com/pmonks/rencg">rencg</a> to ensure your code is future proof in this regard.</p>
-<p><code>ids</code> will appear in the regex sorted from longest to shortest, so that more specific values are preferentially found or matched first - this avoids mismatches when one id is a subset of another id (e.g. <code>GPL-2.0</code> and <code>GPL-2.0-or-later</code>).</p>
+<p>Groups should <em>not</em> be accessed by index, as the groups in the returned regexes are not part of the public contract of this API, and are liable to change over time.  You may choose to use something like <a href="https://github.com/pmonks/rencg">rencg</a> (a library that clj-spdx has a dependency upon, so is already available to your code) to ensure your code is future proof in this regard.</p>
+<p><code>ids</code> will appear in the regex sorted from longest to shortest, so that more specific values are preferentially found or matched first - this avoids mismatches when one id is a subset of another id (e.g. <code>GPL-2.0-or-later</code> and <code>GPL-2.0</code>).</p>
 <p><code>opts</code> are:</p>
 <ul>
-<li><code>case-sensitive?</code> (<code>boolean</code>, default <code>false</code>) - controls whether SPDX identifier matching is case sensitive or not. The <a href="https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity">spec explicitly states that SPDX identifiers are <em>not</em> case sensitive</a>, but there may be cases where case sensitive matching is preferred.  Note that regardless of this setting, LicenseRefs and AdditionRefs are <em>always</em> matched case sensitively - this is required by the spec.</li>
+<li><code>case-sensitive?</code> (<code>boolean</code>, default <code>false</code>) - controls whether SPDX identifier matching is case sensitive or not. The <a href="https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity">spec explicitly states that SPDX identifiers are <em>not</em> case sensitive</a>, but there may be cases where case sensitive matching is preferred.  Note that regardless of this setting, LicenseRefs and AdditionRefs (if included) are <em>always</em> matched as required by the spec (i.e. the ‘tags’ are matched case-sensitively, and the ‘variable sections’ are not)</li>
 <li><code>include-license-refs?</code> (<code>boolean</code>, default <code>false</code>) - controls whether <code>LicenseRef</code> support is also included in the regex</li>
 <li><code>include-addition-refs?</code> (<code>boolean</code>, default <code>false</code>) - controls whether <code>AdditionRef</code> support is also included in the regex</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L20">view source</a></div></div><div class="public anchor" id="var-exception-ids-re"><h3>exception-ids-re</h3><div class="usage"><code>(exception-ids-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX license exception identifier, or <code>AdditionRef</code> in a source text.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L21">view source</a></div></div><div class="public anchor" id="var-exception-ids-re"><h3>exception-ids-re</h3><div class="usage"><code>(exception-ids-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX license exception identifier, or <code>AdditionRef</code> in a source text.</p>
 <p>Specifics of the regex are as for <a href="spdx.regexes.html#var-build-re">build-re</a>.</p>
 <p>Notes:</p>
 <ul>
 <li>caches the generated <code>Pattern</code> object and returns it on subsequent calls, so is efficient when called many times</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L110">view source</a></div></div><div class="public anchor" id="var-ids-re"><h3>ids-re</h3><div class="usage"><code>(ids-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX license identifier, SPDX exception identifier, <code>LicenseRef</code>, or <code>AdditionRef</code> in a source text.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L115">view source</a></div></div><div class="public anchor" id="var-ids-re"><h3>ids-re</h3><div class="usage"><code>(ids-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX license identifier, SPDX exception identifier, <code>LicenseRef</code>, or <code>AdditionRef</code> in a source text.</p>
 <p>Specifics of the regex are as for <a href="spdx.regexes.html#var-build-re">build-re</a>.</p>
 <p>Notes:</p>
 <ul>
 <li>caches the generated <code>Pattern</code> object and returns it on subsequent calls, so is efficient when called many times</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L79">view source</a></div></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><div class="markdown"><p>Initialises this namespace upon first call (and does nothing on subsequent calls), returning <code>nil</code>. Consumers of this namespace are not required to call this fn, as initialisation will occur implicitly anyway; it is provided to allow explicit control of the cost of initialisation to callers who need it.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L84">view source</a></div></div><div class="public anchor" id="var-init.21"><h3>init!</h3><div class="usage"><code>(init!)</code></div><div class="doc"><div class="markdown"><p>Initialises this namespace upon first call (and does nothing on subsequent calls), returning <code>nil</code>. Consumers of this namespace are not required to call this fn, as initialisation will occur implicitly anyway; it is provided to allow explicit control of the cost of initialisation to callers who need it.</p>
 <p>Note: this method may have a substantial performance cost.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L166">view source</a></div></div><div class="public anchor" id="var-license-ids-re"><h3>license-ids-re</h3><div class="usage"><code>(license-ids-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX license identifier, or <code>LicenseRef</code> in a source text.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L171">view source</a></div></div><div class="public anchor" id="var-license-ids-re"><h3>license-ids-re</h3><div class="usage"><code>(license-ids-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX license identifier, or <code>LicenseRef</code> in a source text.</p>
 <p>Specifics of the regex are as for <a href="spdx.regexes.html#var-build-re">build-re</a>.</p>
 <p>Notes:</p>
 <ul>
 <li>caches the generated <code>Pattern</code> object and returns it on subsequent calls, so is efficient when called many times</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L95">view source</a></div></div><div class="public anchor" id="var-license-ref-re"><h3>license-ref-re</h3><div class="usage"><code>(license-ref-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX <code>LicenseRef</code>. The regex provides these named capturing groups:</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L100">view source</a></div></div><div class="public anchor" id="var-license-ref-re"><h3>license-ref-re</h3><div class="usage"><code>(license-ref-re)</code></div><div class="doc"><div class="markdown"><p>Returns a regex (<code>Pattern</code>) that can find or match any SPDX <code>LicenseRef</code>. The regex provides these named capturing groups:</p>
 <ul>
 <li><code>DocumentRef</code> (optional) - captures the <code>DocumentRef</code> tag of a <code>LicenseRef</code>, if it contains one</li>
 <li><code>LicenseRef</code> (always present) - captures the <code>LicenseRef</code> tag of a <code>LicenseRef</code></li>
@@ -57,4 +57,4 @@
 <ul>
 <li>caches the generated <code>Pattern</code> object and returns it on subsequent calls, so is efficient when called many times</li>
 </ul>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L129">view source</a></div></div></div></body></html>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/regexes.clj#L134">view source</a></div></div></div></body></html>

@@ -31,46 +31,62 @@
 <li>The parser always removes redundant grouping e.g. <code>(((((Apache-2.0))))))</code> -&gt; <code>Apache-2.0</code></li>
 <li>The parser always corrects nonsensical combinations of GNU family license identifiers with the ‘or later’ marker e.g. <code>GPL-3.0-only+</code> -&gt; <code>GPL-3.0-or-later</code></li>
 <li>The parser synthesises grouping when needed to make SPDX license expressions’ precedence rules explicit (see <a href="https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses">the relevant section within annex D of the SPDX specification</a> for details).</li>
-<li>The default <code>opts</code> result in parsing that is more lenient than the SPDX specification and is therefore not strictly spec compliant.  You can enable strictly spec compliant parsing by setting <code>normalise-deprecated-ids?</code> to <code>false</code> and <code>case-sensitive-operators?</code> to <code>true</code>.</li>
+<li>The default <code>opts</code> result in parsing that is more lenient than the SPDX specification and is therefore not strictly spec compliant.  You can enable strictly spec compliant parsing by setting <code>case-sensitive-operators?</code> to <code>true</code>.</li>
 </ul>
 <p>Examples (assuming default options):</p>
-<pre><code class="language-clojure">(parse "Apache-2.0")
+<pre><code class="language-clojure">; Simple SPDX expression (single license identifier)
+(parse "Apache-2.0")
 {:license-id "Apache-2.0"}
 
+; Identifier case correction, or-later? flag
 (parse "apache-2.0+")
-{:license-id "Apache-2.0" :or-later? true}  ; Note id case correction
+{:license-id "Apache-2.0" :or-later? true}
 
+; GNU family identifier normalisation
 (parse "GPL-2.0+")
-{:license-id "GPL-2.0-or-later"}  ; Note GNU family normalisation
+{:license-id "GPL-2.0-or-later"}
 
+; Deprecated identifier normalisation
 (parse "StandardML-NJ")
-{:license-id "SMLNJ"}  ; Note deprecated id normalisation
+{:license-id "SMLNJ"}
 
+; License exceptions
 (parse "GPL-2.0 WITH Classpath-exception-2.0")
 {:license-id "GPL-2.0-only"
  :license-exception-id "Classpath-exception-2.0"}
 
-(parse "(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1")  ; Note sorting
+; Nesting (due to operator precedence), and sorting
+(parse "MIT OR BSD-2-Clause AND Apache-2.0")
+[:or
+ {:license-id "MIT"}
+ [:and
+  {:license-id "Apache-2.0"}
+  {:license-id "BSD-2-Clause"}]]
+
+; Case insensitive operators
+(parse "(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1")
 [:or
  {:license-id "CDDL-1.1"}
  {:license-id "GPL-2.0-or-later"
   :license-exception-id "Classpath-exception-2.0"}]
 
+; LicenseRefs (custom license identifiers)
 (parse "DocumentRef-foo:LicenseRef-bar")
 {:document-ref "foo"
  :license-ref "bar"}
 
+; AdditionRefs (custom license exception identifiers, added in SPDX 3.0)
 (parse "Apache-2.0 with DocumentRef-foo:AdditionRef-bar")
 {:license-id "Apache-2.0"
  :addition-document-ref "foo"
  :addition-ref "bar"}
 </code></pre>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L360">view source</a></div></div><div class="public anchor" id="var-parse-with-info"><h3>parse-with-info</h3><div class="usage"><code>(parse-with-info s)</code><code>(parse-with-info s {:keys [normalise-deprecated-ids? case-sensitive-operators? collapse-redundant-clauses? sort-licenses?], :or {normalise-deprecated-ids? true, case-sensitive-operators? false, collapse-redundant-clauses? true, sort-licenses? true}})</code></div><div class="doc"><div class="markdown"><p>As for <a href="spdx.expressions.html#var-parse">parse</a>, but returns an <a href="https://github.com/Engelberg/instaparse#parse-errors">instaparse parse error</a> if parsing fails, instead of <code>nil</code>.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L344">view source</a></div></div><div class="public anchor" id="var-parse-with-info"><h3>parse-with-info</h3><div class="usage"><code>(parse-with-info s)</code><code>(parse-with-info s {:keys [normalise-deprecated-ids? case-sensitive-operators? collapse-redundant-clauses? sort-licenses?], :or {normalise-deprecated-ids? true, case-sensitive-operators? false, collapse-redundant-clauses? true, sort-licenses? true}})</code></div><div class="doc"><div class="markdown"><p>As for <a href="spdx.expressions.html#var-parse">parse</a>, but returns an <a href="https://github.com/Engelberg/instaparse#parse-errors">instaparse parse error</a> if parsing fails, instead of <code>nil</code>.</p>
 <p><code>opts</code> are as for <a href="spdx.expressions.html#var-parse">parse</a></p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L312">view source</a></div></div><div class="public anchor" id="var-simple.3F"><h3>simple?</h3><div class="usage"><code>(simple? s)</code><code>(simple? s opts)</code></div><div class="doc"><div class="markdown"><p>Is <code>s</code> (a <code>String</code>) a ‘simple’ SPDX license expression (i.e. one that contains no AND or OR operators, though it may contain a WITH operator)? Returns <code>nil</code> if <code>s</code> not a valid SPDX expression.</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L296">view source</a></div></div><div class="public anchor" id="var-simple.3F"><h3>simple?</h3><div class="usage"><code>(simple? s)</code><code>(simple? s opts)</code></div><div class="doc"><div class="markdown"><p>Is <code>s</code> (a <code>String</code>) a ‘simple’ SPDX license expression (i.e. one that contains no AND or OR operators, though it may contain a WITH operator)? Returns <code>nil</code> if <code>s</code> not a valid SPDX expression.</p>
 <p>The optional <code>opts</code> map is as for <code>parse</code>.</p>
 </div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L491">view source</a></div></div><div class="public anchor" id="var-unparse"><h3>unparse</h3><div class="usage"><code>(unparse parse-tree)</code></div><div class="doc"><div class="markdown"><p>Turns a valid <code>parse-tree</code> (i.e. obtained from <a href="spdx.expressions.html#var-parse">parse</a>) back into an SPDX expression (a <code>String</code>), or <code>nil</code> if <code>parse-tree</code> is <code>nil</code>.  Results are undefined for invalid parse trees.</p>
-</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L145">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code><code>(valid? s {:keys [case-sensitive-operators?], :or {case-sensitive-operators? false}})</code></div><div class="doc"><div class="markdown"><p>Is <code>s</code> (a <code>String</code>) a valid SPDX license expression?</p>
+</div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/expressions.clj#L129">view source</a></div></div><div class="public anchor" id="var-valid.3F"><h3>valid?</h3><div class="usage"><code>(valid? s)</code><code>(valid? s {:keys [case-sensitive-operators?], :or {case-sensitive-operators? false}})</code></div><div class="doc"><div class="markdown"><p>Is <code>s</code> (a <code>String</code>) a valid SPDX license expression?</p>
 <p>Note: if you intend to parse <code>s</code> if it’s valid, it’s more efficient to call <a href="spdx.expressions.html#var-parse">parse</a> directly and check for a <code>nil</code> result instead of calling this method first (doing so avoids double parsing).</p>
 <p>The optional <code>opts</code> map has these keys:</p>
 <ul>
