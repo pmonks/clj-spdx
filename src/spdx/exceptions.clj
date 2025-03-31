@@ -10,9 +10,13 @@
 
 (ns spdx.exceptions
   "Exception list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
-  (:require [spdx.impl.state   :as is]
+  (:require [clojure.string    :as s]
+            [rencg.api         :as rencg]
+            [wreck.api         :as re]
+            [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
-            [spdx.impl.regexes :as ir]))
+            [spdx.impl.regexes :as ir]
+            [spdx.impl.utils   :as u]))
 
 (defn version
   "The version of the exception list (a `String` in major.minor format).
@@ -32,12 +36,62 @@
   [^String id]
   (im/listed-exception-id? id))
 
-(def ^:private addition-ref-re-d (delay (ir/re-concat #"(?i)\A" @ir/addition-ref-re-d #"\z")))
+(def ^:private addition-ref-re-d (delay (re/join #"\A" @ir/addition-ref-re-d #"\z")))
 
 (defn addition-ref?
   "Is `id` an `AdditionRef`?"
   [id]
   (boolean (when id (re-matches @addition-ref-re-d id))))
+
+(defn addition-ref
+  "Constructs a AdditionRef (as a `String`) from individual 'variable
+  section' `String`s. Returns `nil` if `addition-ref` is blank, or the resulting
+  value is not a valid AdditionRef (see
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/))."
+  ([addition-ref-var-section] (addition-ref nil addition-ref-var-section))
+  ([document-ref-var-section addition-ref-var-section]
+    (when-not (s/blank? addition-ref-var-section)
+      (let [result (str (when document-ref-var-section (str "DocumentRef-" document-ref-var-section ":"))
+                        "AdditionRef-" addition-ref-var-section)]
+        (when (addition-ref? result)
+          result)))))
+
+(defn addition-ref-map->string
+  "Turns map `m` representing a AdditionRef into a `String`, returning `nil` if
+  `m` is `nil` or the resulting value is not a valid AdditionRef (see
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/))."
+  [m]
+  (when m
+    (addition-ref (:addition-document-ref m) (:addition-ref m))))
+
+(defn string->addition-ref-map
+  "Turns `s` (a `String`) into a `map` representing a AdditionRef.  Returns `nil`
+  if `s` is `nil` or not a valid AdditionRef (see
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)).
+
+  Notes:
+
+  * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
+  [s]
+  (when s
+    (when-let [m (rencg/re-matches-ncg @addition-ref-re-d s)]
+      (merge {:addition-ref (get m "AdditionRef")}
+             (when-let [document-ref (get m "AdditionDocumentRef")] {:addition-document-ref document-ref})))))
+
+(defn equivalent-addition-refs?
+  "Are `s1` and `s2` (`String`s) equivalent AdditionRefs (i.e. taking the SPDX
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if either `s1` or `s2` are not valid AdditionRefs"
+  [s1 s2]
+  (boolean
+    (when-let [addition-ref-1 (string->addition-ref-map s1)]
+      (when-let [addition-ref-2 (string->addition-ref-map s2)]
+        (and (= (u/safe-lower-case (:addition-document-ref addition-ref-1)) (u/safe-lower-case (:addition-document-ref addition-ref-2)))
+             (= (s/lower-case      (:addition-ref          addition-ref-1)) (s/lower-case      (:addition-ref          addition-ref-2))))))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info

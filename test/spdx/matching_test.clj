@@ -12,7 +12,8 @@
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [http-get]]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
-                                     texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text exceptions-within-text]]))
+                                     texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text
+                                     exceptions-within-text]]))
 
 ; Official single license texts
 (def apache-10-text                  (delay (slurp (http-get "https://www.apache.org/licenses/LICENSE-1.0.txt"))))

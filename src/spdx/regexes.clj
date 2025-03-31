@@ -12,6 +12,7 @@
   "Regex related functionality.  This functionality is bespoke (it does not use
   any logic from `Spdx-Java-Library`)."
   (:require [clojure.string    :as s]
+            [wreck.api         :as re]
             [spdx.licenses     :as slic]
             [spdx.exceptions   :as sexc]
             [spdx.impl.regexes :as ir]))
@@ -65,14 +66,14 @@
                 include-addition-refs? false}
          :as   opts}]
    (when (seq ids)
-     (ir/re-concat #"(?<!\w)"
-                   "(?<Identifier>"
-                   (when include-license-refs? (str @ir/license-ref-re-d "|"))
-                   (when include-addition-refs? (str @ir/addition-ref-re-d "|"))
-                   (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-                   (s/join "|" (map ir/re-escape (sort-by #(* -1 (count %)) ids)))  ; Sort longest to shortest
-                   ")"
-                   #"(?!\w)"))))
+     (re/join #"(?<!\w)"
+              "(?<Identifier>"
+              (when include-license-refs? (str @ir/license-ref-re-d "|"))
+              (when include-addition-refs? (str @ir/addition-ref-re-d "|"))
+              (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+              (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))  ; Sort longest to shortest
+              ")"
+              #"(?!\w)"))))
 
 (def ^:private ids-re-d (delay (build-re (concat (slic/ids) (sexc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
 
@@ -122,9 +123,9 @@
 
 
 ; Note: the DocumentRef and LicenseRef portions of a LicenseRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-(def ^:private license-ref-re-d (delay (ir/re-concat #"(?<!\w)"
-                                                     @ir/license-ref-re-d
-                                                     #"(?!\w)")))
+(def ^:private license-ref-re-d (delay (re/join #"(?<!\w)"
+                                                @ir/license-ref-re-d
+                                                #"(?!\w)")))
 
 (defn license-ref-re
   "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
@@ -143,9 +144,9 @@
   @license-ref-re-d)
 
 ; Note: the DocumentRef and AdditionRef portions of an AdditionRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-(def ^:private addition-ref-re-d (delay (ir/re-concat #"(?<!\w)"
-                                                      @ir/addition-ref-re-d
-                                                      #"(?!\w)")))
+(def ^:private addition-ref-re-d (delay (re/join #"(?<!\w)"
+                                                 @ir/addition-ref-re-d
+                                                 #"(?!\w)")))
 
 (defn addition-ref-re
  "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.

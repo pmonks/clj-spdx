@@ -10,9 +10,13 @@
 
 (ns spdx.licenses
   "License list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
-  (:require [spdx.impl.state   :as is]
+  (:require [clojure.string    :as s]
+            [rencg.api         :as rencg]
+            [wreck.api         :as re]
+            [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
-            [spdx.impl.regexes :as ir]))
+            [spdx.impl.regexes :as ir]
+            [spdx.impl.utils   :as u]))
 
 (defn version
   "The version of the license list (a `String` in major.minor format).
@@ -32,12 +36,62 @@
   [^String id]
   (im/listed-license-id? id))
 
-(def ^:private license-ref-re-d (delay (ir/re-concat #"(?i)\A" @ir/license-ref-re-d #"\z")))
+(def ^:private license-ref-re-d (delay (re/join #"\A" @ir/license-ref-re-d #"\z")))
 
 (defn license-ref?
   "Is `id` a `LicenseRef`?"
   [id]
   (boolean (when id (re-matches @license-ref-re-d id))))
+
+(defn license-ref
+  "Constructs a LicenseRef (as a `String`) from individual 'variable
+  section' `String`s. Returns `nil` if `license-ref` is blank, or the resulting
+  value is not a valid LicenseRef (see
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/))."
+  ([license-ref-var-section] (license-ref nil license-ref-var-section))
+  ([document-ref-var-section license-ref-var-section]
+    (when-not (s/blank? license-ref-var-section)
+      (let [result (str (when document-ref-var-section (str "DocumentRef-" document-ref-var-section ":"))
+                        "LicenseRef-" license-ref-var-section)]
+        (when (license-ref? result)
+          result)))))
+
+(defn license-ref-map->string
+  "Turns map `m` representing a LicenseRef into a `String`, returning `nil` if
+  `m` is `nil` or the resulting value is not a valid LicenseRef (see
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/))."
+  [m]
+  (when m
+    (license-ref (:document-ref m) (:license-ref m))))
+
+(defn string->license-ref-map
+  "Turns `s` (a `String`) into a `map` representing a LicenseRef.  Returns `nil`
+  if `s` is `nil` or not a valid LicenseRef (see
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)).
+
+  Notes:
+
+  * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
+  [s]
+  (when s
+    (when-let [m (rencg/re-matches-ncg @license-ref-re-d s)]
+      (merge {:license-ref (get m "LicenseRef")}
+             (when-let [document-ref (get m "DocumentRef")] {:document-ref document-ref})))))
+
+(defn equivalent-license-refs?
+  "Are `s1` and `s2` (`String`s) equivalent LicenseRefs (i.e. taking the SPDX
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if either `s1` or `s2` are not valid LicenseRefs"
+  [s1 s2]
+  (boolean
+    (when-let [license-ref-1 (string->license-ref-map s1)]
+      (when-let [license-ref-2 (string->license-ref-map s2)]
+        (and (= (u/safe-lower-case (:document-ref license-ref-1)) (u/safe-lower-case (:document-ref license-ref-2)))
+             (= (s/lower-case      (:license-ref  license-ref-1)) (s/lower-case      (:license-ref  license-ref-2))))))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
