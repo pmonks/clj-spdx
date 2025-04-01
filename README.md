@@ -18,6 +18,10 @@ Note also that this project has no official relationship with the [SPDX project]
 
 `clj-spdx` is available as a Maven artifact from [Clojars](https://clojars.org/com.github.pmonks/clj-spdx).
 
+### API Documentation
+
+[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
+
 ### Trying it Out
 
 #### Clojure CLI
@@ -68,10 +72,6 @@ $ deps-try com.github.pmonks/clj-spdx
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
 ```
-
-### API Documentation
-
-[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
 
 ## Contributor Information
 

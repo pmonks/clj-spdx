@@ -11,9 +11,10 @@
 (ns spdx.licenses-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils  :refer [equivalent-colls?]]
-            [spdx.licenses    :refer [version ids listed-id? license-ref? license-ref license-ref-map->string
-                                      string->license-ref-map equivalent-license-refs? id->info deprecated-id?
-                                      non-deprecated-ids osi-approved-id? osi-approved-ids fsf-libre-id? fsf-libre-ids]]
+            [spdx.licenses    :refer [version ids listed-id? canonicalise-id equivalent-ids? license-ref? license-ref
+                                      license-ref-map->string string->license-ref-map equivalent-license-refs?
+                                      equivalent? id->info deprecated-id? non-deprecated-ids osi-approved-id?
+                                      osi-approved-ids fsf-libre-id? fsf-libre-ids]]
             [spdx.expressions :as exp]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
@@ -38,6 +39,38 @@
     (is (true? (listed-id? "Apache-2.0")))
     (is (true? (listed-id? "GPL-3.0")))
     (is (true? (listed-id? "CC-BY-4.0")))))
+
+(deftest canonicalise-id-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (canonicalise-id nil)))
+    (is (nil? (canonicalise-id "")))
+    (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "id in canonical form"
+    (is (= "Apache-2.0" (canonicalise-id "Apache-2.0")))
+    (is (= "GPL-3.0"    (canonicalise-id "GPL-3.0")))
+    (is (= "CC-BY-4.0"  (canonicalise-id "CC-BY-4.0"))))
+  (testing "id not in canonical form"
+    (is (= "Apache-2.0" (canonicalise-id "APACHE-2.0")))
+    (is (= "GPL-3.0"    (canonicalise-id "gpl-3.0")))
+    (is (= "CC-BY-4.0"  (canonicalise-id "cc-by-4.0")))))
+
+(deftest equivalent-ids?-tests
+  (testing "nil, empty etc."
+    (is (false? (equivalent-ids? nil nil)))
+    (is (false? (equivalent-ids? "" nil)))
+    (is (false? (equivalent-ids? nil ""))))
+  (testing "invalid ids"
+    (is (false? (equivalent-ids? "foo" "foo")))
+    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent-ids? "Apache-2.0"                                             "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "GPL-2.0"))))
+  (testing "valid ids that are not equivalent"
+    (is (false? (equivalent-ids? "Apache-2.0" "GPL-2.0")))
+    (is (false? (equivalent-ids? "cc-by-4.0"  "cc-by-sa-4.0"))))
+  (testing "valid ids that are equivalent"
+    (is (true? (equivalent-ids? "Apache-2.0"   "Apache-2.0")))
+    (is (true? (equivalent-ids? "APACHE-2.0"   "apache-2.0")))
+    (is (true? (equivalent-ids? "CC-BY-SA-4.0" "cc-by-sa-4.0")))))
 
 (deftest license-ref?-tests
   (testing "Invalid LicenseRefs return false"
@@ -259,6 +292,23 @@
     (is (true? (equivalent-license-refs? "DocumentRef-FOO:LicenseRef-BAR" "DocumentRef-foo:LicenseRef-bar")))
     (is (true? (equivalent-license-refs? "DocumentRef-FOO:LicenseRef-bar" "DocumentRef-foo:LicenseRef-BAR")))
     (is (true? (equivalent-license-refs? "DocumentRef-FOO-V2.1:LicenseRef-bar-v3.7" "DocumentRef-foo-v2.1:LicenseRef-BAR-V3.7")))))
+
+(deftest equivalent?-tests
+  (testing "nil, empty etc."
+    (is (false? (equivalent? nil nil)))
+    (is (false? (equivalent? "" nil)))
+    (is (false? (equivalent? nil ""))))
+  (testing "Not an id or LicenseRef"
+    (is (false? (equivalent? "foo" "foo")))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent? "Apache-2.0"                                             "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "LicenseRef-foo"))))
+  (testing "valid values that are not equivalent"
+    (is (false? (equivalent? "Apache-2.0"     "LicenseRef-foo")))
+    (is (false? (equivalent? "LicenseRef-FOO" "gpl-2.0"))))
+  (testing "valid values that are equivalent"
+    (is (true? (equivalent? "APACHE-2.0"                     "apache-2.0")))
+    (is (true? (equivalent? "DocumentRef-FOO:LicenseRef-BAR" "DocumentRef-foo:LicenseRef-bar")))))
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"

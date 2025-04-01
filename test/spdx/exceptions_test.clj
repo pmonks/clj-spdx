@@ -11,9 +11,9 @@
 (ns spdx.exceptions-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.exceptions :refer [version ids listed-id? addition-ref? addition-ref addition-ref-map->string
-                                     string->addition-ref-map equivalent-addition-refs? id->info deprecated-id?
-                                     non-deprecated-ids]]))
+            [spdx.exceptions :refer [version ids listed-id? canonicalise-id equivalent-ids?  addition-ref?
+                                     addition-ref addition-ref-map->string string->addition-ref-map
+                                     equivalent-addition-refs? equivalent? id->info deprecated-id? non-deprecated-ids]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -35,6 +35,38 @@
     (is (true? (listed-id? "Linux-syscall-note"))))
   (testing "Made up ids are not present"
     (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))))
+
+(deftest canonicalise-id-tests
+  (testing "Invalid ids return nil"
+    (is (nil? (canonicalise-id nil)))
+    (is (nil? (canonicalise-id "")))
+    (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "id in canonical form"
+    (is (= "Classpath-exception-2.0" (canonicalise-id "Classpath-exception-2.0")))
+    (is (= "Bison-exception-1.24"    (canonicalise-id "Bison-exception-1.24")))
+    (is (= "GCC-exception-2.0"       (canonicalise-id "GCC-exception-2.0"))))
+  (testing "id not in canonical form"
+    (is (= "Classpath-exception-2.0" (canonicalise-id "CLASSPATH-EXCEPTION-2.0")))
+    (is (= "Bison-exception-1.24"    (canonicalise-id "bison-exception-1.24")))
+    (is (= "GCC-exception-2.0"       (canonicalise-id "gcc-exception-2.0")))))
+
+(deftest equivalent-ids?-tests
+  (testing "nil, empty etc."
+    (is (false? (equivalent-ids? nil nil)))
+    (is (false? (equivalent-ids? "" nil)))
+    (is (false? (equivalent-ids? nil ""))))
+  (testing "invalid ids"
+    (is (false? (equivalent-ids? "foo" "foo")))
+    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent-ids? "Classpath-exception-2.0"                                "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "Bison-exception-1.24"))))
+  (testing "valid ids that are not equivalent"
+    (is (false? (equivalent-ids? "Classpath-exception-2.0" "Bison-exception-1.24")))
+    (is (false? (equivalent-ids? "GCC-exception-2.0"       "GCC-exception-3.1"))))
+  (testing "valid ids that are equivalent"
+    (is (true? (equivalent-ids? "Classpath-exception-2.0"   "Classpath-exception-2.0")))
+    (is (true? (equivalent-ids? "CLASSPATH-EXCEPTION-2.0"   "classpath-exception-2.0")))
+    (is (true? (equivalent-ids? "GCC-exception-3.1"         "gcc-exception-3.1")))))
 
 (deftest addition-ref?-tests
   (testing "Invalid AdditionRefs return false"
@@ -250,6 +282,23 @@
     (is (true? (equivalent-addition-refs? "DocumentRef-FOO:AdditionRef-BAR" "DocumentRef-foo:AdditionRef-bar")))
     (is (true? (equivalent-addition-refs? "DocumentRef-FOO:AdditionRef-bar" "DocumentRef-foo:AdditionRef-BAR")))
     (is (true? (equivalent-addition-refs? "DocumentRef-FOO-V2.1:AdditionRef-bar-v3.7" "DocumentRef-foo-v2.1:AdditionRef-BAR-V3.7")))))
+
+(deftest equivalent?-tests
+  (testing "nil, empty etc."
+    (is (false? (equivalent? nil nil)))
+    (is (false? (equivalent? "" nil)))
+    (is (false? (equivalent? nil ""))))
+  (testing "Not an id or AdditionRef"
+    (is (false? (equivalent? "foo" "foo")))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent? "Classpath-exception-2.0"                                "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo"))))
+  (testing "valid values that are not equivalent"
+    (is (false? (equivalent? "Classpath-exception-2.0" "AdditionRef-foo")))
+    (is (false? (equivalent? "AdditionRef-FOO"         "gcc-exception-3.1"))))
+  (testing "valid values that are equivalent"
+    (is (true? (equivalent? "CLASSPATH-EXCEPTION-2.0"         "classpath-exception-2.0")))
+    (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "DocumentRef-foo:AdditionRef-bar")))))
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"
