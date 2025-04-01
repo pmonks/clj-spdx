@@ -45,7 +45,14 @@
 (defn canonicalise-id
   "Canonicalises `id` (an SPDX license identifier), by returning it in its
   canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX license
-  identifier."
+  identifier.
+
+  Notes:
+
+  * This function does _not_ canonicalise a deprecated id to its non-deprecated
+    equivalent, since some of those conversions result in an SPDX expression
+    rather than an individual id. [[spdx.expressions/parse]] can be used for
+    that."
   [^String id]
   (when id
     (get @id-canonicalisation-d (s/lower-case id))))
