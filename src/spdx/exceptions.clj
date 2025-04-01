@@ -36,6 +36,34 @@
   [^String id]
   (im/listed-exception-id? id))
 
+(def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
+
+(defn canonicalise-id
+  "Canonicalises `id` (an SPDX license exception identifier), by returning it in
+  its canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX license
+  exception identifier."
+  [^String id]
+  (when id
+    (get @id-canonicalisation-d (s/lower-case id))))
+
+(defn equivalent-ids?
+  "Are `id1` and `id2` (`String`s) equivalent SPDX license exception identifiers
+  (i.e. taking the SPDX case sensitivity rules in
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if `id1` or `id2` are not valid SPDX license exception
+    identifiers"
+  [^String id1 ^String id2]
+  (let [canonical-id1 (canonicalise-id id1)
+        canonical-id2 (canonicalise-id id2)]
+    (boolean
+      (and canonical-id1
+           canonical-id2
+           (= canonical-id1 canonical-id2)))))
+
 (def ^:private addition-ref-re-d (delay (re/join #"\A" @ir/addition-ref-re-d #"\z")))
 
 (defn addition-ref?
@@ -64,7 +92,7 @@
   Note:
 
   * This fn is the inverse of [[string->addition-ref-map]]."
-  [m]
+  [^java.util.Map m]
   (when m
     (addition-ref (:addition-document-ref m) (:addition-ref m))))
 
@@ -97,6 +125,25 @@
         (and (= (u/safe-lower-case (:addition-document-ref addition-ref-1)) (u/safe-lower-case (:addition-document-ref addition-ref-2)))
              (= (s/lower-case      (:addition-ref          addition-ref-1)) (s/lower-case      (:addition-ref          addition-ref-2))))))))
 
+(defn equivalent?
+  "Are `s1` and `s2` (`String`s) equivalent SPDX license exception
+  identifiers or AdditionRefs (i.e. taking the SPDX
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if `s1` or `s2` are not listed SPDX license exception
+    identifiers or valid AdditionRefs"
+  [^String s1 ^String s2]
+  (if (and s1 s2)
+    (if (and (listed-id? s1) (listed-id? s2))
+      (equivalent-ids? s1 s2)
+      (if (and (addition-ref? s1) (addition-ref? s2))
+        (equivalent-addition-refs? s1 s2)
+        false))
+    false))
+
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
   "Returns SPDX exception list information for `id` (a `String`) as a map, or
@@ -124,8 +171,8 @@
 
 (defn non-deprecated-ids
   "Returns the set of exception ids that identify current (non-deprecated)
-  exceptions within the provided set of SPDX exception ids (or all of them, if
-  `ids` not provided)."
+  exceptions within the provided set of SPDX license exception ids (or all of
+  them, if `ids` not provided)."
   ([]    (non-deprecated-ids (ids)))
   ([ids] (some-> (seq (filter (complement deprecated-id?) ids))
                  set)))
@@ -143,5 +190,6 @@
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
   ; Note: using embroidery's pmap* function has been found to be counter-productive here
   (doall (pmap id->info (ids)))
+  @id-canonicalisation-d
   @addition-ref-re-d
   nil)

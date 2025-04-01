@@ -26,15 +26,46 @@
   (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
 
 (defn ids
-  "The set of all license ids."
+  "The set of all SPDX license identifiers."
   []
   (some-> (seq (.getSpdxListedLicenseIds ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
           set))
 
 (defn listed-id?
-  "Is `id` (a `String`) one of the listed SPDX license identifiers?"
+  "Is `id` (a `String`) one of the listed SPDX license identifiers?
+
+  Notes:
+
+  * This fn supports any case of id, as per SPDX's case insensitivity rules"
   [^String id]
   (im/listed-license-id? id))
+
+(def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
+
+(defn canonicalise-id
+  "Canonicalises `id` (an SPDX license identifier), by returning it in its
+  canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX license
+  identifier."
+  [^String id]
+  (when id
+    (get @id-canonicalisation-d (s/lower-case id))))
+
+(defn equivalent-ids?
+  "Are `id1` and `id2` (`String`s) equivalent SPDX license identifiers (i.e.
+  taking the SPDX case sensitivity rules in
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if `id1` or `id2` are not valid SPDX license identifiers"
+  [^String id1 ^String id2]
+  (let [canonical-id1 (canonicalise-id id1)
+        canonical-id2 (canonicalise-id id2)]
+    (boolean
+      (and canonical-id1
+           canonical-id2
+           (= canonical-id1 canonical-id2)))))
 
 (def ^:private license-ref-re-d (delay (re/join #"\A" @ir/license-ref-re-d #"\z")))
 
@@ -64,7 +95,7 @@
   Notes:
 
   * This fn is the inverse of [[string->license-ref-map]]."
-  [m]
+  [^java.util.Map m]
   (when m
     (license-ref (:document-ref m) (:license-ref m))))
 
@@ -96,6 +127,25 @@
       (when-let [license-ref-2 (string->license-ref-map s2)]
         (and (= (u/safe-lower-case (:document-ref license-ref-1)) (u/safe-lower-case (:document-ref license-ref-2)))
              (= (s/lower-case      (:license-ref  license-ref-1)) (s/lower-case      (:license-ref  license-ref-2))))))))
+
+(defn equivalent?
+  "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers or
+  LicenseRefs (i.e. taking the SPDX
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  into account)?
+
+  Notes:
+
+  * Returns `false` if `s1` or `s2` are not listed SPDX license identifiers or
+    valid LicenseRefs"
+  [^String s1 ^String s2]
+  (if (and s1 s2)
+    (if (and (listed-id? s1) (listed-id? s2))
+      (equivalent-ids? s1 s2)
+      (if (and (license-ref? s1) (license-ref? s2))
+        (equivalent-license-refs? s1 s2)
+        false))
+    false))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
@@ -183,5 +233,6 @@
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
   ; Note: using embroidery's pmap* function has been found to be counter-productive here
   (doall (pmap id->info (ids)))
+  @id-canonicalisation-d
   @license-ref-re-d
   nil)

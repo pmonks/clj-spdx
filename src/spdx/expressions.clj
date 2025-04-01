@@ -70,9 +70,6 @@
 (def ^:private spdx-license-expression-cs-parser-d (delay (insta/parser @spdx-license-expression-cs-grammar-d :start :expression)))
 (def ^:private spdx-license-expression-ci-parser-d (delay (insta/parser @spdx-license-expression-ci-grammar-d :start :expression)))
 
-(def ^:private normalised-spdx-ids-map-d (delay (merge (into {} (map #(vec [(s/lower-case %) %]) (lic/ids)))
-                                                       (into {} (map #(vec [(s/lower-case %) %]) (exc/ids))))))
-
 (defn- walk-internal
   "Internal implementation of [[walk]]."
   [depth
@@ -140,8 +137,8 @@
                 parse-tree)
           s/trim))
 
-(defn- normalise-nested-operators
-  "Normalises nested operators that are the same."
+(defn- canonicalise-nested-operators
+  "Canonicalises nested operators that are the same."
   [operator coll]
   (loop [result [operator]
          f      (first coll)
@@ -201,12 +198,12 @@
       ; It's a LicenseRef, so skip license id replacement
       result)))
 
-(defn- normalise-deprecated-ids
-  "Normalises deprecated SPDX identifiers, based on the replacement rules
+(defn- canonicalise-deprecated-ids
+  "Canonicalises deprecated SPDX identifiers, based on the replacement rules
   provided by [[spdx.impl.replacements]]."
   [parse-tree]
   (walk {:license-fn replace-deprecated-entries-in-license-map
-         :group-fn   (fn [_ [operator & entries]] (normalise-nested-operators operator entries))}
+         :group-fn   (fn [_ [operator & entries]] (canonicalise-nested-operators operator entries))}
         parse-tree))
 
 (defn- license-map->sortable-string
@@ -299,22 +296,22 @@
 
   `opts` are as for [[parse]]"
   ([s] (parse-with-info s nil))
-  ([^String s {:keys [normalise-deprecated-ids?
+  ([^String s {:keys [canonicalise-deprecated-ids?
                       case-sensitive-operators?
                       collapse-redundant-clauses?
                       sort-licenses?]
-                 :or {normalise-deprecated-ids?   true
-                      case-sensitive-operators?   false
-                      collapse-redundant-clauses? true
-                      sort-licenses?              true}}]
+                 :or {canonicalise-deprecated-ids? true
+                      case-sensitive-operators?    false
+                      collapse-redundant-clauses?  true
+                      sort-licenses?               true}}]
    (when-not (s/blank? s)
      (let [parser     (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
            parse-tree (insta/parse parser s)]
        (if (insta/failure? parse-tree)
          parse-tree
          (as-> parse-tree parse-tree
-               (insta/transform {:license-id           #(hash-map  :license-id           (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
-                                 :license-exception-id #(hash-map  :license-exception-id (get @normalised-spdx-ids-map-d (s/lower-case (first %&)) (first %&)))
+               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise-id (first %&)))
+                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise-id (first %&)))
                                  :license-ref          #(case (count %&)
                                                           1 {:license-ref  (first %&)}
                                                           2 {:document-ref (first %&) :license-ref (second %&)})
@@ -325,20 +322,20 @@
                                  :with-expression      #(merge (first %&)        (second %&))
                                  :and-expression       #(case (count %&)
                                                           1 (first %&)
-                                                          (normalise-nested-operators :and %&))
+                                                          (canonicalise-nested-operators :and %&))
                                  :or-expression        #(case (count %&)
                                                           1 (first %&)
-                                                          (normalise-nested-operators :or %&))
+                                                          (canonicalise-nested-operators :or %&))
                                  :expression           #(case (count %&)
                                                           1 (first %&)
                                                           (vec %&))}
                                 parse-tree)
                (mandatory-license-id-replacements parse-tree)
-               (if normalise-deprecated-ids?   (normalise-deprecated-ids   parse-tree) parse-tree)
-               (if sort-licenses?              (sort-parse-tree            parse-tree) parse-tree)
-               (if collapse-redundant-clauses? (collapse-redundant-clauses parse-tree) parse-tree)
+               (if canonicalise-deprecated-ids? (canonicalise-deprecated-ids parse-tree) parse-tree)
+               (if sort-licenses?               (sort-parse-tree             parse-tree) parse-tree)
+               (if collapse-redundant-clauses?  (collapse-redundant-clauses  parse-tree) parse-tree)
                (if (and collapse-redundant-clauses?
-                        sort-licenses?)        (sort-parse-tree            parse-tree) parse-tree)))))))  ; Post-sort, to ensure results of collapsing redundant clauses get sorted
+                        sort-licenses?)         (sort-parse-tree             parse-tree) parse-tree)))))))  ; Post-sort, to ensure results of collapsing redundant clauses get sorted
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
@@ -353,11 +350,11 @@
 
   The optional `opts` map has these keys:
 
-  * `:normalise-deprecated-ids?` (`boolean`, default `true`) - controls whether
-    deprecated ids in the expression are normalised to their non-deprecated
-    equivalents (where possible) as part of the parsing process.  Note that not
-    all deprecated identifiers have non-deprecated equivalents, and those will
-    be left unchanged in the parse tree.
+  * `:canonicalise-deprecated-ids?` (`boolean`, default `true`) - controls
+    whether deprecated ids in the expression are canonicalised to their
+    non-deprecated equivalents (where possible) as part of the parsing process.
+    Note that not all deprecated identifiers have non-deprecated equivalents,
+    and those will be left unchanged in the parse tree.
   * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
     operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
     (spec-compliant, but strict) or not (non-spec-compliant, lenient).
@@ -372,13 +369,14 @@
     the parse tree for `Apache-2.0 OR MIT` would be identical to the parse tree
     for `MIT OR Apache-2.0`.
 
-  Deprecated & no-longer-supported `opts`:
+  Deprecated & removed `opts`:
 
-  * `:normalise-gpl-ids?` - superceded by `:normalise-deprecated-ids?`
+  * `:normalise-deprecated-ids?` - superceded by `:canonicalise-deprecated-ids?`
+  * `:normalise-gpl-ids?` - superceded by `:canonicalise-deprecated-ids?`
 
   Notes:
 
-  * The parser always normalises SPDX ids to their canonical case
+  * The parser always canonicalises SPDX identifiers
     e.g. `aPAcHe-2.0` -> `Apache-2.0`
   * The parser always removes redundant grouping
     e.g. `(((((Apache-2.0))))))` -> `Apache-2.0`
@@ -405,11 +403,11 @@
   (parse \"apache-2.0+\")
   {:license-id \"Apache-2.0\" :or-later? true}
 
-  ; GNU family identifier normalisation
+  ; GNU family identifier canonicalisation
   (parse \"GPL-2.0+\")
   {:license-id \"GPL-2.0-or-later\"}
 
-  ; Deprecated identifier normalisation
+  ; Deprecated identifier canonicalisation
   (parse \"StandardML-NJ\")
   {:license-id \"SMLNJ\"}
 
@@ -445,29 +443,34 @@
    :addition-ref \"bar\"}
   ```"
   ([s] (parse s nil))
-  ([s {:keys [normalise-deprecated-ids?
+  ([s {:keys [canonicalise-deprecated-ids?
               case-sensitive-operators?
               collapse-redundant-clauses?
               sort-licenses?]
-         :or {normalise-deprecated-ids?   true
-              case-sensitive-operators?   false
-              collapse-redundant-clauses? true
-              sort-licenses?              true}
+         :or {canonicalise-deprecated-ids? true
+              case-sensitive-operators?    false
+              collapse-redundant-clauses?  true
+              sort-licenses?               true}
          :as opts}]
    (when-let [raw-parse-tree (parse-with-info s opts)]
      (when-not (insta/failure? raw-parse-tree)
        raw-parse-tree))))
 
-(defn normalise
-  "Normalises an SPDX expression, by running it through [[parse]] then
+(defn canonicalise
+  "Canonicalises an SPDX expression, by running it through [[parse]] then
   [[unparse]].  Returns `nil` if `s` is not a valid SPDX expression.
 
   `opts` are as for [[parse]]"
-  ([s] (normalise s nil))
-  ([s opts]
+  ([^String s] (canonicalise s nil))
+  ([^String s opts]
    (some-> s
            (parse opts)
            unparse)))
+
+(defn ^:deprecated normalise
+  "Deprecated - use [[canonicalise]] instead."
+  ([^String s]      (canonicalise s nil))
+  ([^String s opts] (canonicalise s opts)))
 
 (defn valid?
   "Is `s` (a `String`) a valid SPDX license expression?
@@ -542,7 +545,6 @@
   (exc/init!)
   @license-ids-fragment
   @exception-ids-fragment
-  @normalised-spdx-ids-map-d
 ; Note: we always leave these to runtime, since they're not expensive, and doing so
 ; ensures that callers who exclusively use one parsing variant aren't paying an
 ; unnecessary memory cost.

@@ -11,7 +11,7 @@
 (ns spdx.expressions-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils]      ; Unused, but we force it to run first
-            [spdx.expressions :refer [parse parse-with-info unparse normalise valid? simple? compound? extract-ids walk]]))
+            [spdx.expressions :refer [parse parse-with-info unparse canonicalise valid? simple? compound? extract-ids walk]]))
 
 (deftest parse-tests
   (testing "Nil, empty, etc."
@@ -156,9 +156,9 @@
     ; Cursed expressions with +
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
-    (is (= (parse "GPL-2.0-only+" {:normalise-deprecated-ids? false})   ; This should always be normalised, regardless of deprecation normalisation
+    (is (= (parse "GPL-2.0-only+" {:canonicalise-deprecated-ids? false})   ; This should always be canonicalised, regardless of deprecation canonicalisation
                                                               {:license-id "GPL-2.0-or-later"}))
-    (is (= (parse "GPL-2.0-or-later+" {:normalise-deprecated-ids? false})   ; This should always be normalised, regardless of deprecation normalisation
+    (is (= (parse "GPL-2.0-or-later+" {:canonicalise-deprecated-ids? false})   ; This should always be canonicalised, regardless of deprecation canonicalisation
                                                               {:license-id "GPL-2.0-or-later"}))
     ; Cursed eCos-2.0 and wxWindows cases (these two changed type - license ids replaced by exception ids 😬)
     (is (= (parse "eCos-2.0")                                 {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}))
@@ -181,7 +181,7 @@
                                                                {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}
                                                                {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}]))
     (is (= (parse "eCos-2.0 WITH eCos-exception-2.0")         {:license-id "GPL-2.0-only" :license-exception-id "eCos-exception-2.0"}))
-    (is (= (parse "MIT AND eCos-2.0" {:normalise-deprecated-ids? false})
+    (is (= (parse "MIT AND eCos-2.0" {:canonicalise-deprecated-ids? false})
                                                               [:and
                                                                {:license-id "eCos-2.0"}
                                                                {:license-id "MIT"}]))
@@ -189,7 +189,7 @@
     (is (= (parse "MIT AND wxWindows")                        [:and {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"} {:license-id "MIT"}]))
     (is (= (parse "wxWindows AND MIT")                        [:and {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"} {:license-id "MIT"}]))
     (is (= (parse "wxWindows WITH WxWindows-exception-3.1")   {:license-id "GPL-2.0-only" :license-exception-id "WxWindows-exception-3.1"}))
-    (is (= (parse "BSD-2-Clause AND wxWindows" {:normalise-deprecated-ids? false})
+    (is (= (parse "BSD-2-Clause AND wxWindows" {:canonicalise-deprecated-ids? false})
                                                               [:and
                                                                {:license-id "BSD-2-Clause"}
                                                                {:license-id "wxWindows"}]))
@@ -276,46 +276,46 @@
     (is (= (parse "LicenseRef-foo WITH AdditionRef-foo AND LicenseRef-foo WITH Classpath-exception-2.0")                                                  ; AdditionRefs sort after license exceptions (LicenseRef variant)
                                                               [:and {:license-ref "foo" :license-exception-id "Classpath-exception-2.0"} {:license-ref "foo" :addition-ref "foo"}]))))
 
-(deftest unnormalised-parse-tests
-  (testing "Simple expressions - normalisation"
-    (is (= (parse "AGPL-1.0"                               {:normalise-deprecated-ids? true}) {:license-id "AGPL-1.0-only"}))
-    (is (= (parse "GPL-2.0"                                {:normalise-deprecated-ids? true}) {:license-id "GPL-2.0-only"}))
-    (is (= (parse "StandardML-NJ"                          {:normalise-deprecated-ids? true}) {:license-id "SMLNJ"}))
-    (is (= (parse "Apache-2.0 WITH Nokia-Qt-exception-1.1" {:normalise-deprecated-ids? true}) {:license-id "Apache-2.0" :license-exception-id "Qt-LGPL-exception-1.1"})))
-  (testing "Simple expressions - no normalisation"
-    (is (= (parse "AGPL-1.0"                               {:normalise-deprecated-ids? false}) {:license-id "AGPL-1.0"}))
-    (is (= (parse "GPL-2.0"                                {:normalise-deprecated-ids? false}) {:license-id "GPL-2.0"}))
-    (is (= (parse "StandardML-NJ"                          {:normalise-deprecated-ids? false}) {:license-id "StandardML-NJ"}))
-    (is (= (parse "Apache-2.0 WITH Nokia-Qt-exception-1.1" {:normalise-deprecated-ids? false}) {:license-id "Apache-2.0" :license-exception-id "Nokia-Qt-exception-1.1"})))
+(deftest uncanonicalised-parse-tests
+  (testing "Simple expressions - canonicalisation"
+    (is (= (parse "AGPL-1.0"                               {:canonicalise-deprecated-ids? true}) {:license-id "AGPL-1.0-only"}))
+    (is (= (parse "GPL-2.0"                                {:canonicalise-deprecated-ids? true}) {:license-id "GPL-2.0-only"}))
+    (is (= (parse "StandardML-NJ"                          {:canonicalise-deprecated-ids? true}) {:license-id "SMLNJ"}))
+    (is (= (parse "Apache-2.0 WITH Nokia-Qt-exception-1.1" {:canonicalise-deprecated-ids? true}) {:license-id "Apache-2.0" :license-exception-id "Qt-LGPL-exception-1.1"})))
+  (testing "Simple expressions - no canonicalisation"
+    (is (= (parse "AGPL-1.0"                               {:canonicalise-deprecated-ids? false}) {:license-id "AGPL-1.0"}))
+    (is (= (parse "GPL-2.0"                                {:canonicalise-deprecated-ids? false}) {:license-id "GPL-2.0"}))
+    (is (= (parse "StandardML-NJ"                          {:canonicalise-deprecated-ids? false}) {:license-id "StandardML-NJ"}))
+    (is (= (parse "Apache-2.0 WITH Nokia-Qt-exception-1.1" {:canonicalise-deprecated-ids? false}) {:license-id "Apache-2.0" :license-exception-id "Nokia-Qt-exception-1.1"})))
   (testing "Compound expressions"
-    (is (= (parse "GPL-2.0+" {:normalise-deprecated-ids? false})
+    (is (= (parse "GPL-2.0+" {:canonicalise-deprecated-ids? false})
            {:license-id "GPL-2.0" :or-later? true}))
-    (is (= (parse "GPL-2.0-only+" {:normalise-deprecated-ids? false})
-           {:license-id "GPL-2.0-or-later"}))  ; This is a mandatory replacement, not controllable via the :normalise-deprecated-ids? flag
-    (is (= (parse "Apache-2.0 OR GPL-2.0" {:normalise-deprecated-ids? false})
+    (is (= (parse "GPL-2.0-only+" {:canonicalise-deprecated-ids? false})
+           {:license-id "GPL-2.0-or-later"}))  ; This is a mandatory replacement, not controllable via the :canonicalise-deprecated-ids? flag
+    (is (= (parse "Apache-2.0 OR GPL-2.0" {:canonicalise-deprecated-ids? false})
            [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0"}]))
-    (is (= (parse "Apache-2.0 OR GPL-2.0+" {:normalise-deprecated-ids? false})
+    (is (= (parse "Apache-2.0 OR GPL-2.0+" {:canonicalise-deprecated-ids? false})
            [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0" :or-later? true}]))
-    (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0" {:normalise-deprecated-ids? false})
+    (is (= (parse "Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0" {:canonicalise-deprecated-ids? false})
            [:or
             {:license-id "Apache-2.0"}
             {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}]))
-    (is (= (parse "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)" {:normalise-deprecated-ids? false})
+    (is (= (parse "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)" {:canonicalise-deprecated-ids? false})
            [:or
             {:license-id "Apache-2.0"}
             {:license-id "GPL-2.0" :license-exception-id "Classpath-exception-2.0"}]))
-    (is (= (parse "APACHE-2.0 OR (((((GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)))))" {:normalise-deprecated-ids? false})
+    (is (= (parse "APACHE-2.0 OR (((((GPL-2.0+ WITH CLASSPATH-EXCEPTION-2.0)))))" {:canonicalise-deprecated-ids? false})
            [:or
             {:license-id "Apache-2.0"}
             {:license-id "GPL-2.0"
              :or-later? true
              :license-exception-id "Classpath-exception-2.0"}]))
-    (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar" {:normalise-deprecated-ids? false})
+    (is (= (parse "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar" {:canonicalise-deprecated-ids? false})
            [:or
             {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"}
             {:license-ref "bar" :document-ref "foo"}
             [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))
-    (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0" {:normalise-deprecated-ids? false})
+    (is (= (parse "GPL-2.0-with-GCC-exception WITH Classpath-exception-2.0" {:canonicalise-deprecated-ids? false})
            {:license-id "GPL-2.0-with-GCC-exception" :license-exception-id "Classpath-exception-2.0"}))))
 
 (deftest parse-with-info-tests
@@ -370,71 +370,71 @@
                                                      "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (Apache-2.0+ AND MIT) OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))))
 
 ; Note: we keep these short(ish), as the parser is far more extensively exercised by parse-tests and unparse-tests
-; Precedence rule tests are only here however, as they're less cumbersome to test using normalise
-(deftest normalise-tests
+; Precedence rule tests are only here however, as they're less cumbersome to test using canonicalise
+(deftest canonicalise-tests
   (testing "Nil, blank, etc."
-    (is (nil? (normalise nil)))
-    (is (nil? (normalise "")))
-    (is (nil? (normalise "  ")))
-    (is (nil? (normalise "\n\t"))))
+    (is (nil? (canonicalise nil)))
+    (is (nil? (canonicalise "")))
+    (is (nil? (canonicalise "  ")))
+    (is (nil? (canonicalise "\n\t"))))
   (testing "Invalid expressions"
-    (is (nil? (normalise "AND")))
-    (is (nil? (normalise "THIS-IS-NOT-A-LICENSE-ID")))
-    (is (nil? (normalise "DocumentRef-foo")))
-    (is (nil? (normalise "LicenseRef-this:is:invalid")))
-    (is (nil? (normalise "((BSD-2-Clause")))
-    (is (nil? (normalise "Classpath-exception-2.0")))
-    (is (nil? (normalise "MIT and AGPL-3.0" {:case-sensitive-operators? true}))))
+    (is (nil? (canonicalise "AND")))
+    (is (nil? (canonicalise "THIS-IS-NOT-A-LICENSE-ID")))
+    (is (nil? (canonicalise "DocumentRef-foo")))
+    (is (nil? (canonicalise "LicenseRef-this:is:invalid")))
+    (is (nil? (canonicalise "((BSD-2-Clause")))
+    (is (nil? (canonicalise "Classpath-exception-2.0")))
+    (is (nil? (canonicalise "MIT and AGPL-3.0" {:case-sensitive-operators? true}))))
   (testing "Simple expressions"
-    (is (= (normalise "Apache-2.0")                     "Apache-2.0"))
-    (is (= (normalise "aPaCHe-2.0")                     "Apache-2.0"))
-    (is (= (normalise "((bsd-4-clause))")               "BSD-4-Clause"))
-    (is (= (normalise "LGPL-3.0")                       "LGPL-3.0-only"))
-    (is (= (normalise "LGPL-3.0+")                      "LGPL-3.0-or-later"))
-    (is (= (normalise "LGPL-3.0-or-later")              "LGPL-3.0-or-later"))
-    (is (= (normalise "LicenseRef-foo")                 "LicenseRef-foo"))
-    (is (= (normalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar")))
+    (is (= (canonicalise "Apache-2.0")                     "Apache-2.0"))
+    (is (= (canonicalise "aPaCHe-2.0")                     "Apache-2.0"))
+    (is (= (canonicalise "((bsd-4-clause))")               "BSD-4-Clause"))
+    (is (= (canonicalise "LGPL-3.0")                       "LGPL-3.0-only"))
+    (is (= (canonicalise "LGPL-3.0+")                      "LGPL-3.0-or-later"))
+    (is (= (canonicalise "LGPL-3.0-or-later")              "LGPL-3.0-or-later"))
+    (is (= (canonicalise "LicenseRef-foo")                 "LicenseRef-foo"))
+    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar")))
   (testing "Compound expressions"
-    (is (= (normalise "MIT and AGPL-3.0")                                                        "AGPL-3.0-only AND MIT"))
-    (is (= (normalise "(GPL-2.0 WITH Classpath-exception-2.0)")                                  "GPL-2.0-only WITH Classpath-exception-2.0"))
-    (is (= (normalise "BSD-2-Clause AND MIT or GPL-2.0+ WITH Classpath-exception-2.0")           "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (BSD-2-Clause AND MIT)"))
-    (is (= (normalise "(BSD-2-Clause AND MIT) Or GPL-2.0+ WITH Classpath-exception-2.0")         "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (BSD-2-Clause AND MIT)"))
-    (is (= (normalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")                 "GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-only WITH GCC-exception-2.0"))
-    (is (= (normalise "LicenseRef-foo WITH Classpath-exception-2.0")                             "LicenseRef-foo WITH Classpath-exception-2.0"))
-    (is (= (normalise "Apache-2.0 WITH AdditionRef-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
-    (is (= (normalise "LicenseRef-foo with AdditionRef-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
-    (is (= (normalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
+    (is (= (canonicalise "MIT and AGPL-3.0")                                                        "AGPL-3.0-only AND MIT"))
+    (is (= (canonicalise "(GPL-2.0 WITH Classpath-exception-2.0)")                                  "GPL-2.0-only WITH Classpath-exception-2.0"))
+    (is (= (canonicalise "BSD-2-Clause AND MIT or GPL-2.0+ WITH Classpath-exception-2.0")           "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (BSD-2-Clause AND MIT)"))
+    (is (= (canonicalise "(BSD-2-Clause AND MIT) Or GPL-2.0+ WITH Classpath-exception-2.0")         "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (BSD-2-Clause AND MIT)"))
+    (is (= (canonicalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")                 "GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-only WITH GCC-exception-2.0"))
+    (is (= (canonicalise "LicenseRef-foo WITH Classpath-exception-2.0")                             "LicenseRef-foo WITH Classpath-exception-2.0"))
+    (is (= (canonicalise "Apache-2.0 WITH AdditionRef-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
+    (is (= (canonicalise "LicenseRef-foo with AdditionRef-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
+    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
   (testing "Precedence rules"
-    (is (= (normalise "Apache-2.0 OR  (MIT or  BSD-3-Clause)") "Apache-2.0 OR BSD-3-Clause OR MIT"))
-    (is (= (normalise "Apache-2.0 and (MIT AND BSD-3-Clause)") "Apache-2.0 AND BSD-3-Clause AND MIT"))
-    (is (= (normalise "((((((Apache-2.0)))))) AND (MIT and BSD-3-Clause)")
-                                                               "Apache-2.0 AND BSD-3-Clause AND MIT"))
-    (is (= (normalise "(Apache-2.0 or  MIT) or  BSD-3-Clause") "Apache-2.0 OR BSD-3-Clause OR MIT"))
-    (is (= (normalise "(Apache-2.0 and MIT) and BSD-3-Clause") "Apache-2.0 AND BSD-3-Clause AND MIT"))
-    (is (= (normalise "Apache-2.0 oR  MIT aNd BSD-3-Clause")   "Apache-2.0 OR (BSD-3-Clause AND MIT)"))
-    (is (= (normalise "Apache-2.0 AnD MIT Or  BSD-3-Clause")   "BSD-3-Clause OR (Apache-2.0 AND MIT)"))
-    (is (= (normalise "Apache-2.0 or  MIT and BSD-3-Clause or Unlicense")
-                                                               "Apache-2.0 OR Unlicense OR (BSD-3-Clause AND MIT)"))
-    (is (= (normalise "Apache-2.0 AND MIT OR BSD-3-Clause and Unlicense")
-                                                               "(Apache-2.0 AND MIT) OR (BSD-3-Clause AND Unlicense)"))
-    (is (= (normalise "Apache-2.0 OR (MIT and BSD-3-Clause OR Unlicense)")
-                                                               "Apache-2.0 OR Unlicense OR (BSD-3-Clause AND MIT)"))
-    (is (= (normalise "mit or bsd-3-clause AND apache-2.0 and beerware OR epl-2.0 and mpl-2.0 OR unlicense and lgpl-3.0 OR wtfpl or glwtpl OR hippocratic-2.1")
-                                                               "GLWTPL OR Hippocratic-2.1 OR MIT OR WTFPL OR (EPL-2.0 AND MPL-2.0) OR (LGPL-3.0-only AND Unlicense) OR (Apache-2.0 AND Beerware AND BSD-3-Clause)"))
-    (is (= (normalise "MIT or (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
-                                                               "Apache-2.0 OR Beerware OR BSD-3-Clause OR EPL-2.0 OR GLWTPL OR Hippocratic-2.1 OR LGPL-3.0-only OR MIT OR MPL-2.0 OR Unlicense OR WTFPL"))
-    (is (= (normalise "MIT and (BSD-3-Clause AND (Apache-2.0 and (Beerware AND (EPL-2.0 and (MPL-2.0 AND (Unlicense and (LGPL-3.0-only AND (WTFPL and (GLWTPL AND (Hippocratic-2.1))))))))))")
-                                                               "Apache-2.0 AND Beerware AND BSD-3-Clause AND EPL-2.0 AND GLWTPL AND Hippocratic-2.1 AND LGPL-3.0-only AND MIT AND MPL-2.0 AND Unlicense AND WTFPL"))
-    (is (= (normalise "MIT and (BSD-3-Clause or (Apache-2.0 and (Beerware or (EPL-2.0 and (MPL-2.0 or (Unlicense and (LGPL-3.0-only or (WTFPL and (GLWTPL or Hippocratic-2.1)))))))))")
-                                                               "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
-    (is (= (normalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
-                                                               "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))")))
+    (is (= (canonicalise "Apache-2.0 OR  (MIT or  BSD-3-Clause)") "Apache-2.0 OR BSD-3-Clause OR MIT"))
+    (is (= (canonicalise "Apache-2.0 and (MIT AND BSD-3-Clause)") "Apache-2.0 AND BSD-3-Clause AND MIT"))
+    (is (= (canonicalise "((((((Apache-2.0)))))) AND (MIT and BSD-3-Clause)")
+           "Apache-2.0 AND BSD-3-Clause AND MIT"))
+    (is (= (canonicalise "(Apache-2.0 or  MIT) or  BSD-3-Clause") "Apache-2.0 OR BSD-3-Clause OR MIT"))
+    (is (= (canonicalise "(Apache-2.0 and MIT) and BSD-3-Clause") "Apache-2.0 AND BSD-3-Clause AND MIT"))
+    (is (= (canonicalise "Apache-2.0 oR  MIT aNd BSD-3-Clause")   "Apache-2.0 OR (BSD-3-Clause AND MIT)"))
+    (is (= (canonicalise "Apache-2.0 AnD MIT Or  BSD-3-Clause")   "BSD-3-Clause OR (Apache-2.0 AND MIT)"))
+    (is (= (canonicalise "Apache-2.0 or  MIT and BSD-3-Clause or Unlicense")
+           "Apache-2.0 OR Unlicense OR (BSD-3-Clause AND MIT)"))
+    (is (= (canonicalise "Apache-2.0 AND MIT OR BSD-3-Clause and Unlicense")
+           "(Apache-2.0 AND MIT) OR (BSD-3-Clause AND Unlicense)"))
+    (is (= (canonicalise "Apache-2.0 OR (MIT and BSD-3-Clause OR Unlicense)")
+           "Apache-2.0 OR Unlicense OR (BSD-3-Clause AND MIT)"))
+    (is (= (canonicalise "mit or bsd-3-clause AND apache-2.0 and beerware OR epl-2.0 and mpl-2.0 OR unlicense and lgpl-3.0 OR wtfpl or glwtpl OR hippocratic-2.1")
+           "GLWTPL OR Hippocratic-2.1 OR MIT OR WTFPL OR (EPL-2.0 AND MPL-2.0) OR (LGPL-3.0-only AND Unlicense) OR (Apache-2.0 AND Beerware AND BSD-3-Clause)"))
+    (is (= (canonicalise "MIT or (BSD-3-Clause OR (Apache-2.0 OR (Beerware OR (EPL-2.0 OR (MPL-2.0 OR (Unlicense OR (LGPL-3.0-only OR (WTFPL OR (GLWTPL OR (Hippocratic-2.1))))))))))")
+           "Apache-2.0 OR Beerware OR BSD-3-Clause OR EPL-2.0 OR GLWTPL OR Hippocratic-2.1 OR LGPL-3.0-only OR MIT OR MPL-2.0 OR Unlicense OR WTFPL"))
+    (is (= (canonicalise "MIT and (BSD-3-Clause AND (Apache-2.0 and (Beerware AND (EPL-2.0 and (MPL-2.0 AND (Unlicense and (LGPL-3.0-only AND (WTFPL and (GLWTPL AND (Hippocratic-2.1))))))))))")
+           "Apache-2.0 AND Beerware AND BSD-3-Clause AND EPL-2.0 AND GLWTPL AND Hippocratic-2.1 AND LGPL-3.0-only AND MIT AND MPL-2.0 AND Unlicense AND WTFPL"))
+    (is (= (canonicalise "MIT and (BSD-3-Clause or (Apache-2.0 and (Beerware or (EPL-2.0 and (MPL-2.0 or (Unlicense and (LGPL-3.0-only or (WTFPL and (GLWTPL or Hippocratic-2.1)))))))))")
+           "MIT AND (BSD-3-Clause OR (Apache-2.0 AND (Beerware OR (EPL-2.0 AND (MPL-2.0 OR (Unlicense AND (LGPL-3.0-only OR (WTFPL AND (GLWTPL OR Hippocratic-2.1)))))))))"))
+    (is (= (canonicalise "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND (Hippocratic-2.1))))))))))")
+           "MIT OR (BSD-3-Clause AND (Apache-2.0 OR (Beerware AND (EPL-2.0 OR (MPL-2.0 AND (Unlicense OR (LGPL-3.0-only AND (WTFPL OR (GLWTPL AND Hippocratic-2.1)))))))))")))
   (testing "Collapsing redundant expressions"
-    (is (= (normalise "Apache-2.0 OR Apache-2.0")              "Apache-2.0"))
-    (is (= (normalise "Apache-2.0 OR (Apache-2.0 AND (Apache-2.0 AND Apache-2.0) OR Apache-2.0)")
-                                                               "Apache-2.0")))
+    (is (= (canonicalise "Apache-2.0 OR Apache-2.0")              "Apache-2.0"))
+    (is (= (canonicalise "Apache-2.0 OR (Apache-2.0 AND (Apache-2.0 AND Apache-2.0) OR Apache-2.0)")
+           "Apache-2.0")))
   (testing "Sorting of licenses within the parse tree"
-    (is (= (normalise "Apache-2.0 OR MIT")                     (normalise "MIT OR Apache-2.0")))))
+    (is (= (canonicalise "Apache-2.0 OR MIT")                     (canonicalise "MIT OR Apache-2.0")))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests
