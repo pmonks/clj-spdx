@@ -233,7 +233,7 @@
   this fn, as initialisation will occur implicitly anyway; it is provided to
   allow explicit control of the cost of initialisation to callers who need it.
 
-  Note: this method may have a substantial performance cost."
+  Note: this function may have a substantial performance cost."
   []
   (is/init!)
   (ir/init!)

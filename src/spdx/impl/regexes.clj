@@ -12,8 +12,8 @@
   "Regex utility namespace. Note: this namespace is not part of the public
   API of clj-spdx and may change without notice.")
 
-(def license-ref-re-d  (delay #"(DocumentRef-(?<DocumentRef>[\p{Alnum}-\.]+):)?LicenseRef-(?<LicenseRef>[\p{Alnum}-\.]+)"))
-(def addition-ref-re-d (delay #"(DocumentRef-(?<AdditionDocumentRef>[\p{Alnum}-\.]+):)?AdditionRef-(?<AdditionRef>[\p{Alnum}-\.]+)"))
+(def license-ref-re-d  (delay #"(?:DocumentRef-(?<DocumentRef>[\p{Alnum}-\.]+):)?LicenseRef-(?<LicenseRef>[\p{Alnum}-\.]+)"))
+(def addition-ref-re-d (delay #"(?:DocumentRef-(?<AdditionDocumentRef>[\p{Alnum}-\.]+):)?AdditionRef-(?<AdditionRef>[\p{Alnum}-\.]+)"))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
@@ -21,7 +21,7 @@
   this fn, as initialisation will occur implicitly anyway; it is provided to
   allow explicit control of the cost of initialisation to callers who need it.
 
-  Note: this method may have a substantial performance cost."
+  Note: this function may have a substantial performance cost."
   []
   @license-ref-re-d
   @addition-ref-re-d

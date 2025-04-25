@@ -242,7 +242,7 @@
   "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG"])
 
 (deftest parsing-equivalence-tests
-  (testing "Equivalence of parsing methods"
+  (testing "Equivalence of parsing functions"
     (run! #(is (= (string->license-ref-map %) (exp/parse %)) %) roundtrip-license-refs)))
 
 (deftest license-ref-roundtrip-tests

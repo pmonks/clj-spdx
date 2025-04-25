@@ -12,7 +12,7 @@
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
                                      texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text
-                                     exceptions-within-text]]))
+                                     exceptions-within-text differences]]))
 
 ; Official single license texts
 (def apache-10-text                  (delay (slurp "./test/data/apache-1.0.txt")))
@@ -289,3 +289,17 @@
   (testing "Texts with multiple licenses/exceptions"
     (is (= (exceptions-within-text @apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0"}))
     (is (= (exceptions-within-text @javamail-license)                   #{"Classpath-exception-2.0"}))))
+
+(deftest differences-tests
+  (testing "nil, empty string"
+    (is (nil? (differences nil nil)))
+    (is (nil? (differences "" nil)))
+    (is (nil? (differences nil "")))
+    (is (nil? (differences "" ""))))
+  (testing "Invalid SPDX identifiers"
+    (is (nil? (differences "Example text" "INVALID_SPDX_IDENTIFIER"))))
+  (testing "Valid SPDX identifiers"
+    (is (nil? (differences @apache-20-text "Apache-2.0")))
+    (is (map? (differences "Example text" "Apache-2.0")))
+    (is (= [:differences-found? :message :differences] (keys (differences "Example text" "Apache-2.0"))))
+    (is (= [:line :column :length] (keys (first (:differences (differences "Example text" "Apache-2.0"))))))))

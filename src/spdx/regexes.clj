@@ -27,13 +27,13 @@
 
   * `Identifier` (always present) - captures the entire identifier, `LicenseRef`
     or `AdditionRef`
-  * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
-    if that's what's matched and it contains one
-  * `LicenseRef` (optional) - captures the `LicenseRef` tag of a `LicenseRef`,
-    if that's what's matched
-  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
-    `AdditionRef`, if that's what's matched and it contains one
-  * `AdditionRef` (optional) - captures the `AdditionRef` tag of an
+  * `DocumentRef` (optional) - captures the `DocumentRef` variable text of a
+    `LicenseRef`, if that's what's matched and it contains one
+  * `LicenseRef` (optional) - captures the `LicenseRef` variable textof a
+    `LicenseRef`, if that's what's matched
+  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` variable text
+    of an `AdditionRef`, if that's what's matched and it contains one
+  * `AdditionRef` (optional) - captures the `AdditionRef` variable text of an
     `AdditionRef`, if that's what's matched
 
   Groups should _not_ be accessed by index, as the groups in the returned
@@ -55,8 +55,9 @@
     that SPDX identifiers are _not_ case sensitive](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity),
     but there may be cases where case sensitive matching is preferred.  Note
     that regardless of this setting, LicenseRefs and AdditionRefs (if included)
-    are _always_ matched as required by the spec (i.e. the 'tags' are matched
-    case-sensitively, and the 'variable sections' are not)
+    are _always_ matched as required by the spec (i.e. the constant 'tag'
+    sections are matched case-sensitively, and the 'variable text' sections are
+    not)
   * `include-license-refs?` (`boolean`, default `false`) - controls whether
     `LicenseRef` support is also included in the regex
   * `include-addition-refs?` (`boolean`, default `false`) - controls whether
@@ -135,9 +136,9 @@
   "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
   The regex provides these named capturing groups:
 
-  * `DocumentRef` (optional) - captures the `DocumentRef` tag of a `LicenseRef`,
-    if it contains one
-  * `LicenseRef` (always present) - captures the `LicenseRef` tag of a
+  * `DocumentRef` (optional) - captures the `DocumentRef` variable text of a
+    `LicenseRef`, if it contains one
+  * `LicenseRef` (always present) - captures the `LicenseRef` variable text of a
     `LicenseRef`
 
   Notes:
@@ -156,10 +157,10 @@
  "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.
  The regex provides these named capturing groups:
 
-  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` tag of an
-    `AdditionRef`, if it contains one
-  * `AdditionRef` (always present) - captures the `AdditionRef` tag of an
-    `AdditionRef`
+  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` variable text
+    of an `AdditionRef`, if it contains one
+  * `AdditionRef` (always present) - captures the `AdditionRef` variable text of
+    an `AdditionRef`
 
   Notes:
 
@@ -174,7 +175,7 @@
   this fn, as initialisation will occur implicitly anyway; it is provided to
   allow explicit control of the cost of initialisation to callers who need it.
 
-  Note: this method may have a substantial performance cost."
+  Note: this function may have a substantial performance cost."
   []
   (slic/init!)
   (sexc/init!)
