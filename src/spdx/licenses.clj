@@ -9,7 +9,7 @@
 ;
 
 (ns spdx.licenses
-  "License list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
+  "License list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
             [rencg.api         :as rencg]
             [wreck.api         :as re]
@@ -23,12 +23,12 @@
 
   Note: identical to [[spdx.exceptions/version]]."
   []
-  (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
+  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @is/list-obj))
 
 (defn ids
   "The set of all SPDX license identifiers."
   []
-  (some-> (seq (.getSpdxListedLicenseIds ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
+  (some-> (seq (.getSpdxListedLicenseIds ^org.spdx.library.ListedLicenses @is/list-obj))
           set))
 
 (defn listed-id?

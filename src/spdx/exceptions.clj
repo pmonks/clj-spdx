@@ -9,7 +9,7 @@
 ;
 
 (ns spdx.exceptions
-  "Exception list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
+  "Exception list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
             [rencg.api         :as rencg]
             [wreck.api         :as re]
@@ -23,12 +23,12 @@
 
   Note: identical to [[spdx.licenses/version]]."
   []
-  (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
+  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @is/list-obj))
 
 (defn ids
   "The set of all exception ids."
   []
-  (some-> (seq (.getSpdxListedExceptionIds ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
+  (some-> (seq (.getSpdxListedExceptionIds ^org.spdx.library.ListedLicenses @is/list-obj))
           set))
 
 (defn listed-id?

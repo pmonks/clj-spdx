@@ -53,7 +53,7 @@
   "Does `text1` and `text2` represent an equivalent license?"
   [^String text1 ^String text2]
   (if (and text1 text2)
-    (org.spdx.utility.compare.LicenseCompareHelper/isLicenseTextEquivalent text1 text2)
+    (org.spdx.licenseTemplate.LicenseTextHelper/isLicenseTextEquivalent text1 text2)
     (= nil text1 text2)))   ; Two nil texts are considered equivalent
 
 (defn texts-equivalent-exceptions?

@@ -16,8 +16,9 @@
 ; Static initialisation
 (when (s/blank? (System/getProperty "org.spdx.downloadCacheEnabled"))
   (System/setProperty "org.spdx.downloadCacheEnabled" (str true)))  ; Note: unlike Spdx-Java-Library itself, we enable the download cache by default
+(org.spdx.library.SpdxModelFactory/init)
 
-(def list-obj (delay (org.spdx.library.model.license.ListedLicenses/getListedLicenses)))
+(def list-obj (delay (org.spdx.library.ListedLicenses/getListedLicenses)))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
@@ -26,6 +27,5 @@
   namespace's functionality; it is provided to allow explicit control of the
   cost of initialisation to callers who need it."
   []
-  ; Enable download caching in the Spdx-Java-Library (from v1.1.8 onward)
   @list-obj
   nil)
