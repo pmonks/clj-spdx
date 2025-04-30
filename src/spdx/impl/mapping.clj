@@ -44,13 +44,15 @@
 (defn listed-license-id?
   "Is the given id one of the listed SPDX license identifiers?"
   [^String id]
-  (boolean (when id (.isSpdxListedLicenseId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id))))
+  (boolean (when id (.isSpdxListedLicenseId ^org.spdx.library.ListedLicenses @is/list-obj id))))
 
 (defn listed-exception-id?
   "Is the given id one of the listed SPDX exception identifiers?"
   [^String id]
-  (boolean (when id (.isSpdxListedExceptionId ^org.spdx.library.model.license.ListedLicenses @is/list-obj id))))
+  (boolean (when id (.isSpdxListedExceptionId ^org.spdx.library.ListedLicenses @is/list-obj id))))
 
+;####TODO: REMOVE ME!!!!
+(comment
 (defn cross-ref->map
   "Turns a `org.spdx.library.model.license.CrossRef` object into a map. All map
   keys are optional, but may include:
@@ -75,16 +77,17 @@
 ;           (value-to-map :type             (.getType          cr))    ; Spdx-Java-Library implementation detail
            (value-to-map :url              (.getUrl           cr) nil-blank-string)
            (value-to-map :valid?           (.getValid         cr)))))
+)
 
 (defn license->map
-  "Turns a `org.spdx.library.model.license.SpdxListedLicense` object into a map.
-  All map keys are optional, but may include:
+  "Turns a `org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicense`
+  object into a map. All map keys are optional, but may include:
 
   * `:id`                 - `String` (an SPDX identifier)
   * `:name`               - `String`
   * `:comment`            - `String`
   * `:see-also`           - sequence of `String`s
-  * `:cross-refs`         - sequence of maps (see cross-ref->map for details)
+  * `:cross-refs`         - sequence of maps (see cross-ref->map for details)   ####TODO: REMOVE ME!!!!
   * `:deprecated?`        - `boolean`
   * `:deprecated-version` - `String`
   * `:fsf-libre?`         - `boolean`
@@ -104,37 +107,41 @@
   * `:include-large-text-values?` (default `false`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template :header :header-html :header-template`"
-  ^java.util.Map [^org.spdx.library.model.license.SpdxListedLicense lic
+  ^java.util.Map [^org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicense lic
                   {:keys [include-large-text-values?] :or {include-large-text-values? false}}]
   (when lic
-    (merge (value-to-map :id                 (.getLicenseId                     lic))
+    (merge (value-to-map :id                 (.getId                            lic))
            (value-to-map :name               (.getName                          lic) nil-blank-string)
-;           (value-to-map :type               (.getType                          lic))    ; Spdx-Java-Library implementation detail
-           (value-to-map :see-also           (seq (.getSeeAlso                  lic)))
-           (value-to-map :cross-refs         (seq (filter identity (map cross-ref->map (.getCrossRef lic)))))
-           (value-to-map :deprecated?        (.isDeprecated                     lic) boolean)
+           (value-to-map :see-also           (seq (.getSeeAlsos                 lic)))
+;####TODO: REMOVE ME!!!!  Removed in a recent version of the license list
+;           (value-to-map :cross-refs         (seq (filter identity (map cross-ref->map (.getCrossRef lic)))))
+           (value-to-map :deprecated?        (.getIsDeprecatedLicenseId         lic) boolean)
            (value-to-map :deprecated-version (.getDeprecatedVersion             lic) nil-blank-string)
-           (value-to-map :fsf-libre?         (.getFsfLibre                      lic))
-           (value-to-map :osi-approved?      (.isOsiApproved                    lic))
-           (when include-large-text-values? (value-to-map :comment            (.getComment                       lic) nil-blank-string))
-           (when include-large-text-values? (value-to-map :text               (.getLicenseText                   lic) nil-blank-string))
-           (when include-large-text-values? (value-to-map :text-html          (.getLicenseTextHtml               lic) nil-blank-string))
-           (when include-large-text-values? (value-to-map :text-template      (.getStandardLicenseTemplate       lic) nil-blank-string))
-           (when include-large-text-values? (value-to-map :header             (.getStandardLicenseHeader         lic) nil-blank-string))
-           (when include-large-text-values? (value-to-map :header-html        (.getLicenseHeaderHtml             lic) nil-blank-string))
-           (when include-large-text-values? (value-to-map :header-template    (.getStandardLicenseHeaderTemplate lic) nil-blank-string)))))
+           (value-to-map :fsf-libre?         (.getIsFsfLibre                    lic))
+           (value-to-map :osi-approved?      (.getIsOsiApproved                 lic))
+           (when include-large-text-values? (value-to-map :comment         (.getComment                       lic) nil-blank-string))
+           (when include-large-text-values? (value-to-map :xml             (.getLicenseXml                    lic) nil-blank-string))
+           (when include-large-text-values? (value-to-map :text            (.getLicenseText                   lic) nil-blank-string))
+;####TODO: FIGURE OUT WHERE TO GET THIS FROM IN LIB v2.0
+;           (when include-large-text-values? (value-to-map :text-html       (.getLicenseTextHtml               lic) nil-blank-string))
+           (when include-large-text-values? (value-to-map :text-template   (.getStandardLicenseTemplate       lic) nil-blank-string))
+           (when include-large-text-values? (value-to-map :header          (.getStandardLicenseHeader         lic) nil-blank-string))
+;####TODO: FIGURE OUT WHERE TO GET THIS FROM IN LIB v2.0
+;           (when include-large-text-values? (value-to-map :header-html     (.getLicenseHeaderHtml             lic) nil-blank-string))
+;           (when include-large-text-values? (value-to-map :header-template (.getStandardLicenseHeaderTemplate lic) nil-blank-string))
+           )))
 
 (defn id->license
-  "Turns a valid license id into a `org.spdx.library.model.license.SpdxListedLicense`
+  "Turns a valid license id into a `org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicense`
   object, or returns nil.
 
   Note: unlike the underlying Java library, this function only handles listed
   SPDX license ids."
-  ^org.spdx.library.model.license.SpdxListedLicense [^String id]
-  (when (listed-license-id? id) (.getListedLicenseById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  ^org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicense [^String id]
+  (when (listed-license-id? id) (.getListedLicenseById ^org.spdx.library.ListedLicenses @is/list-obj id)))
 
 (defn exception->map
-  "Turns a `org.spdx.library.model.license.ListedLicenseException` object into a
+  "Turns a `org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicenseException` object into a
   map. All map keys are optional, but may include:
 
   * `:id`                 - `String` (an SPDX identifier)
@@ -155,36 +162,36 @@
   * `:include-large-text-values?` (default `false`) - controls whether the
     following large text values are included in the result: `:comment :text
     :text-html :text-template`"
-  ^java.util.Map [^org.spdx.library.model.license.ListedLicenseException exc
+  ^java.util.Map [^org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicenseException exc
                   {:keys [include-large-text-values?] :or {include-large-text-values? false}}]
 
   (when exc
-    (merge (value-to-map :id                 (.getLicenseExceptionId exc))
-           (value-to-map :name               (.getName exc))
-;           (value-to-map :type               (.getType exc))    ; Spdx-Java-Library implementation detail
-           (value-to-map :see-also           (seq (.getSeeAlso exc)))
-           (value-to-map :deprecated?        (.isDeprecated exc)                boolean)
-           (value-to-map :deprecated-version (.getDeprecatedVersion exc)        nil-blank-string)
+    (merge (value-to-map :id                 (.getId exc))
+           (value-to-map :name               (.getName exc)                   nil-blank-string)
+           (value-to-map :see-also           (seq (.getSeeAlsos exc)))
+           (value-to-map :deprecated?        (.getIsDeprecatedAdditionId exc) boolean)
+           (value-to-map :deprecated-version (.getDeprecatedVersion exc)      nil-blank-string)
            (when include-large-text-values? (value-to-map :comment            (.getComment exc)                  nil-blank-string))
-           (when include-large-text-values? (value-to-map :text               (.getLicenseExceptionText exc)     nil-blank-string))
-           (when include-large-text-values? (value-to-map :text-html          (.getExceptionTextHtml exc)        nil-blank-string))
-           (when include-large-text-values? (value-to-map :text-template      (.getLicenseExceptionTemplate exc) nil-blank-string)))))
+           (when include-large-text-values? (value-to-map :text               (.getAdditionText exc)             nil-blank-string))
+;####TODO: FIGURE OUT WHERE TO GET THIS FROM IN LIB v2.0
+;           (when include-large-text-values? (value-to-map :text-html          (.getExceptionTextHtml exc)        nil-blank-string))
+           (when include-large-text-values? (value-to-map :text-template      (.getStandardAdditionTemplate exc) nil-blank-string)))))
 
 (defn id->exception
-  "Turns a valid exception id into a org.spdx.library.model.license.ListedLicenseException
+  "Turns a valid exception id into a org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicenseException
   object, or returns nil. Note: unlike the underlying Java library it only
   handles listed SPDX exception ids."
-  ^org.spdx.library.model.license.ListedLicenseException [^String id]
-  (when (listed-exception-id? id) (.getListedExceptionById ^org.spdx.library.model.license.ListedLicenses @is/list-obj id)))
+  ^org.spdx.library.model.v3_0_1.expandedlicensing.ListedLicenseException [^String id]
+  (when (listed-exception-id? id) (.getListedExceptionById ^org.spdx.library.ListedLicenses @is/list-obj id)))
 
 (defn line-column->map
-  "Turns a `org.spdx.utility.compare.LineColumn` object into a map. All map keys
+  "Turns a `org.spdx.licenseTemplate.LineColumn` object into a map. All map keys
   are optional, but may include:
 
   * `:line`   - `integer`
   * `:column` - `integer`
   * `:length` - `integer`"
-  ^java.util.Map [^org.spdx.utility.compare.LineColumn lc]
+  ^java.util.Map [^org.spdx.licenseTemplate.LineColumn lc]
   (when lc
     (merge (value-to-map :line   (.getLine   lc))
            (value-to-map :column (.getColumn lc))
