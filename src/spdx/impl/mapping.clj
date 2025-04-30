@@ -12,7 +12,6 @@
   "Java object mapping namespace. Note: this namespace is not part of the public
   API of clj-spdx and may change without notice."
   (:require [clojure.string  :as s]
-            [clojure.instant :as inst]
             [spdx.impl.state :as is]))
 
 (defn- unwrap-optional
@@ -35,11 +34,6 @@
   "Returns s, or nil if it is blank."
   [^String s]
   (when-not (s/blank? s) s))
-
-(defn- read-instant-date
-  "Because clojure.instant/read-instant-date isn't nil tolerant... 🙄"
-  [^String s]
-  (when s (inst/read-instant-date s)))
 
 (defn listed-license-id?
   "Is the given id one of the listed SPDX license identifiers?"

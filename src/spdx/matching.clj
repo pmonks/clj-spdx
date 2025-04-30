@@ -10,8 +10,7 @@
 
 (ns spdx.matching
   "License matching functionality, primarily provided by `org.spdx.utility.compare.LicenseCompareHelper`."
-  (:require [clojure.string    :as s]
-            [spdx.impl.mapping :as im]))
+  (:require [spdx.impl.mapping :as im]))
 
 (defn text-is-license?
   "Does the entire `text` match the license identified by `license-id`?"
