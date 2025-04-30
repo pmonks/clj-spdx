@@ -9,10 +9,9 @@
 ;
 
 (ns spdx.exceptions
-  "Exception list functionality, primarily provided by `org.spdx.library.model.license.ListedLicenses`."
+  "Exception list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
             [rencg.api         :as rencg]
-            [wreck.api         :as re]
             [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
             [spdx.impl.regexes :as ir]
@@ -23,12 +22,12 @@
 
   Note: identical to [[spdx.licenses/version]]."
   []
-  (.getLicenseListVersion ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
+  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @is/list-obj))
 
 (defn ids
   "The set of all exception ids."
   []
-  (some-> (seq (.getSpdxListedExceptionIds ^org.spdx.library.model.license.ListedLicenses @is/list-obj))
+  (some-> (seq (.getSpdxListedExceptionIds ^org.spdx.library.ListedLicenses @is/list-obj))
           set))
 
 (defn listed-id?
@@ -41,7 +40,14 @@
 (defn canonicalise-id
   "Canonicalises `id` (an SPDX license exception identifier), by returning it in
   its canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX license
-  exception identifier."
+  exception identifier.
+
+  Notes:
+
+  * This function does _not_ canonicalise a deprecated id to its non-deprecated
+    equivalent, since some of those conversions result in an SPDX expression
+    rather than an individual id. [[spdx.expressions/parse]] can be used for
+    that."
   [^String id]
   (when id
     (get @id-canonicalisation-d (s/lower-case id))))
@@ -64,14 +70,12 @@
            canonical-id2
            (= canonical-id1 canonical-id2)))))
 
-(def ^:private addition-ref-re-d (delay (re/join #"\A" @ir/addition-ref-re-d #"\z")))
-
 (defn addition-ref?
   "Is `s` (a `String`) a valid `AdditionRef`? See
   [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
   for specifics."
   [^String s]
-  (boolean (when s (re-matches @addition-ref-re-d s))))
+  (boolean (when s (re-matches @ir/addition-ref-re-d s))))
 
 (defn addition-ref
   "Constructs an AdditionRef (as a `String`) from individual 'variable
@@ -106,7 +110,7 @@
   * This fn is the inverse of [[addition-ref-map->string]]."
   [^String s]
   (when s
-    (when-let [m (rencg/re-matches-ncg @addition-ref-re-d s)]
+    (when-let [m (rencg/re-matches-ncg @ir/addition-ref-re-d s)]
       (merge {:addition-ref (get m "AdditionRef")}
              (when-let [document-ref (get m "AdditionDocumentRef")] {:addition-document-ref document-ref})))))
 
@@ -151,9 +155,8 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `false`) - controls whether the
-    following large text values are included in the result: `:comment :text
-    :text-html :text-template`"
+  * `:include-large-text-values?` (default `false`) - controls large text values
+    are included in the result or not"
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
@@ -183,7 +186,7 @@
   this fn, as initialisation will occur implicitly anyway; it is provided to
   allow explicit control of the cost of initialisation to callers who need it.
 
-  Note: this method may have a substantial performance cost."
+  Note: this function may have a substantial performance cost."
   []
   (is/init!)
   (ir/init!)
@@ -191,5 +194,4 @@
   ; Note: using embroidery's pmap* function has been found to be counter-productive here
   (doall (pmap id->info (ids)))
   @id-canonicalisation-d
-  @addition-ref-re-d
   nil)

@@ -12,7 +12,7 @@
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
                                      texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text
-                                     exceptions-within-text]]))
+                                     exceptions-within-text differences]]))
 
 ; Official single license texts
 (def apache-10-text                  (delay (slurp "./test/data/apache-1.0.txt")))
@@ -33,7 +33,6 @@
 (def lgpl-30-text                    (delay (slurp "./test/data/lgpl-3.0.txt")))
 (def agpl-30-text                    (delay (slurp "./test/data/agpl-3.0.txt")))
 
-; Note: none of these are readable on JVM 1.8 - it seems to be a CloudFlare encryption problem
 (def cc0-10-text                     (delay (slurp "./test/data/cc0.txt")))
 (def cc-by-30-text                   (delay (slurp "./test/data/cc-by-3.0.txt")))
 (def cc-by-40-text                   (delay (slurp "./test/data/cc-by-4.0.txt")))
@@ -86,8 +85,8 @@
     (is (true?  (text-is-license? @epl-20-text         "EPL-2.0")))
     (is (true?  (text-is-license? @cddl-10-text        "CDDL-1.0")))
     (is (true?  (text-is-license? @cddl-11-text        "CDDL-1.1")))
-;    (is (true?  (text-is-license? @gpl-10-text         "GPL-1.0")))          ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/231
-;    (is (true?  (text-is-license? @gpl-20-text         "GPL-2.0")))          ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/231
+;    (is (true?  (text-is-license? @gpl-10-text         "GPL-1.0")))          ; Failing due to https://github.com/spdx/license-list-XML/issues/2568
+;    (is (true?  (text-is-license? @gpl-20-text         "GPL-2.0")))          ; Failing due to https://github.com/spdx/license-list-XML/issues/2568
     (is (true?  (text-is-license? @gpl-30-text         "GPL-3.0")))
 ;    (is (true?  (text-is-license? @lgpl-20-text        "LGPL-2.0")))         ; Failing due to https://github.com/spdx/license-list-XML/issues/2568
 ;    (is (true?  (text-is-license? @lgpl-21-text        "LGPL-2.1")))         ; Failing due to https://github.com/spdx/license-list-XML/issues/2568
@@ -95,16 +94,15 @@
     (is (true?  (text-is-license? @agpl-30-text        "AGPL-3.0")))
     (is (true?  (text-is-license? @cc0-10-text         "CC0-1.0")))
     (is (true?  (text-is-license? @cc-by-30-text       "CC-BY-3.0")))
-;    (is (true?  (text-is-license? @cc-by-40-text       "CC-BY-4.0")))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-is-license? @cc-by-sa-40-text    "CC-BY-SA-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-is-license? @cc-by-nc-40-text    "CC-BY-NC-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-is-license? @cc-by-nc-sa-40-text "CC-BY-NC-SA-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-is-license? @cc-by-nd-40-text    "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-is-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
+    (is (true?  (text-is-license? @cc-by-40-text       "CC-BY-4.0")))
+    (is (true?  (text-is-license? @cc-by-sa-40-text    "CC-BY-SA-4.0")))
+    (is (true?  (text-is-license? @cc-by-nc-40-text    "CC-BY-NC-4.0")))
+    (is (true?  (text-is-license? @cc-by-nc-sa-40-text "CC-BY-NC-SA-4.0")))
+    (is (true?  (text-is-license? @cc-by-nd-40-text    "CC-BY-ND-4.0")))
+    (is (true?  (text-is-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))
     (is (true?  (text-is-license? @wtfpl-text          "WTFPL")))
     (is (true?  (text-is-license? @mpl-20-text         "MPL-2.0")))
-;    (is (true?  (text-is-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
-    )
+    (is (true?  (text-is-license? @mit-text            "MIT"))))
   (testing "Exactly matching 3rd party license texts"
     (is (true?  (text-is-license? @clj-spdx-license        "MPL-2.0")))
     (is (true?  (text-is-license? @commonmark-java-license "BSD-2-Clause")))))
@@ -153,15 +151,15 @@
     (is (true?  (text-contains-license? @agpl-30-text        "AGPL-3.0")))
     (is (true?  (text-contains-license? @cc0-10-text         "CC0-1.0")))
     (is (true?  (text-contains-license? @cc-by-30-text       "CC-BY-3.0")))
-;    (is (true?  (text-contains-license? @cc-by-40-text       "CC-BY-4.0")))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-contains-license? @cc-by-sa-40-text    "CC-BY-SA-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-contains-license? @cc-by-nc-40-text    "CC-BY-NC-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-contains-license? @cc-by-nc-sa-40-text "CC-BY-NC-SA-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-contains-license? @cc-by-nd-40-text    "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (true?  (text-contains-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
+;    (is (true?  (text-contains-license? @cc-by-40-text       "CC-BY-4.0")))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (true?  (text-contains-license? @cc-by-sa-40-text    "CC-BY-SA-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (true?  (text-contains-license? @cc-by-nc-40-text    "CC-BY-NC-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (true?  (text-contains-license? @cc-by-nc-sa-40-text "CC-BY-NC-SA-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (true?  (text-contains-license? @cc-by-nd-40-text    "CC-BY-ND-4.0")))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (true?  (text-contains-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
     (is (true?  (text-contains-license? @wtfpl-text          "WTFPL")))
     (is (true?  (text-contains-license? @mpl-20-text         "MPL-2.0")))
-;    (is (true?  (text-contains-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
+    (is (true?  (text-contains-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
     )
   (testing "3rd party license text contains license"
     (is (true?  (text-contains-license? @clj-spdx-license        "MPL-2.0")))
@@ -169,9 +167,9 @@
   (testing "Larger texts with junk characters contain licenses"
     (is (true?  (text-contains-license? (str "ABCD\n" @apache-20-text          "\nEFGH") "Apache-2.0")))
     (is (true?  (text-contains-license? (str "ABCD\n" @gpl-30-text             "\nEFGH") "GPL-3.0")))
-;    (is (true?  (text-contains-license? (str "ABCD\n" @cc-by-40-text           "\nEFGH") "CC-BY-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
+;    (is (true?  (text-contains-license? (str "ABCD\n" @cc-by-40-text           "\nEFGH") "CC-BY-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
     (is (true?  (text-contains-license? (str "ABCD\n" @mpl-20-text             "\nEFGH") "MPL-2.0")))
-;    (is (true?  (text-contains-license? (str "ABCD\n" @mit-text                "\nEFGH") "MIT")))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
+    (is (true?  (text-contains-license? (str "ABCD\n" @mit-text                "\nEFGH") "MIT")))
     (is (true?  (text-contains-license? (str "ABCD\n" @clj-spdx-license        "\nEFGH") "MPL-2.0")))
     (is (true?  (text-contains-license? @jffi-text                                       "Apache-2.0")))
     (is (true?  (text-contains-license? @jffi-text                                       "LGPL-3.0-or-later")))
@@ -246,31 +244,30 @@
     (is (= (licenses-within-text @agpl-30-text)        #{"AGPL-3.0-or-later" "AGPL-3.0-only" "AGPL-3.0"}))
     (is (= (licenses-within-text @cc0-10-text)         #{"CC0-1.0"}))
     (is (= (licenses-within-text @cc-by-30-text)       #{"CC-BY-3.0"}))
-;    (is (= (licenses-within-text @cc-by-40-text)       #{"CC-BY-4.0"}))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (= (licenses-within-text @cc-by-sa-40-text)    #{"CC-BY-SA-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (= (licenses-within-text @cc-by-nc-40-text)    #{"CC-BY-NC-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (= (licenses-within-text @cc-by-nc-sa-40-text) #{"CC-BY-NC-SA-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (= (licenses-within-text @cc-by-nd-40-text)    #{"CC-BY-ND-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
-;    (is (= (licenses-within-text @cc-by-nc-nd-40-text) #{"CC-BY-NC-ND-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
+;    (is (= (licenses-within-text @cc-by-40-text)       #{"CC-BY-4.0"}))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (= (licenses-within-text @cc-by-sa-40-text)    #{"CC-BY-SA-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (= (licenses-within-text @cc-by-nc-40-text)    #{"CC-BY-NC-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (= (licenses-within-text @cc-by-nc-sa-40-text) #{"CC-BY-NC-SA-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (= (licenses-within-text @cc-by-nd-40-text)    #{"CC-BY-ND-4.0"}))     ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
+;    (is (= (licenses-within-text @cc-by-nc-nd-40-text) #{"CC-BY-NC-ND-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
     (is (= (licenses-within-text @wtfpl-text)          #{"WTFPL"}))
     (is (= (licenses-within-text @mpl-20-text)         #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
-;    (is (= (licenses-within-text @mit-text             #{"MIT"})))             ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
-    )
+    (is (= (licenses-within-text @mit-text             #{"MIT"}))))
   (testing "Matching 3rd party license texts that only contain a single license"
     (is (= (licenses-within-text @clj-spdx-license)        #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
     (is (= (licenses-within-text @commonmark-java-license) #{"BSD-2-Clause"})))
   (testing "Matching larger texts with junk characters and a single license"
     (is (= (licenses-within-text (str "ABCD\n" @apache-20-text          "\nEFGH")) #{"Apache-2.0"}))
     (is (= (licenses-within-text (str "ABCD\n" @gpl-30-text             "\nEFGH")) #{"GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-;    (is (= (licenses-within-text (str "ABCD\n" @cc-by-40-text           "\nEFGH")) #{"CC-BY-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/233
+;    (is (= (licenses-within-text (str "ABCD\n" @cc-by-40-text           "\nEFGH")) #{"CC-BY-4.0"}))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
     (is (= (licenses-within-text (str "ABCD\n" @mpl-20-text             "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
-;    (is (= (licenses-within-text (str "ABCD\n" @mit-text                "\nEFGH")) #{"MIT"}))        ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
+    (is (= (licenses-within-text (str "ABCD\n" @mit-text                "\nEFGH")) #{"MIT"}))
     (is (= (licenses-within-text (str "ABCD\n" @wtfpl-text              "\nEFGH")) #{"WTFPL"}))
     (is (= (licenses-within-text (str "ABCD\n" @clj-spdx-license        "\nEFGH")) #{"MPL-2.0-no-copyleft-exception" "MPL-2.0"}))
     (is (= (licenses-within-text (str "ABCD\n" @commonmark-java-license "\nEFGH")) #{"BSD-2-Clause"})))
   (testing "Matching larger texts with multiple licenses and (optionally) other text (e.g. exceptions) that shouldn't match"
     (is (= (licenses-within-text @apache-20-gpl-30-text)              #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))
-;    (is (= (licenses-within-text @javamail-license)                   #{"CDDL-1.1"   "GPL-2.0"}))    ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/231
+;    (is (= (licenses-within-text @javamail-license)                   #{"CDDL-1.1"   "GPL-2.0"}))    ; Failing due to https://github.com/spdx/license-list-XML/issues/2568
     (is (= (licenses-within-text @jffi-text)                          #{"Apache-2.0" "LGPL-3.0-or-later" "LGPL-3.0+" "LGPL-3.0" "LGPL-3.0-only"}))
     (is (= (licenses-within-text @apache-20-gpl-30-classpath-20-text) #{"Apache-2.0" "GPL-3.0-only" "GPL-3.0+" "GPL-3.0-or-later" "GPL-3.0"}))))
 
@@ -289,3 +286,17 @@
   (testing "Texts with multiple licenses/exceptions"
     (is (= (exceptions-within-text @apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0"}))
     (is (= (exceptions-within-text @javamail-license)                   #{"Classpath-exception-2.0"}))))
+
+(deftest differences-tests
+  (testing "nil, empty string"
+    (is (nil? (differences nil nil)))
+    (is (nil? (differences "" nil)))
+    (is (nil? (differences nil "")))
+    (is (nil? (differences "" ""))))
+  (testing "Invalid SPDX identifiers"
+    (is (nil? (differences "Example text" "INVALID_SPDX_IDENTIFIER"))))
+  (testing "Valid SPDX identifiers"
+    (is (nil? (differences @apache-20-text "Apache-2.0")))
+    (is (map? (differences "Example text" "Apache-2.0")))
+    (is (= [:differences-found? :message :differences] (keys (differences "Example text" "Apache-2.0"))))
+    (is (= [:line :column :length] (keys (first (:differences (differences "Example text" "Apache-2.0"))))))))

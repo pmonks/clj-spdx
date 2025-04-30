@@ -9,7 +9,7 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality. This functionality is bespoke (it does
+  "SPDX license expression functionality, as defined in [SPDX v3.0.1 Annex . This functionality is bespoke (it does
   not use the parser in `Spdx-Java-Library`)."
   (:require [clojure.string         :as s]
             [instaparse.core        :as insta]
@@ -28,7 +28,7 @@
    <or>                   = <ws #\"(?i)OR\" ws>
    <with>                 = <ws #\"(?i)WITH\" ws>")
 
-; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/
+; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
@@ -476,8 +476,8 @@
   "Is `s` (a `String`) a valid SPDX license expression?
 
   Note: if you intend to parse `s` if it's valid, it's more efficient to call
-  [[parse]] directly and check for a `nil` result instead of calling this method
-  first (doing so avoids double parsing).
+  [[parse]] directly and check for a `nil` result instead of calling this
+  function first (doing so avoids double parsing).
 
   The optional `opts` map has these keys:
 
@@ -539,7 +539,7 @@
   this fn, as initialisation will occur implicitly anyway; it is provided to
   allow explicit control of the cost of initialisation to callers who need it.
 
-  Note: this method may have a substantial performance cost."
+  Note: this function may have a substantial performance cost."
   []
   (lic/init!)
   (exc/init!)

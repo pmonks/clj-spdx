@@ -242,7 +242,7 @@
   "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG"])
 
 (deftest parsing-equivalence-tests
-  (testing "Equivalence of parsing methods"
+  (testing "Equivalence of parsing functions"
     (run! #(is (= (string->license-ref-map %) (exp/parse %)) %) roundtrip-license-refs)))
 
 (deftest license-ref-roundtrip-tests
@@ -321,17 +321,17 @@
     (is (instance? java.util.Map (id->info "Apache-2.0"))))
   (testing "Expected keys are present"
     (is (equivalent-colls? (keys (id->info "Apache-2.0"))
-                           [:name :cross-refs :id :fsf-libre? :see-also :osi-approved?]))
+                           [:name :id :fsf-libre? :see-also :osi-approved?]))
     (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? false}))
-                           [:name :cross-refs :id :fsf-libre? :see-also :osi-approved?]))
+                           [:name :id :fsf-libre? :see-also :osi-approved?]))
     (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? true}))
-                           [:text-template :text-html :header-template :name :cross-refs :header :header-html :id :comment :fsf-libre? :see-also :osi-approved? :text])))
+                           [:name :id :fsf-libre? :see-also :osi-approved? :text :text-template :header :comment])))
   (testing "Select keys have expected values"
     (let [info (id->info "Apache-2.0")]
       (is (=           (:name          info) "Apache License 2.0"))
       (is (true?       (:osi-approved? info)))
       (is (true?       (:fsf-libre?    info)))
-      (is (pos? (count (:cross-refs    info)))))))
+      (is (pos? (count (:see-also      info)))))))
 
 (deftest deprecated-id?-tests
   (testing "Invalid ids return false"
