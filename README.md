@@ -4,7 +4,7 @@
 <br/>
 [![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/) [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues) [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE)
 
-A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. custom [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) parsing, regular expressions for matching individual SPDX listed identifiers, etc.).
+A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. a canonicalising [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) parser, regular expressions for matching individual SPDX listed identifiers, etc.).
 
 Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library such as the [SPDX model classes](https://github.com/pmonks/clj-spdx/issues/58)!
 
