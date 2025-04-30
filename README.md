@@ -1,16 +1,10 @@
-| | | |
-|---:|:---:|:---:|
-| [**release**](https://github.com/pmonks/clj-spdx/tree/release) | [![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=release)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Arelease) | [![Dependencies](https://github.com/pmonks/clj-spdx/actions/workflows/dependencies.yml/badge.svg?branch=release)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Arelease) |
-| [**dev**](https://github.com/pmonks/clj-spdx/tree/dev)  | [![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev) | [![Dependencies](https://github.com/pmonks/clj-spdx/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Adev) |
-
-[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/) [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE) [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues) [![Vulnerabilities](https://github.com/pmonks/clj-spdx/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://pmonks.github.io/clj-spdx/nvd/dependency-check-report.html)
-
-
 # clj-spdx
 
-A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. custom [SPDX expression](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/) parsing).
+[![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev) [![Dependencies](https://github.com/pmonks/clj-spdx/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Adev) [![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/) [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE) [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues) [![Vulnerabilities](https://github.com/pmonks/clj-spdx/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://pmonks.github.io/clj-spdx/nvd/dependency-check-report.html)
 
-Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library!
+A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. custom [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) parsing, regular expressions for matching individual SPDX listed identifiers, etc.).
+
+Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library such as the [SPDX model classes](https://github.com/pmonks/clj-spdx/issues/58)!
 
 Note also that this project has no official relationship with the [SPDX project](https://spdx.dev/) (who maintain `Spdx-Java-Library`), and this work is in no way associated with, or endorsed by, them.
 
@@ -18,25 +12,39 @@ Note also that this project has no official relationship with the [SPDX project]
 
 `clj-spdx` is available as a Maven artifact from [Clojars](https://clojars.org/com.github.pmonks/clj-spdx).
 
-### API Documentation
+## API Documentation
 
 [API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
 
-### Trying it Out
+### A note about Spdx-Java-Library v2
 
-#### Clojure CLI
+With the implementation of [issue #59](https://github.com/pmonks/clj-spdx/issues/59), `clj-spdx` now uses `Spdx-Java-Library` version 2.0, which adds support for [SPDX specification v3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/).  This new version of the Java library is _not_ backwards compatible with the prior version (v1.1.12), and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
+
+While `clj-spdx` managed to hide most of the breaking changes, the following data structure changes were unavoidable:
+
+* [license information maps](https://pmonks.github.io/clj-spdx/spdx.licenses.html#var-id-.3Einfo) no longer contain these keys:
+  * `:cross-refs` - merged into `:see-also` (note that the Java library renamed "see also" to "see alsos", however `clj-spdx` preserves the old name)
+  * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
+  * `:header-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
+  * `:header-template` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
+* [license exception information maps](https://pmonks.github.io/clj-spdx/spdx.exceptions.html#var-id-.3Einfo) no longer contain this key:
+  * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
+
+## Trying it out
+
+### Clojure CLI
 
 ```shell
 $ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "RELEASE"}}}'
 ```
 
-#### Leiningen
+### Leiningen
 
 ```shell
 $ lein try com.github.pmonks/clj-spdx
 ```
 
-#### deps-try
+### deps-try
 
 ```shell
 $ deps-try com.github.pmonks/clj-spdx

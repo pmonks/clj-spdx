@@ -9,7 +9,7 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality. This functionality is bespoke (it does
+  "SPDX license expression functionality, as defined in [SPDX v3.0.1 Annex . This functionality is bespoke (it does
   not use the parser in `Spdx-Java-Library`)."
   (:require [clojure.string         :as s]
             [instaparse.core        :as insta]
@@ -28,7 +28,7 @@
    <or>                   = <ws #\"(?i)OR\" ws>
    <with>                 = <ws #\"(?i)WITH\" ws>")
 
-; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/
+; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/
 (def ^:private spdx-license-expression-grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">

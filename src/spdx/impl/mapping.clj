@@ -112,7 +112,6 @@
   (when lic
     (merge (value-to-map :id                 (.getId                            lic))
            (value-to-map :name               (.getName                          lic) nil-blank-string)
-;           (value-to-map :type               (.getType                          lic))    ; Spdx-Java-Library implementation detail
            (value-to-map :see-also           (seq (.getSeeAlsos                 lic)))
 ;####TODO: REMOVE ME!!!!  Removed in a recent version of the license list
 ;           (value-to-map :cross-refs         (seq (filter identity (map cross-ref->map (.getCrossRef lic)))))
@@ -168,11 +167,10 @@
 
   (when exc
     (merge (value-to-map :id                 (.getId exc))
-           (value-to-map :name               (.getName exc))
-;           (value-to-map :type               (.getType exc))    ; Spdx-Java-Library implementation detail
+           (value-to-map :name               (.getName exc)                   nil-blank-string)
            (value-to-map :see-also           (seq (.getSeeAlsos exc)))
            (value-to-map :deprecated?        (.getIsDeprecatedAdditionId exc) boolean)
-           (value-to-map :deprecated-version (.getDeprecatedVersion exc)        nil-blank-string)
+           (value-to-map :deprecated-version (.getDeprecatedVersion exc)      nil-blank-string)
            (when include-large-text-values? (value-to-map :comment            (.getComment exc)                  nil-blank-string))
            (when include-large-text-values? (value-to-map :text               (.getAdditionText exc)             nil-blank-string))
 ;####TODO: FIGURE OUT WHERE TO GET THIS FROM IN LIB v2.0
