@@ -12,7 +12,6 @@
   "License list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
             [rencg.api         :as rencg]
-            [wreck.api         :as re]
             [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
             [spdx.impl.regexes :as ir]
@@ -74,14 +73,12 @@
            canonical-id2
            (= canonical-id1 canonical-id2)))))
 
-(def ^:private license-ref-re-d (delay (re/join #"\A" @ir/license-ref-re-d #"\z")))
-
 (defn license-ref?
   "Is `s` (a `String`) a valid `LicenseRef`? See
   [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
   for specifics."
   [s]
-  (boolean (when s (re-matches @license-ref-re-d s))))
+  (boolean (when s (re-matches @ir/license-ref-re-d s))))
 
 (defn license-ref
   "Constructs a LicenseRef (as a `String`) from individual 'variable
@@ -116,7 +113,7 @@
   * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
   [^String s]
   (when s
-    (when-let [m (rencg/re-matches-ncg @license-ref-re-d s)]
+    (when-let [m (rencg/re-matches-ncg @ir/license-ref-re-d s)]
       (merge {:license-ref (get m "LicenseRef")}
              (when-let [document-ref (get m "DocumentRef")] {:document-ref document-ref})))))
 
@@ -240,5 +237,4 @@
   ; Note: using embroidery's pmap* function has been found to be counter-productive here
   (doall (pmap id->info (ids)))
   @id-canonicalisation-d
-  @license-ref-re-d
   nil)

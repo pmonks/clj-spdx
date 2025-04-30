@@ -73,8 +73,8 @@
    (when (seq ids)
      (re/join #"(?<!\w)"
               "(?<Identifier>"
-              (when include-license-refs? (str @ir/license-ref-re-d "|"))
-              (when include-addition-refs? (str @ir/addition-ref-re-d "|"))
+              (when include-license-refs?  (str @ir/license-ref-fragment-re-d "|"))
+              (when include-addition-refs? (str @ir/addition-ref-fragment-re-d "|"))
               (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
               (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))  ; Sort longest to shortest
               ")"
@@ -126,12 +126,6 @@
   []
   @exception-ids-re-d)
 
-
-; Note: the DocumentRef and LicenseRef portions of a LicenseRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-(def ^:private license-ref-re-d (delay (re/join #"(?<!\w)"
-                                                @ir/license-ref-re-d
-                                                #"(?!\w)")))
-
 (defn license-ref-re
   "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
   The regex provides these named capturing groups:
@@ -146,12 +140,7 @@
   * caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
-  @license-ref-re-d)
-
-; Note: the DocumentRef and AdditionRef portions of an AdditionRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-(def ^:private addition-ref-re-d (delay (re/join #"(?<!\w)"
-                                                 @ir/addition-ref-re-d
-                                                 #"(?!\w)")))
+  @ir/license-ref-re-d)
 
 (defn addition-ref-re
  "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.
@@ -167,7 +156,7 @@
   * caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
-  @addition-ref-re-d)
+  @ir/addition-ref-re-d)
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
