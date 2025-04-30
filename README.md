@@ -20,7 +20,7 @@ Note also that this project has no official relationship with the [SPDX project]
 
 ### A note about Spdx-Java-Library v2
 
-With the implementation of [issue #59](https://github.com/pmonks/clj-spdx/issues/59), `clj-spdx` now uses `Spdx-Java-Library` version 2.0, which adds support for [SPDX specification v3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/).  This new version of the Java library is _not_ backwards compatible with the prior version (v1.1.12), and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
+As of v1.0.247, `clj-spdx` uses `Spdx-Java-Library` v2.0, which adds support for [SPDX specification v3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/).  This new version of the Java library is _not_ backwards compatible with the prior version (v1.1.12), and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
 
 While `clj-spdx` managed to hide most of the breaking changes, the following data structure changes were unavoidable:
 
