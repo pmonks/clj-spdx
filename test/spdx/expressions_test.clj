@@ -139,6 +139,12 @@
     (is (= (parse "LGPL-2.1+")                                {:license-id "LGPL-2.1-or-later"}))
     (is (= (parse "LGPL-3.0" )                                {:license-id "LGPL-3.0-only"}))
     (is (= (parse "LGPL-3.0+")                                {:license-id "LGPL-3.0-or-later"}))
+    (is (= (parse "GFDL-1.1")                                 {:license-id "GFDL-1.1-only"}))
+    (is (= (parse "GFDL-1.1+")                                {:license-id "GFDL-1.1-or-later"}))
+    (is (= (parse "GFDL-1.2")                                 {:license-id "GFDL-1.2-only"}))
+    (is (= (parse "GFDL-1.2+")                                {:license-id "GFDL-1.2-or-later"}))
+    (is (= (parse "GFDL-1.3")                                 {:license-id "GFDL-1.3-only"}))
+    (is (= (parse "GFDL-1.3+")                                {:license-id "GFDL-1.3-or-later"}))
     (is (= (parse "StandardML-NJ")                            {:license-id "SMLNJ"}))
     (is (= (parse "StandardML-NJ+")                           {:license-id "SMLNJ" :or-later? true}))   ; Note: StandardML-NJ+ is not a listed identifier - it's an expression, but still needs to be replaced, preserving the or-later? flag
     (is (= (parse "BSD-2-Clause-FreeBSD")                     {:license-id "BSD-2-Clause-Views"}))
