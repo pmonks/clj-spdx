@@ -31,7 +31,13 @@
   "LGPL-2.1-only+"     "LGPL-2.1-or-later"
   "LGPL-2.1-or-later+" "LGPL-2.1-or-later"
   "LGPL-3.0-only+"     "LGPL-3.0-or-later"
-  "LGPL-3.0-or-later+" "LGPL-3.0-or-later"}))
+  "LGPL-3.0-or-later+" "LGPL-3.0-or-later"
+  "GFDL-1.1-only+"     "GFDL-1.1-or-later"
+  "GFDL-1.1-or-later+" "GFDL-1.1-or-later"
+  "GFDL-1.2-only+"     "GFDL-1.2-or-later"
+  "GFDL-1.2-or-later+" "GFDL-1.2-or-later"
+  "GFDL-1.3-only+"     "GFDL-1.3-or-later"
+  "GFDL-1.3-or-later+" "GFDL-1.3-or-later"}))
 
 (defn replacement-for-license-id
   "Returns a map representing the replacement of `license-id` & `or-later?`, if
@@ -73,6 +79,12 @@
   "LGPL-2.1+"                         {:license-ids ["LGPL-2.1-or-later"]}
   "LGPL-3.0"                          {:license-ids ["LGPL-3.0-only"]}
   "LGPL-3.0+"                         {:license-ids ["LGPL-3.0-or-later"]}
+  "GFDL-1.1"                          {:license-ids ["GFDL-1.1-only"]}
+  "GFDL-1.1+"                         {:license-ids ["GFDL-1.1-or-later"]}    ; Note: GFDL-1.1+ never existed as a listed SPDX license identifier, but we still (optionally) replace it
+  "GFDL-1.2"                          {:license-ids ["GFDL-1.2-only"]}
+  "GFDL-1.2+"                         {:license-ids ["GFDL-1.2-or-later"]}    ; Note: GFDL-1.2+ never existed as a listed SPDX license identifier, but we still (optionally) replace it
+  "GFDL-1.3"                          {:license-ids ["GFDL-1.3-only"]}
+  "GFDL-1.3+"                         {:license-ids ["GFDL-1.3-or-later"]}    ; Note: GFDL-1.3+ never existed as a listed SPDX license identifier, but we still (optionally) replace it
   "GPL-2.0-with-autoconf-exception"   {:license-ids ["GPL-2.0-only"]     :license-exception-id "Autoconf-exception-2.0"}
   "GPL-2.0-with-autoconf-exception+"  {:license-ids ["GPL-2.0-or-later"] :license-exception-id "Autoconf-exception-2.0"}
   "GPL-2.0-with-bison-exception"      {:license-ids ["GPL-2.0-only"]     :license-exception-id "Bison-exception-2.2"}
