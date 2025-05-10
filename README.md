@@ -14,10 +14,6 @@ Note also that this project has no official relationship with the [SPDX project]
 
 `clj-spdx` is available as a Maven artifact from [Clojars](https://clojars.org/com.github.pmonks/clj-spdx).
 
-## API Documentation
-
-[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
-
 ### A note about Spdx-Java-Library v2
 
 As of v1.0.247, `clj-spdx` uses `Spdx-Java-Library` v2.0, which adds support for [SPDX specification v3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/).  This new version of the Java library is _not_ backwards compatible with the prior version (v1.1.12), and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
@@ -31,6 +27,10 @@ While `clj-spdx` managed to hide most of the breaking changes, the following dat
   * `:header-template` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
 * [license exception information maps](https://pmonks.github.io/clj-spdx/spdx.exceptions.html#var-id-.3Einfo) no longer contain this key:
   * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
+
+## API Documentation
+
+[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
 
 ## Trying it out
 
