@@ -37,19 +37,19 @@ While `clj-spdx` managed to hide most of the breaking changes, the following dat
 ### Clojure CLI
 
 ```shell
-$ clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "RELEASE"}}}'
+clj -Sdeps '{:deps {com.github.pmonks/clj-spdx {:mvn/version "RELEASE"}}}'
 ```
 
 ### Leiningen
 
 ```shell
-$ lein try com.github.pmonks/clj-spdx
+lein try com.github.pmonks/clj-spdx
 ```
 
 ### deps-try
 
 ```shell
-$ deps-try com.github.pmonks/clj-spdx
+deps-try com.github.pmonks/clj-spdx
 ```
 
 ### Demo
