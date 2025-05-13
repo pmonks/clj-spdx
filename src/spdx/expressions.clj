@@ -9,8 +9,8 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality, as defined in [SPDX v3.0.1 Annex . This functionality is bespoke (it does
-  not use the parser in `Spdx-Java-Library`)."
+  "SPDX license expression functionality, as defined in [SPDX v3.0.1 Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/).
+  This functionality is bespoke (it does not use the parser in `Spdx-Java-Library`)."
   (:require [clojure.string         :as s]
             [instaparse.core        :as insta]
             [wreck.api              :as re]
