@@ -75,9 +75,9 @@ deps-try com.github.pmonks/clj-spdx
 (sm/licenses-within-text apache-20-text)
 ;=> #{"Apache-2.0"}
 
-(require '[spdx.expressions :as sexp])
+(require '[spdx.expressions :as sx])
 
-(sexp/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
+(sx/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
 ;=> [:or
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
