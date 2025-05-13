@@ -339,7 +339,7 @@
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
-  "Attempt to parse `s` (a `String`) as an [SPDX license expression](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/),
+  "Attempt to parse `s` (a `String`) as an [SPDX license expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/),
   returning a data structure representing the parse tree, or `nil` if it cannot
   be parsed.  Licenses and associated license exceptions / 'or later' markers
   (if any) are represented as a map, groups of licenses separated by operators
@@ -385,7 +385,7 @@
     e.g. `GPL-3.0-only+` -> `GPL-3.0-or-later`
   * The parser synthesises grouping when needed to make SPDX license
     expressions' precedence rules explicit (see [the relevant section within
-    annex D of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0/annexes/SPDX-license-expressions/#d45-order-of-precedence-and-parentheses)
+    annex B of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#order-of-precedence-and-parentheses)
     for details).
   * The default `opts` result in parsing that is more lenient than the SPDX
     specification and is therefore not strictly spec compliant.  You can enable
