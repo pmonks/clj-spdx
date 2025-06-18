@@ -1,8 +1,14 @@
 # clj-spdx
 
-[![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev) [![Dependencies](https://github.com/pmonks/clj-spdx/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Adev) [![Vulnerabilities](https://github.com/pmonks/clj-spdx/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://pmonks.github.io/clj-spdx/nvd/dependency-check-report.html)
+[![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev)
+[![Dependencies](https://github.com/pmonks/clj-spdx/actions/workflows/dependencies.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3Adependencies+branch%3Adev)
+[![Vulnerabilities](https://github.com/pmonks/clj-spdx/actions/workflows/vulnerabilities.yml/badge.svg?branch=dev)](https://pmonks.github.io/clj-spdx/nvd/dependency-check-report.html)
 <br/>
-[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/) [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues) [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE)
+[![Latest Version](https://img.shields.io/clojars/v/com.github.pmonks/clj-spdx)](https://clojars.org/com.github.pmonks/clj-spdx/)
+[![Open Issues](https://img.shields.io/github/issues/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/issues)
+[![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE)
+![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
+
 
 A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. a canonicalising [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) parser, regular expressions for matching individual SPDX listed identifiers, etc.).
 
