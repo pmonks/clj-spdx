@@ -48,10 +48,10 @@
 
   Notes:
 
-  * This function does _not_ canonicalise a deprecated id to its non-deprecated
-    equivalent, since some of those conversions result in an SPDX expression
-    rather than an individual id. [[spdx.expressions/parse]] can be used for
-    that."
+  * This function does _not_ canonicalise a deprecated identifier to its non-
+    deprecated equivalent(s), since some of those conversions result in an SPDX
+    expression rather than an individual identifier.
+    [[spdx.expressions/canonicalise]] can be used for that."
   [^String id]
   (when id
     (get @id-canonicalisation-d (s/lower-case id))))
