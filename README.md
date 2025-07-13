@@ -86,6 +86,15 @@ deps-try com.github.pmonks/clj-spdx
 ;=> [:or
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
+
+(require '[rencg.api :as rencg])
+(require '[spdx.regexes :as sr])
+
+(rencg/re-seq-ncg (sr/ids-re) "foo Apache-2.0 bar MIT blah LicenseRef-something more text")
+;=> ({:start 4 :end 14 :match "Apache-2.0" "Identifier" "Apache-2.0"}
+;=>  {:start 19 :end 22 :match "MIT" "Identifier" "MIT"}
+;=>  {:start 28 :end 48 :match "LicenseRef-something" "LicenseRef" "something"
+;=>   "Identifier" "LicenseRef-something"})
 ```
 
 ## Contributor Information
