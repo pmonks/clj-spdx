@@ -91,7 +91,7 @@
 
   Notes:
 
-  * caches the generated `Pattern` object and returns it on subsequent calls, so
+  * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
   @ids-re-d)
@@ -106,7 +106,7 @@
 
   Notes:
 
-  * caches the generated `Pattern` object and returns it on subsequent calls, so
+  * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
   @license-ids-re-d)
@@ -121,7 +121,7 @@
 
   Notes:
 
-  * caches the generated `Pattern` object and returns it on subsequent calls, so
+  * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
   @exception-ids-re-d)
@@ -137,7 +137,9 @@
 
   Notes:
 
-  * caches the generated `Pattern` object and returns it on subsequent calls, so
+  * Does not provide a named capturing group for the entire LicenseRef - that's
+    available as the entire match
+  * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
   @ir/license-ref-re-d)
@@ -153,7 +155,9 @@
 
   Notes:
 
-  * caches the generated `Pattern` object and returns it on subsequent calls, so
+  * Does not provide a named capturing group for the entire AdditionRef - that's
+    available as the entire match
+  * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
   @ir/addition-ref-re-d)
@@ -171,5 +175,6 @@
   (ir/init!)
   ; Note: we always lazy-initialise all of the regexes, as it's unlikely that
   ; a caller will use all of them, and they're quick to construct. This saves
-  ; callers unecessary memory consumption.
+  ; callers unecessary memory consumption (an unrealised delay, while not free,
+  ; consumes very little memory - around 96 bytes on my machine).
   nil)
