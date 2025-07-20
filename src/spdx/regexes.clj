@@ -128,17 +128,11 @@
 
 (defn license-ref-re
   "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
-  The regex provides these named capturing groups:
 
-  * `DocumentRef` (optional) - captures the `DocumentRef` variable text of a
-    `LicenseRef`, if it contains one
-  * `LicenseRef` (always present) - captures the `LicenseRef` variable text of a
-    `LicenseRef`
+  Specifics of the regex are as for [[build-re]].
 
   Notes:
 
-  * Does not provide a named capturing group for the entire LicenseRef - that's
-    available as the entire match
   * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
@@ -146,17 +140,11 @@
 
 (defn addition-ref-re
  "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.
- The regex provides these named capturing groups:
 
-  * `AdditionDocumentRef` (optional) - captures the `DocumentRef` variable text
-    of an `AdditionRef`, if it contains one
-  * `AdditionRef` (always present) - captures the `AdditionRef` variable text of
-    an `AdditionRef`
+  Specifics of the regex are as for [[build-re]].
 
   Notes:
 
-  * Does not provide a named capturing group for the entire AdditionRef - that's
-    available as the entire match
   * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []

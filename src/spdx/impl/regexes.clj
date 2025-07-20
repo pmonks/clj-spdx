@@ -15,11 +15,11 @@
 
 ; Note: the DocumentRef and LicenseRef portions of a LicenseRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
 (def license-ref-fragment-re-d  (delay #"(?:DocumentRef-(?<DocumentRef>[\p{Alnum}-\.]+):)?LicenseRef-(?<LicenseRef>[\p{Alnum}-\.]+)"))
-(def license-ref-re-d           (delay (re/join #"(?<!\w)" @license-ref-fragment-re-d #"(?!\w)")))
+(def license-ref-re-d           (delay (re/join #"(?<!\w)" "(?<Identifier>" @license-ref-fragment-re-d ")" #"(?!\w)")))
 
 ; Note: the DocumentRef and AdditionRef portions of an AdditionRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
 (def addition-ref-fragment-re-d (delay #"(?:DocumentRef-(?<AdditionDocumentRef>[\p{Alnum}-\.]+):)?AdditionRef-(?<AdditionRef>[\p{Alnum}-\.]+)"))
-(def addition-ref-re-d          (delay (re/join #"(?<!\w)" @addition-ref-fragment-re-d #"(?!\w)")))
+(def addition-ref-re-d          (delay (re/join #"(?<!\w)" "(?<Identifier>" @addition-ref-fragment-re-d ")" #"(?!\w)")))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
