@@ -134,11 +134,11 @@ deps-try com.github.pmonks/clj-spdx
 (require '[rencg.api :as rencg])
 (require '[spdx.regexes :as sr])
 
-(rencg/re-seq-ncg (sr/ids-re) "some initial text Apache-2.0 and more text MIT and even more text LicenseRef-something some final text")
+(rencg/re-seq-ncg (sr/ids-re) "some initial text Apache-2.0 and more text MIT and even more text LicenseRef-foo some final text")
 ;=> ({:start 18 :end 28 :match "Apache-2.0" "Identifier" "Apache-2.0"}
 ;=>  {:start 43 :end 46 :match "MIT" "Identifier" "MIT"}
-;=>  {:start 66 :end 86 :match "LicenseRef-something"
-;=>   "LicenseRef" "something" "Identifier" "LicenseRef-something"})
+;=>  {:start 66 :end 80 :match "LicenseRef-foo" "LicenseRef" "foo"
+;=>   "Identifier" "LicenseRef-foo"})
 ```
 
 ## Contributor Information
