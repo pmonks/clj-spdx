@@ -60,25 +60,63 @@ deps-try com.github.pmonks/clj-spdx
 ### Demo
 
 ```clojure
+;; A taste of the spdx.licenses namespace
+
 (require '[spdx.licenses :as sl])
 
 ; This is optional but can be time consuming, so we run it explicitly to force
 ; population of the local Spdx-Java-Library cache.
 (sl/init!)
 
+(sl/version)
+;=> "3.27.0"
+
 (sl/ids)
 ;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many more]
+
+(sl/listed-id? "Apache-2.0")
+;=> true
+
+(sl/canonicalise-id "aPaChE-2.0")
+;=> "Apache-2.0"
+
+(sl/listed-id? "LicenseRef-foo")
+;=> false
+
+(sl/license-ref? "LicenseRef-foo")
+;=> true
+
+
+;; A taste of the spdx.exceptions namespace
 
 (require '[spdx.exceptions :as se])
 
 (se/ids)
 ;=> #{"GCC-exception-2.0-note" "Qwt-exception-1.0" [and many more]
 
+(se/listed-id? "Classpath-exception-2.0")
+;=> true
+
+(se/canonicalise-id "CLASSPATH-EXCEPTION-2.0")
+;=> "Classpath-exception-2.0"
+
+
+;; A taste of the spdx.matching namespace
+
 (require '[spdx.matching :as sm])
 
 (def apache-20-text (slurp "https://www.apache.org/licenses/LICENSE-2.0.txt"))
-(sm/licenses-within-text apache-20-text)
-;=> #{"Apache-2.0"}
+
+(sm/text-is-license? apache-20-text "Apache-2.0")
+;=> true
+
+(def mit-text (slurp "https://mit-license.org/license.txt"))
+
+(sm/licenses-within-text (str apache-20-text "\n\n" mit-text))
+;=> #{"Apache-2.0" "MIT"}
+
+
+;; A taste of the spdx.expressions namespace
 
 (require '[spdx.expressions :as sx])
 
@@ -87,14 +125,20 @@ deps-try com.github.pmonks/clj-spdx
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
 
+(sx/canonicalise "mit and apache-2.0 or ecos-2.0+")
+;=> "GPL-2.0-or-later WITH eCos-exception-2.0 OR (Apache-2.0 AND MIT)"
+
+
+;; A taste of the spdx.regexes namespace (with help from rencg)
+
 (require '[rencg.api :as rencg])
 (require '[spdx.regexes :as sr])
 
-(rencg/re-seq-ncg (sr/ids-re) "foo Apache-2.0 bar MIT blah LicenseRef-something more text")
-;=> ({:start 4 :end 14 :match "Apache-2.0" "Identifier" "Apache-2.0"}
-;=>  {:start 19 :end 22 :match "MIT" "Identifier" "MIT"}
-;=>  {:start 28 :end 48 :match "LicenseRef-something" "LicenseRef" "something"
-;=>   "Identifier" "LicenseRef-something"})
+(rencg/re-seq-ncg (sr/ids-re) "some initial text Apache-2.0 and more text MIT and even more text LicenseRef-something some final text")
+;=> ({:start 18 :end 28 :match "Apache-2.0" "Identifier" "Apache-2.0"}
+;=>  {:start 43 :end 46 :match "MIT" "Identifier" "MIT"}
+;=>  {:start 66 :end 86 :match "LicenseRef-something"
+;=>   "LicenseRef" "something" "Identifier" "LicenseRef-something"})
 ```
 
 ## Contributor Information
