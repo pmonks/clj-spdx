@@ -14,7 +14,7 @@
             [spdx.licenses   :as slic]
             [spdx.exceptions :as sexc]
             [spdx.test-utils]  ; Unused here, but we force it to run first
-            [spdx.regexes    :refer [build-re ids-re license-ids-re exception-ids-re license-ref-re addition-ref-re]]))
+            [spdx.regexes    :refer [build-re ids-re license-ids-re exception-ids-re license-ref-re addition-ref-re id-seq-matches id-seq]]))
 
 (deftest build-re-tests
   (testing "Basic tests"
@@ -290,3 +290,57 @@
     (is (nil? (re-matches (addition-ref-re) "Classpath-exception-2.0")))
     (is (nil? (re-matches (addition-ref-re) "LicenseRef-foo")))
     (is (nil? (re-matches (addition-ref-re) "DocumentRef-foo:LicenseRef-bar"))))
+
+; Note: we keep this minimal since the id-seq tests exercise this more thoroughly
+(deftest id-seq-matches-tests
+  (testing "correct keys are present"
+    (is (= #{:start :end :match :type :identifier "Identifier"}                                     (set (keys (first (id-seq-matches "foo Apache-2.0 bar"))))))
+    (is (= #{:start :end :match :type :identifier "Identifier" "DocumentRef" "LicenseRef"}          (set (keys (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-foo bar"))))))
+    (is (= #{:start :end :match :type :identifier "Identifier" "AdditionDocumentRef" "AdditionRef"} (set (keys (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-foo bar")))))))
+  (testing "synthesised keys have correct values"
+    (is (= "Apache-2.0"              (:identifier (first (id-seq-matches "foo apache-2.0 bar")))))
+    (is (= :license-id               (:type       (first (id-seq-matches "foo apache-2.0 bar")))))
+    (is (= "Classpath-exception-2.0" (:identifier (first (id-seq-matches "foo CLASSPATH-EXCEPTION-2.0 bar")))))
+    (is (= :exception-id             (:type       (first (id-seq-matches "foo CLASSPATH-EXCEPTION-2.0 bar")))))
+    (is (= "LicenseRef-foo"          (:identifier (first (id-seq-matches "foo LicenseRef-foo bar")))))
+    (is (= :license-ref              (:type       (first (id-seq-matches "foo LicenseRef-foo bar")))))
+    (is (= "AdditionRef-foo"         (:identifier (first (id-seq-matches "foo AdditionRef-foo bar")))))
+    (is (= :addition-ref             (:type       (first (id-seq-matches "foo AdditionRef-foo bar")))))))
+
+(deftest id-seq-tests
+  (testing "nil, empty, blank, etc."
+    (is (nil? (id-seq nil)))
+    (is (nil? (id-seq "")))
+    (is (nil? (id-seq " ")))
+    (is (nil? (id-seq "\t\n\r")))
+    (is (nil? (id-seq nil nil)))
+    (is (nil? (id-seq nil "")))
+    (is (nil? (id-seq nil "Apache-2.0"))))
+  (testing "non-matches - default re"
+    (is (nil? (id-seq "foo")))
+    (is (nil? (id-seq "bar")))
+    (is (nil? (id-seq "foo bar")))
+    (is (nil? (id-seq "Apache 2.0")))
+    (is (nil? (id-seq "Apache-2.00")))
+    (is (nil? (id-seq "RMIT"))))
+  (testing "single matches - default re"
+    (is (= '("Apache-2.0") (id-seq "Apache-2.0")))
+    (is (= '("Apache-2.0") (id-seq "apache-2.0")))
+    (is (= '("Apache-2.0") (id-seq "APACHE-2.0")))
+    (is (= '("Apache-2.0") (id-seq "aPaChE-2.0")))
+    (is (= '("Apache-2.0") (id-seq " Apache-2.0 ")))
+    (is (= '("Apache-2.0") (id-seq "-Apache-2.0-")))
+    (is (= '("Apache-2.0") (id-seq "\nApache-2.0\n")))
+    (is (= '("Apache-2.0") (id-seq "foo Apache-2.0 bar"))))
+  (testing "multiple matches - default re"
+    (is (= '("Apache-2.0" "MIT") (id-seq "Apache-2.0 MIT")))
+    (is (= '("Apache-2.0" "MIT") (id-seq "Apache-2.0 OR MIT")))
+    (is (= '("Apache-2.0" "MIT") (id-seq "Apache-2.0 AND MIT")))
+    (is (= '("Apache-2.0" "MIT") (id-seq "foo Apache-2.0 bar MIT blah")))
+    (is (= '("GPL-2.0" "Classpath-exception-2.0") (id-seq "the gpl-2.0 with classpath-exception-2.0 is old skool")))
+    (is (= '("DocumentRef-foo:LicenseRef-foo" "DocumentRef-bar:AdditionRef-bar") (id-seq "the DocumentRef-foo:LicenseRef-foo with DocumentRef-bar:AdditionRef-bar is lit fam"))))
+  (testing "non-default re"
+    (is (nil? (id-seq (license-ref-re) "Apache-2.0")))
+    (is (nil? (id-seq (license-ref-re) "Classpath-exception-2.0")))
+    (is (nil? (id-seq (license-ref-re) "AdditionRef-foo")))
+    (is (= '("DocumentRef-foo:LicenseRef-foo") (id-seq (license-ref-re) "the DocumentRef-foo:LicenseRef-foo with DocumentRef-bar:AdditionRef:bar is lit fam")))))

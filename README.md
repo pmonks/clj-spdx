@@ -129,16 +129,39 @@ deps-try com.github.pmonks/clj-spdx
 ;=> "GPL-2.0-or-later WITH eCos-exception-2.0 OR (Apache-2.0 AND MIT)"
 
 
-;; A taste of the spdx.regexes namespace (with help from rencg)
+;; A taste of the spdx.regexes namespace
 
-(require '[rencg.api :as rencg])
 (require '[spdx.regexes :as sr])
 
-(rencg/re-seq-ncg (sr/ids-re) "some initial text Apache-2.0 and more text MIT and even more text LicenseRef-foo some final text")
-;=> ({:start 18 :end 28 :match "Apache-2.0" "Identifier" "Apache-2.0"}
-;=>  {:start 43 :end 46 :match "MIT" "Identifier" "MIT"}
-;=>  {:start 66 :end 80 :match "LicenseRef-foo" "LicenseRef" "foo"
+(sr/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
+;=> '("Apache-2.0" "MIT")
+
+; Using some of the regexes directly (with help from rencg)
+
+(require '[rencg.api :as rencg])
+
+(rencg/re-matches-ncg (sr/ids-re) "Apache-2.0")
+;=> {:start 0, :end 10, :match "Apache-2.0", "Identifier" "Apache-2.0"}
+
+(rencg/re-find-ncg (sr/ids-re) "some initial text GPL-3.0 some final text")
+;=> {:start 18, :end 25, :match "GPL-3.0", "Identifier" "GPL-3.0"}
+
+; NOTE: ids are not canonicalised by the regexes...
+(rencg/re-seq-ncg (sr/ids-re) "some initial text mpl-2.0 and more text mit and even more text LicenseRef-foo some final text")
+;=> ({:start 18 :end 25 :match "mpl-2.0" "Identifier" "mpl-2.0"}
+;=>  {:start 40 :end 43 :match "mit" "Identifier" "mit"}   
+;=>  {:start 63 :end 77 :match "LicenseRef-foo" "LicenseRef" "foo"
 ;=>   "Identifier" "LicenseRef-foo"})
+
+; ...but they are by the id-seq-* fns
+(sr/id-seq-matches "some initial text mpl-2.0 and more text mit and even more text LicenseRef-foo some final text")
+;=> ({:start 18 :end 25 :match "mpl-2.0" "Identifier" "mpl-2.0"
+;=>   :identifier "MPL-2.0" :type :license-id}
+;=>  {:start 40 :end 43 :match "mit" "Identifier" "mit" :identifier "MIT"
+;=>   :type :license-id}
+;=>  {:start 63 :end 77 :match "LicenseRef-foo" "LicenseRef" "foo"
+;=>   "Identifier" "LicenseRef-foo" :identifier "LicenseRef-foo"
+;=>   :type :license-ref})
 ```
 
 ## Contributor Information

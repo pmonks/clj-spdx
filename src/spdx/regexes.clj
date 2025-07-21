@@ -13,8 +13,9 @@
   any logic from `Spdx-Java-Library`)."
   (:require [clojure.string    :as s]
             [wreck.api         :as re]
-            [spdx.licenses     :as slic]
-            [spdx.exceptions   :as sexc]
+            [rencg.api         :as rencg]
+            [spdx.licenses     :as lic]
+            [spdx.exceptions   :as exc]
             [spdx.impl.regexes :as ir]))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
@@ -80,7 +81,7 @@
               ")"
               #"(?!\w)"))))
 
-(def ^:private ids-re-d (delay (build-re (concat (slic/ids) (sexc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
+(def ^:private ids-re-d (delay (build-re (concat (lic/ids) (exc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
 
 (defn ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
@@ -96,7 +97,7 @@
   []
   @ids-re-d)
 
-(def ^:private license-ids-re-d (delay (build-re (slic/ids) {:case-sensitive? false :include-license-refs? true :include-addition-refs? false})))
+(def ^:private license-ids-re-d (delay (build-re (lic/ids) {:case-sensitive? false :include-license-refs? true :include-addition-refs? false})))
 
 (defn license-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
@@ -111,7 +112,7 @@
   []
   @license-ids-re-d)
 
-(def ^:private exception-ids-re-d (delay (build-re (sexc/ids) {:case-sensitive? false :include-license-refs? false :include-addition-refs? true})))
+(def ^:private exception-ids-re-d (delay (build-re (exc/ids) {:case-sensitive? false :include-license-refs? false :include-addition-refs? true})))
 
 (defn exception-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license exception
@@ -150,6 +151,69 @@
   []
   @ir/addition-ref-re-d)
 
+(defn- id-type
+  "Returns a keyword representing the 'type' of `id`:
+
+  * `:license-id` - it's a listed license identifier
+  * `:exception-id` - it's a listed exception identifier
+  * `:license-ref` - it's a LicenseRef
+  * `:addition-ref` - it's an AdditionRef"
+  [^String id]
+  (when id
+    (cond
+      (lic/listed-id? id)    :license-id
+      (exc/listed-id? id)    :exception-id
+      (lic/license-ref? id)  :license-ref
+      (exc/addition-ref? id) :addition-ref
+      :else                  nil)))
+
+(defn- canonicalise-id
+  "Canonicalises `id` (if it's a listed license or exception identifer), or
+  returns it verbatim if it is not (i.e. it's a LicenseRef or AdditionRef)."
+  [^String id]
+  (when id
+    (if-let [canonical-license-id (lic/canonicalise-id id)]
+      canonical-license-id
+      (if-let [canonical-exception-id (exc/canonicalise-id id)]
+        canonical-exception-id
+        id))))
+
+(defn id-seq-matches
+  "Returns a lazy sequence of maps representing each of the identifier matches
+  found in `text`, in the order in which they were found, or `nil` if no matches
+  were found. `re` must be a regex returned by one of the fns in this namespace,
+  and defaults to [[ids-re]] if not provided.
+
+  The result is as for [rencg.api/re-seq-ncg](https://pmonks.github.io/rencg/rencg.api.html#var-re-seq-ncg)
+  and each map contains the named capture groups described in [[build-re]],
+  plus:
+
+  * `:identifier` (always present) - the canonical represention of the listed
+    identifier that matched, or the verbatim `LicenseRef` or `AdditionRef` that
+    matched
+  * `:type` (always present) - one of `:license-id`, `:exception-id`,
+    `:license-ref`, or `:addition-ref`"
+  ([^String text] (id-seq-matches @ids-re-d text))
+  ([^java.util.regex.Pattern re ^String text]
+   (when (and re text)
+     (when-let [matches (rencg/re-seq-ncg re text)]
+       (seq (map #(assoc % :identifier (canonicalise-id (get % "Identifier"))
+                           :type       (id-type         (get % "Identifier")))
+                 matches))))))
+
+(defn id-seq
+  "Returns a lazy sequence of the canonicalised forms of all identifiers found
+  in `text`, in the order in which they were found, or `nil` if no matches were
+  found. `re` must be a regex returned by one of the fns in this namespace, and
+  defaults to [[ids-re]] if not provided.
+
+  If you need more information about where in the text the identifiers were
+  found, or the original text that matched an identifier, use [[id-seq-matches]]
+  instead."
+  ([^String text] (id-seq @ids-re-d text))
+  ([^java.util.regex.Pattern re ^String text]
+   (seq (map :identifier (id-seq-matches re text)))))
+
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent
   calls), returning `nil`. Consumers of this namespace are not required to call
@@ -158,11 +222,11 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (slic/init!)
-  (sexc/init!)
+  (lic/init!)
+  (exc/init!)
   (ir/init!)
   ; Note: we always lazy-initialise all of the regexes, as it's unlikely that
   ; a caller will use all of them, and they're quick to construct. This saves
   ; callers unecessary memory consumption (an unrealised delay, while not free,
-  ; consumes very little memory - around 96 bytes on my machine).
+  ; consumes very little memory - 96 bytes on my machine).
   nil)
