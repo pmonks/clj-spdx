@@ -134,7 +134,7 @@ deps-try com.github.pmonks/clj-spdx
 (require '[spdx.regexes :as sr])
 
 (sr/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
-;=> '("Apache-2.0" "MIT")
+;=> ("Apache-2.0" "MIT")
 
 ; Using some of the regexes directly (with help from rencg)
 
