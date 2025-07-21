@@ -53,8 +53,9 @@
   * This fn supports any case of identifier, as per the SPDX case sensitivity
     rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
   [^String id]
-  (or (lic/listed-id? id)
-      (exc/listed-id? id)))
+  (boolean
+    (or (lic/listed-id? id)
+        (exc/listed-id? id))))
 
 (defn canonicalise-id
   "Canonicalises `id` (an SPDX identifier), by returning it in its canonical
