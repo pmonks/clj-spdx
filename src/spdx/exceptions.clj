@@ -27,20 +27,21 @@
 (defn ids
   "The set of all exception ids."
   []
-  (some-> (seq (.getSpdxListedExceptionIds ^org.spdx.library.ListedLicenses @is/list-obj))
+  (some-> (.getSpdxListedExceptionIds ^org.spdx.library.ListedLicenses @is/list-obj)
+          seq
           set))
 
 (defn listed-id?
-  "Is `id` (a `String`) one of the listed SPDX exception ids?"
+  "Is `id` (a `String`) one of the listed SPDX exception identifiers?"
   [^String id]
   (im/listed-exception-id? id))
 
 (def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
 
 (defn canonicalise-id
-  "Canonicalises `id` (an SPDX license exception identifier), by returning it in
-  its canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX license
-  exception identifier.
+  "Canonicalises `id` (an SPDX exception identifier), by returning it in its
+  canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX exception
+  identifier.
 
   Notes:
 
@@ -53,8 +54,8 @@
     (get @id-canonicalisation-d (s/lower-case id))))
 
 (defn equivalent-ids?
-  "Are `id1` and `id2` (`String`s) equivalent SPDX license exception identifiers
-  (i.e. taking the SPDX case sensitivity rules in
+  "Are `id1` and `id2` (`String`s) equivalent SPDX exception identifiers (i.e.
+  taking the SPDX case sensitivity rules in
   [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
   into account)?
 
@@ -151,7 +152,7 @@
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
   "Returns SPDX exception list information for `id` (a `String`) as a map, or
-  `nil` if `id` is not a valid SPDX exception id.
+  `nil` if `id` is not a valid SPDX exception identifier.
 
   `opts` are:
 
@@ -173,11 +174,12 @@
   (boolean (when (listed-id? id) (:deprecated? (id->info id)))))
 
 (defn non-deprecated-ids
-  "Returns the set of exception ids that identify current (non-deprecated)
-  exceptions within the provided set of SPDX license exception ids (or all of
-  them, if `ids` not provided)."
+  "Returns the set of SPDX exception identifiers that identify current
+  (non-deprecated) exceptions within the provided set of SPDX exception
+  identifiers (or all of them, if `ids` not provided)."
   ([]    (non-deprecated-ids (ids)))
-  ([ids] (some-> (seq (filter (complement deprecated-id?) ids))
+  ([ids] (some-> (filter (complement deprecated-id?) ids)
+                 seq
                  set)))
 
 (defn init!

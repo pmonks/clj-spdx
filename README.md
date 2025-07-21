@@ -60,45 +60,59 @@ deps-try com.github.pmonks/clj-spdx
 ### Demo
 
 ```clojure
-;; A taste of the spdx.licenses namespace
+;; A taste of the spdx.identifiers namespace
 
-(require '[spdx.licenses :as sl])
+(require '[spdx.identifiers :as si])
 
 ; This is optional but can be time consuming, so we run it explicitly to force
 ; population of the local Spdx-Java-Library cache.
-(sl/init!)
+(si/init!)
 
-(sl/version)
+(si/version)
 ;=> "3.27.0"
 
-(sl/ids)
+(si/ids)
 ;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many more]
 
-(sl/listed-id? "Apache-2.0")
+(si/listed-id? "Apache-2.0")
 ;=> true
 
-(sl/canonicalise-id "aPaChE-2.0")
+(si/listed-id? "Classpath-exception-2.0")
+;=> true
+
+(si/canonicalise-id "aPaChE-2.0")
 ;=> "Apache-2.0"
 
-(sl/listed-id? "LicenseRef-foo")
-;=> false
-
-(sl/license-ref? "LicenseRef-foo")
-;=> true
-
-
-;; A taste of the spdx.exceptions namespace
-
-(require '[spdx.exceptions :as se])
-
-(se/ids)
-;=> #{"GCC-exception-2.0-note" "Qwt-exception-1.0" [and many more]
-
-(se/listed-id? "Classpath-exception-2.0")
-;=> true
-
-(se/canonicalise-id "CLASSPATH-EXCEPTION-2.0")
+(si/canonicalise-id "CLASSPATH-EXCEPTION-2.0")
 ;=> "Classpath-exception-2.0"
+
+(si/id-type "Apache-2.0")
+;=> :license-id
+
+(si/id-type "Classpath-exception-2.0")
+;=> :exception-id
+
+(si/id-type "LicenseRef-foo")
+;=> :license-ref
+
+(si/id-type "AdditionRef-foo")
+;=> :addition-ref
+
+(si/id->info "Apache-2.0")
+;=> {:id "Apache-2.0" :name "Apache License 2.0" :see-also
+;=>  ("https://www.apache.org/licenses/LICENSE-2.0"
+;=>   "https://opensource.org/licenses/Apache-2.0"
+;=>   "https://opensource.org/license/apache-2-0")
+;=>  :fsf-libre? true :osi-approved? true :type :license-id}
+
+(si/id->info "Classpath-exception-2.0")
+;=> {:id "Classpath-exception-2.0" :name "Classpath exception 2.0" :see-also
+;=>  ("http://www.gnu.org/software/classpath/license.html"
+;=>   "https://fedoraproject.org/wiki/Licensing/GPL_Classpath_Exception")
+;=>  :type :exception-id}
+
+; spdx.licenses and spdx.exceptions provide finer-grained type-specific fns for
+; SPDX licenses and exceptions
 
 
 ;; A taste of the spdx.matching namespace
@@ -147,21 +161,22 @@ deps-try com.github.pmonks/clj-spdx
 ;=> {:start 18, :end 25, :match "GPL-3.0", "Identifier" "GPL-3.0"}
 
 ; NOTE: ids are not canonicalised by the regexes...
-(rencg/re-seq-ncg (sr/ids-re) "some initial text mpl-2.0 and more text mit and even more text LicenseRef-foo some final text")
-;=> ({:start 18 :end 25 :match "mpl-2.0" "Identifier" "mpl-2.0"}
-;=>  {:start 40 :end 43 :match "mit" "Identifier" "mit"}   
-;=>  {:start 63 :end 77 :match "LicenseRef-foo" "LicenseRef" "foo"
-;=>   "Identifier" "LicenseRef-foo"})
+(rencg/re-seq-ncg (sr/ids-re) "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
+;=> ({:start 13 :end 20 :match "mpl-2.0" "Identifier" "mpl-2.0"}
+;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier"
+;=>   "LicenseRef-foo"}
+;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier"
+;=>   "classpath-exception-2.0"})
 
-; ...but they are by the id-seq-* fns
-(sr/id-seq-matches "some initial text mpl-2.0 and more text mit and even more text LicenseRef-foo some final text")
-;=> ({:start 18 :end 25 :match "mpl-2.0" "Identifier" "mpl-2.0"
-;=>   :identifier "MPL-2.0" :type :license-id}
-;=>  {:start 40 :end 43 :match "mit" "Identifier" "mit" :identifier "MIT"
-;=>   :type :license-id}
-;=>  {:start 63 :end 77 :match "LicenseRef-foo" "LicenseRef" "foo"
-;=>   "Identifier" "LicenseRef-foo" :identifier "LicenseRef-foo"
-;=>   :type :license-ref})
+; ...but they are by the id-seq-* fns, which also provide id type information
+(sr/id-seq-matches "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
+;=> ({:start 13 :end 20 :match "mpl-2.0" "Identifier" "mpl-2.0" :identifier
+;=>   "MPL-2.0" :type :license-id}
+;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier"
+;=>   "LicenseRef-foo" :identifier "LicenseRef-foo" :type :license-ref}
+;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier"
+;=>   "classpath-exception-2.0" :identifier "Classpath-exception-2.0" :type
+;=>   :exception-id})
 ```
 
 ## Contributor Information

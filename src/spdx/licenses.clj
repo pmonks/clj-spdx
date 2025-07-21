@@ -27,7 +27,8 @@
 (defn ids
   "The set of all SPDX license identifiers."
   []
-  (some-> (seq (.getSpdxListedLicenseIds ^org.spdx.library.ListedLicenses @is/list-obj))
+  (some-> (.getSpdxListedLicenseIds ^org.spdx.library.ListedLicenses @is/list-obj)
+          seq
           set))
 
 (defn listed-id?
@@ -48,9 +49,9 @@
 
   Notes:
 
-  * This function does _not_ canonicalise a deprecated identifier to its non-
-    deprecated equivalent(s), since some of those conversions result in an SPDX
-    expression rather than an individual identifier.
+  * This function does _not_ canonicalise a deprecated identifier to its
+    non-deprecated equivalent(s), since some of those conversions result in an
+    SPDX expression rather than an individual identifier.
     [[spdx.expressions/canonicalise]] can be used for that."
   [^String id]
   (when id
@@ -154,7 +155,7 @@
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
   "Returns SPDX license list information for `id` as a map, or `nil` if `id` is
-  not a valid SPDX license id.
+  not a valid SPDX license identifier.
 
   `opts` are:
 
@@ -176,11 +177,12 @@
   (boolean (when (listed-id? id) (:deprecated? (id->info id)))))
 
 (defn non-deprecated-ids
-  "Returns the set of license ids that identify current (non-deprecated)
-  licenses within the provided set of SPDX license ids (or all of them, if `ids`
-  is not provided)."
+  "Returns the set of SPDX license identifiers that identify current
+  (non-deprecated) licenses within the provided set of SPDX license identifiers
+  (or all of them, if `ids` is not provided)."
   ([]    (non-deprecated-ids (ids)))
-  ([ids] (some-> (seq (filter (complement deprecated-id?) ids))
+  ([ids] (some-> (filter (complement deprecated-id?) ids)
+                 seq
                  set)))
 
 (defn osi-approved-id?
@@ -193,14 +195,15 @@
   (boolean (when (listed-id? id) (:osi-approved? (id->info id)))))
 
 (defn osi-approved-ids
-  "Returns the set of SPDX license ids that identify OSI Approved licenses
-  within the provided set of SPDX license ids (or all of them, if `ids` is not
-  provided).
+  "Returns the set of SPDX license identifiers that identify OSI Approved
+  licenses within the provided set of SPDX license identifiers (or all of them,
+  if `ids` is not provided).
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'OSI Approved' means."
   ([]    (osi-approved-ids (ids)))
-  ([ids] (some-> (seq (filter osi-approved-id? ids))
+  ([ids] (some-> (filter osi-approved-id? ids)
+                 seq
                  set)))
 
 (defn fsf-libre-id?
@@ -213,14 +216,15 @@
   (boolean (when (listed-id? id) (:fsf-libre? (id->info id)))))
 
 (defn fsf-libre-ids
-  "Returns the set of SPDX license ids that identify FSF Libre licenses within
-  the provided set of SPDX license ids (or all of them, if `ids` is not
-  provided).
+  "Returns the set of SPDX license identifiers that identify FSF Libre licenses
+  within the provided set of SPDX license identifiers (or all of them, if `ids`
+  is not provided).
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'FSF Libre' means."
   ([]    (fsf-libre-ids (ids)))
-  ([ids] (some-> (seq (filter fsf-libre-id? ids))
+  ([ids] (some-> (filter fsf-libre-id? ids)
+                 seq
                  set)))
 
 (defn init!
