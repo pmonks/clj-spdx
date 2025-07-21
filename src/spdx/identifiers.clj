@@ -60,9 +60,9 @@
 
   Notes:
 
-  * This function does _not_ canonicalise a deprecated identifier to its non-
-    deprecated equivalent(s), since some of those conversions result in an SPDX
-    expression rather than an individual identifier.
+  * This function does _not_ canonicalise a deprecated identifier to its
+    non-deprecated equivalent(s), since some of those conversions result in an
+    SPDX expression rather than an individual identifier.
     [[spdx.expressions/canonicalise]] can be used for that."
   [^String id]
   (case (id-type id)
@@ -97,8 +97,8 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `false`) - controls large text values
-    are included in the result or not"
+  * `:include-large-text-values?` (default `false`) - controls wheter large text
+    values are included in the result or not"
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (when-let [id-t (id-type id)]

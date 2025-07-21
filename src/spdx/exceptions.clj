@@ -156,8 +156,8 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `false`) - controls large text values
-    are included in the result or not"
+  * `:include-large-text-values?` (default `false`) - controls whether large
+    text values are included in the result or not"
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
