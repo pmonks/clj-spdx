@@ -17,8 +17,9 @@
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
 
-(def version  ^{:doc
-  "The version of the license list (a `String` in major.minor format)."}
+(def ^{:arglists '([])} version
+  "The version of the license list (a `String` in major.minor(.patchlevel)
+  format)."
   lic/version)
 
 (defn ids

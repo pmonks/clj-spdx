@@ -18,7 +18,8 @@
             [spdx.impl.utils   :as u]))
 
 (defn version
-  "The version of the exception list (a `String` in major.minor format).
+  "The version of the exception list (a `String` in major.minor(.patchlevel)
+  format).
 
   Note: identical to [[spdx.licenses/version]]."
   []
