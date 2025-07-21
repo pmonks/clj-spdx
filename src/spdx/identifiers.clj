@@ -17,8 +17,9 @@
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
 
-(def version  ^{:doc
-  "The version of the license list (a `String` in major.minor format)."}
+(def ^{:arglists '([])} version
+  "The version of the license list (a `String` in major.minor(.patchlevel)
+  format)."
   lic/version)
 
 (defn ids
@@ -49,10 +50,12 @@
 
   Notes:
 
-  * This fn supports any case of id, as per SPDX's case insensitivity rules"
+  * This fn supports any case of identifier, as per the SPDX case sensitivity
+    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
   [^String id]
-  (or (lic/listed-id? id)
-      (exc/listed-id? id)))
+  (boolean
+    (or (lic/listed-id? id)
+        (exc/listed-id? id))))
 
 (defn canonicalise-id
   "Canonicalises `id` (an SPDX identifier), by returning it in its canonical
@@ -60,9 +63,9 @@
 
   Notes:
 
-  * This function does _not_ canonicalise a deprecated identifier to its non-
-    deprecated equivalent(s), since some of those conversions result in an SPDX
-    expression rather than an individual identifier.
+  * This function does _not_ canonicalise a deprecated identifier to its
+    non-deprecated equivalent(s), since some of those conversions result in an
+    SPDX expression rather than an individual identifier.
     [[spdx.expressions/canonicalise]] can be used for that."
   [^String id]
   (case (id-type id)
@@ -72,8 +75,8 @@
 
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX identifiers, LicenseRefs or
-  AdditionRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  AdditionRefs (i.e. taking the SPDX case sensitivity rules in
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
@@ -97,8 +100,8 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `false`) - controls large text values
-    are included in the result or not"
+  * `:include-large-text-values?` (default `false`) - controls wheter large text
+    values are included in the result or not"
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (when-let [id-t (id-type id)]

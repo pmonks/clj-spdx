@@ -18,7 +18,8 @@
             [spdx.impl.utils   :as u]))
 
 (defn version
-  "The version of the exception list (a `String` in major.minor format).
+  "The version of the exception list (a `String` in major.minor(.patchlevel)
+  format).
 
   Note: identical to [[spdx.licenses/version]]."
   []
@@ -32,7 +33,12 @@
           set))
 
 (defn listed-id?
-  "Is `id` (a `String`) one of the listed SPDX exception identifiers?"
+  "Is `id` (a `String`) one of the listed SPDX exception identifiers?
+
+  Notes:
+
+  * This fn supports any case of identifier, as per the SPDX case sensitivity
+    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
   [^String id]
   (im/listed-exception-id? id))
 
@@ -56,7 +62,7 @@
 (defn equivalent-ids?
   "Are `id1` and `id2` (`String`s) equivalent SPDX exception identifiers (i.e.
   taking the SPDX case sensitivity rules in
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
@@ -133,7 +139,7 @@
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX license exception
   identifiers or AdditionRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
@@ -156,8 +162,8 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `false`) - controls large text values
-    are included in the result or not"
+  * `:include-large-text-values?` (default `false`) - controls whether large
+    text values are included in the result or not"
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
