@@ -41,6 +41,9 @@
     (is (nil? (canonicalise-id nil)))
     (is (nil? (canonicalise-id "")))
     (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "AdditionRefs return nil"
+    (is (nil? (canonicalise-id "AdditionRef-foo")))
+    (is (nil? (canonicalise-id "DocumentRef-foo:AdditionRef-foo"))))
   (testing "id in canonical form"
     (is (= "Classpath-exception-2.0" (canonicalise-id "Classpath-exception-2.0")))
     (is (= "Bison-exception-1.24"    (canonicalise-id "Bison-exception-1.24")))

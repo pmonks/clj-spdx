@@ -14,6 +14,7 @@
   (:require [clojure.string    :as s]
             [wreck.api         :as re]
             [rencg.api         :as rencg]
+            [spdx.identifiers  :as ids]
             [spdx.licenses     :as lic]
             [spdx.exceptions   :as exc]
             [spdx.impl.regexes :as ir]))
@@ -151,22 +152,6 @@
   []
   @ir/addition-ref-re-d)
 
-(defn- id-type
-  "Returns a keyword representing the 'type' of `id`:
-
-  * `:license-id` - it's a listed license identifier
-  * `:exception-id` - it's a listed exception identifier
-  * `:license-ref` - it's a LicenseRef
-  * `:addition-ref` - it's an AdditionRef"
-  [^String id]
-  (when id
-    (cond
-      (lic/listed-id? id)    :license-id
-      (exc/listed-id? id)    :exception-id
-      (lic/license-ref? id)  :license-ref
-      (exc/addition-ref? id) :addition-ref
-      :else                  nil)))
-
 (defn- canonicalise-id
   "Canonicalises `id` (if it's a listed license or exception identifer), or
   returns it verbatim if it is not (i.e. it's a LicenseRef or AdditionRef)."
@@ -191,14 +176,13 @@
   * `:identifier` (always present) - the canonical represention of the listed
     identifier that matched, or the verbatim `LicenseRef` or `AdditionRef` that
     matched
-  * `:type` (always present) - one of `:license-id`, `:exception-id`,
-    `:license-ref`, or `:addition-ref`"
+  * `:type` (always present) - identifier type, as per [[spdx.identifiers/id-type]]"
   ([^String text] (id-seq-matches @ids-re-d text))
   ([^java.util.regex.Pattern re ^String text]
    (when (and re text)
      (when-let [matches (rencg/re-seq-ncg re text)]
        (seq (map #(assoc % :identifier (canonicalise-id (get % "Identifier"))
-                           :type       (id-type         (get % "Identifier")))
+                           :type       (ids/id-type     (get % "Identifier")))
                  matches))))))
 
 (defn id-seq
@@ -224,6 +208,7 @@
   []
   (lic/init!)
   (exc/init!)
+  (ids/init!)
   (ir/init!)
   ; Note: we always lazy-initialise all of the regexes, as it's unlikely that
   ; a caller will use all of them, and they're quick to construct. This saves

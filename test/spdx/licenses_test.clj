@@ -45,6 +45,9 @@
     (is (nil? (canonicalise-id nil)))
     (is (nil? (canonicalise-id "")))
     (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "LicenseRefs return nil"
+    (is (nil? (canonicalise-id "LicenseRef-foo")))
+    (is (nil? (canonicalise-id "DocumentRef-foo:LicenseRef-foo"))))
   (testing "id in canonical form"
     (is (= "Apache-2.0" (canonicalise-id "Apache-2.0")))
     (is (= "GPL-3.0"    (canonicalise-id "GPL-3.0")))
