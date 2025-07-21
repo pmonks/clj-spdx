@@ -38,7 +38,7 @@
   Notes:
 
   * This fn supports any case of identifier, as per the SPDX case sensitivity
-    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)"
+    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
   [^String id]
   (im/listed-exception-id? id))
 
@@ -62,7 +62,7 @@
 (defn equivalent-ids?
   "Are `id1` and `id2` (`String`s) equivalent SPDX exception identifiers (i.e.
   taking the SPDX case sensitivity rules in
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
@@ -139,7 +139,7 @@
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX license exception
   identifiers or AdditionRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:

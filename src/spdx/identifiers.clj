@@ -51,7 +51,7 @@
   Notes:
 
   * This fn supports any case of identifier, as per the SPDX case sensitivity
-    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)"
+    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
   [^String id]
   (or (lic/listed-id? id)
       (exc/listed-id? id)))
@@ -75,7 +75,7 @@
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX identifiers, LicenseRefs or
   AdditionRefs (i.e. taking the SPDX case sensitivity rules in
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
