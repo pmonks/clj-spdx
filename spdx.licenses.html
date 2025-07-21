@@ -5,7 +5,7 @@
 </div></div><div class="public anchor" id="var-canonicalise-id"><h3>canonicalise-id</h3><div class="usage"><code>(canonicalise-id id)</code></div><div class="doc"><div class="markdown"><p>Canonicalises <code>id</code> (an SPDX license identifier), by returning it in its canonical case.  Returns <code>nil</code> if <code>id</code> is <code>nil</code> or not a listed SPDX license identifier.</p>
 <p>Notes:</p>
 <ul>
-<li>This function does <em>not</em> canonicalise a deprecated id to its non-deprecated equivalent, since some of those conversions result in an SPDX expression rather than an individual id. <a href="spdx.expressions.html#var-parse">spdx.expressions/parse</a> can be used for that.</li>
+<li>This function does <em>not</em> canonicalise a deprecated identifier to its non- deprecated equivalent(s), since some of those conversions result in an SPDX expression rather than an individual identifier. <a href="spdx.expressions.html#var-canonicalise">spdx.expressions/canonicalise</a> can be used for that.</li>
 </ul>
 </div></div><div class="src-link"><a href="https://github.com/pmonks/clj-spdx/blob/release/src/spdx/licenses.clj#L44">view source</a></div></div><div class="public anchor" id="var-deprecated-id.3F"><h3>deprecated-id?</h3><div class="usage"><code>(deprecated-id? id)</code></div><div class="doc"><div class="markdown"><p>Is <code>id</code> (a <code>String</code>) deprecated?  Also returns <code>false</code> if <code>id</code> is not in the SPDX license list.</p>
 <p>See <a href="https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated">this SPDX FAQ item</a> for details on what this means.</p>
