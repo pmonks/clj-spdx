@@ -36,7 +36,8 @@
 
   Notes:
 
-  * This fn supports any case of id, as per SPDX's case insensitivity rules"
+  * This fn supports any case of identifier, as per the SPDX case sensitivity
+    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)"
   [^String id]
   (im/listed-license-id? id))
 
