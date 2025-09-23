@@ -2,442 +2,444 @@ Downloading: nvd-clojure/nvd-clojure/maven-metadata.xml from clojars
 Downloading: nvd-clojure/nvd-clojure/5.1.0/nvd-clojure-5.1.0.pom from clojars
 Downloading: org/slf4j/slf4j-simple/2.0.17/slf4j-simple-2.0.17.pom from central
 Downloading: com/google/errorprone/error_prone_annotations/2.38.0/error_prone_annotations-2.38.0.pom from central
-Downloading: com/google/errorprone/error_prone_parent/2.38.0/error_prone_parent-2.38.0.pom from central
 Downloading: org/owasp/dependency-check-core/12.1.3/dependency-check-core-12.1.3.pom from central
+Downloading: com/google/errorprone/error_prone_parent/2.38.0/error_prone_parent-2.38.0.pom from central
 Downloading: rm-hull/table/0.7.1/table-0.7.1.pom from clojars
 Downloading: org/owasp/dependency-check-parent/12.1.3/dependency-check-parent-12.1.3.pom from central
-Downloading: trptcolin/versioneer/0.2.0/versioneer-0.2.0.pom from clojars
 Downloading: clansi/clansi/1.0.0/clansi-1.0.0.pom from clojars
 Downloading: com/fasterxml/jackson/jackson-bom/2.19.0/jackson-bom-2.19.0.pom from central
 Downloading: com/fasterxml/jackson/jackson-parent/2.19/jackson-parent-2.19.pom from central
 Downloading: com/fasterxml/oss-parent/65/oss-parent-65.pom from central
+Downloading: trptcolin/versioneer/0.2.0/versioneer-0.2.0.pom from clojars
 Downloading: org/anarres/jdiagnostics/jdiagnostics/1.0.7/jdiagnostics-1.0.7.pom from central
-Downloading: org/apache/commons/commons-jcs3-core/3.2.1/commons-jcs3-core-3.2.1.pom from central
-Downloading: io/github/jeremylong/open-vulnerability-clients/7.3.2/open-vulnerability-clients-7.3.2.pom from central
 Downloading: org/whitesource/pecoff4j/0.0.2.1/pecoff4j-0.0.2.1.pom from central
-Downloading: com/fasterxml/jackson/jackson-bom/2.18.3/jackson-bom-2.18.3.pom from central
-Downloading: org/apache/commons/commons-jcs3/3.2.1/commons-jcs3-3.2.1.pom from central
+Downloading: io/github/jeremylong/open-vulnerability-clients/7.3.2/open-vulnerability-clients-7.3.2.pom from central
+Downloading: org/apache/commons/commons-jcs3-core/3.2.1/commons-jcs3-core-3.2.1.pom from central
 Downloading: io/github/jeremylong/jcs3-slf4j/1.0.5/jcs3-slf4j-1.0.5.pom from central
 Downloading: com/github/package-url/packageurl-java/1.5.0/packageurl-java-1.5.0.pom from central
-Downloading: com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom from central
+Downloading: com/fasterxml/jackson/jackson-bom/2.18.3/jackson-bom-2.18.3.pom from central
+Downloading: org/apache/commons/commons-jcs3/3.2.1/commons-jcs3-3.2.1.pom from central
 Downloading: us/springett/cpe-parser/3.0.0/cpe-parser-3.0.0.pom from central
-Downloading: org/apache/commons/commons-parent/58/commons-parent-58.pom from central
-Downloading: com/fasterxml/oss-parent/61/oss-parent-61.pom from central
-Downloading: org/assertj/assertj-bom/3.25.3/assertj-bom-3.25.3.pom from central
 Downloading: org/semver4j/semver4j/5.7.1/semver4j-5.7.1.pom from central
+Downloading: com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom from central
+Downloading: org/apache/commons/commons-parent/58/commons-parent-58.pom from central
+Downloading: org/assertj/assertj-bom/3.25.3/assertj-bom-3.25.3.pom from central
 Downloading: org/owasp/dependency-check-utils/12.1.3/dependency-check-utils-12.1.3.pom from central
+Downloading: com/fasterxml/oss-parent/61/oss-parent-61.pom from central
 Downloading: org/apache/commons/commons-collections4/4.5.0/commons-collections4-4.5.0.pom from central
-Downloading: org/junit/junit-bom/5.9.3/junit-bom-5.9.3.pom from central
 Downloading: org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.pom from central
-Downloading: org/apache/commons/commons-parent/81/commons-parent-81.pom from central
 Downloading: commons-io/commons-io/2.19.0/commons-io-2.19.0.pom from central
+Downloading: org/apache/commons/commons-parent/81/commons-parent-81.pom from central
+Downloading: org/junit/junit-bom/5.9.3/junit-bom-5.9.3.pom from central
 Downloading: org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.pom from central
+Downloading: org/apache/commons/commons-text/1.13.1/commons-text-1.13.1.pom from central
 Downloading: org/apache/commons/commons-parent/73/commons-parent-73.pom from central
 Downloading: org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom from central
-Downloading: org/apache/commons/commons-text/1.13.1/commons-text-1.13.1.pom from central
-Downloading: org/apache/commons/commons-dbcp2/2.13.0/commons-dbcp2-2.13.0.pom from central
-Downloading: org/apache/lucene/lucene-core/9.12.0/lucene-core-9.12.0.pom from central
 Downloading: org/junit/junit-bom/5.11.0/junit-bom-5.11.0.pom from central
-Downloading: org/apache/lucene/lucene-queryparser/9.12.0/lucene-queryparser-9.12.0.pom from central
-Downloading: org/apache/commons/commons-parent/78/commons-parent-78.pom from central
-Downloading: org/apache/velocity/velocity-engine-core/2.4.1/velocity-engine-core-2.4.1.pom from central
 Downloading: org/apache/lucene/lucene-analysis-common/9.12.0/lucene-analysis-common-9.12.0.pom from central
+Downloading: org/apache/commons/commons-dbcp2/2.13.0/commons-dbcp2-2.13.0.pom from central
+Downloading: org/apache/lucene/lucene-queryparser/9.12.0/lucene-queryparser-9.12.0.pom from central
+Downloading: org/apache/lucene/lucene-core/9.12.0/lucene-core-9.12.0.pom from central
+Downloading: org/apache/velocity/velocity-engine-core/2.4.1/velocity-engine-core-2.4.1.pom from central
 Downloading: com/h2database/h2/2.3.232/h2-2.3.232.pom from central
-Downloading: org/junit/junit-bom/5.11.2/junit-bom-5.11.2.pom from central
-Downloading: org/jsoup/jsoup/1.20.1/jsoup-1.20.1.pom from central
-Downloading: org/apache/velocity/velocity-engine-parent/2.4.1/velocity-engine-parent-2.4.1.pom from central
+Downloading: org/apache/commons/commons-parent/78/commons-parent-78.pom from central
 Downloading: org/glassfish/jakarta.json/2.0.1/jakarta.json-2.0.1.pom from central
+Downloading: org/apache/velocity/velocity-engine-parent/2.4.1/velocity-engine-parent-2.4.1.pom from central
+Downloading: org/jsoup/jsoup/1.20.1/jsoup-1.20.1.pom from central
+Downloading: org/glassfish/json/2.0.1/json-2.0.1.pom from central
 Downloading: org/apache/velocity/velocity-master/7/velocity-master-7.pom from central
+Downloading: org/junit/junit-bom/5.11.2/junit-bom-5.11.2.pom from central
 Downloading: com/fasterxml/jackson/core/jackson-databind/2.19.0/jackson-databind-2.19.0.pom from central
 Downloading: com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.19.0/jackson-datatype-jsr310-2.19.0.pom from central
+Downloading: org/eclipse/ee4j/project/1.0.6/project-1.0.6.pom from central
 Downloading: com/fasterxml/jackson/module/jackson-module-blackbird/2.19.0/jackson-module-blackbird-2.19.0.pom from central
 Downloading: com/fasterxml/jackson/jackson-base/2.19.0/jackson-base-2.19.0.pom from central
 Downloading: com/fasterxml/jackson/module/jackson-modules-java8/2.19.0/jackson-modules-java8-2.19.0.pom from central
-Downloading: org/glassfish/json/2.0.1/json-2.0.1.pom from central
-Downloading: com/fasterxml/jackson/module/jackson-modules-base/2.19.0/jackson-modules-base-2.19.0.pom from central
 Downloading: com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.19.0/jackson-dataformat-yaml-2.19.0.pom from central
-Downloading: com/h3xstream/retirejs/retirejs-core/3.0.4/retirejs-core-3.0.4.pom from central
-Downloading: org/eclipse/ee4j/project/1.0.6/project-1.0.6.pom from central
-Downloading: com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.19.0/jackson-dataformats-text-2.19.0.pom from central
-Downloading: com/h3xstream/retirejs/retirejs-root-pom/3.0.4/retirejs-root-pom-3.0.4.pom from central
+Downloading: com/fasterxml/jackson/module/jackson-modules-base/2.19.0/jackson-modules-base-2.19.0.pom from central
 Downloading: org/sonatype/ossindex/ossindex-service-client/1.8.2/ossindex-service-client-1.8.2.pom from central
-Downloading: com/hankcs/aho-corasick-double-array-trie/1.2.3/aho-corasick-double-array-trie-1.2.3.pom from central
-Downloading: com/moandjiezana/toml/toml4j/0.7.2/toml4j-0.7.2.pom from central
-Downloading: org/sonatype/ossindex/ossindex-service/1.8.2/ossindex-service-1.8.2.pom from central
+Downloading: com/h3xstream/retirejs/retirejs-core/3.0.4/retirejs-core-3.0.4.pom from central
+Downloading: com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.19.0/jackson-dataformats-text-2.19.0.pom from central
 Downloading: com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.pom from central
+Downloading: org/sonatype/ossindex/ossindex-service/1.8.2/ossindex-service-1.8.2.pom from central
+Downloading: com/h3xstream/retirejs/retirejs-root-pom/3.0.4/retirejs-root-pom-3.0.4.pom from central
+Downloading: com/moandjiezana/toml/toml4j/0.7.2/toml4j-0.7.2.pom from central
 Downloading: org/sonatype/buildsupport/public-parent/28/public-parent-28.pom from central
-Downloading: org/eclipse/packager/packager-rpm/0.21.0/packager-rpm-0.21.0.pom from central
-Downloading: org/sonatype/buildsupport/buildsupport/28/buildsupport-28.pom from central
-Downloading: org/eclipse/packager/packager/0.21.0/packager-0.21.0.pom from central
-Downloading: org/apache/httpcomponents/core5/httpcore5/5.3.4/httpcore5-5.3.4.pom from central
 Downloading: com/google/guava/guava-parent/33.4.8-jre/guava-parent-33.4.8-jre.pom from central
-Downloading: org/apache/httpcomponents/core5/httpcore5-parent/5.3.4/httpcore5-parent-5.3.4.pom from central
+Downloading: com/hankcs/aho-corasick-double-array-trie/1.2.3/aho-corasick-double-array-trie-1.2.3.pom from central
+Downloading: org/sonatype/buildsupport/buildsupport/28/buildsupport-28.pom from central
 Downloading: org/apache/httpcomponents/client5/httpclient5/5.5/httpclient5-5.5.pom from central
-Downloading: org/apache/httpcomponents/httpcomponents-parent/13/httpcomponents-parent-13.pom from central
-Downloading: org/sonatype/ossindex/ossindex-service-bom/1.8.2/ossindex-service-bom-1.8.2.pom from central
-Downloading: com/fasterxml/jackson/core/jackson-core/2.19.0/jackson-core-2.19.0.pom from central
+Downloading: org/eclipse/packager/packager-rpm/0.21.0/packager-rpm-0.21.0.pom from central
+Downloading: org/apache/httpcomponents/core5/httpcore5/5.3.4/httpcore5-5.3.4.pom from central
 Downloading: org/apache/httpcomponents/client5/httpclient5-parent/5.5/httpclient5-parent-5.5.pom from central
-Downloading: com/fasterxml/jackson/core/jackson-annotations/2.19.0/jackson-annotations-2.19.0.pom from central
+Downloading: org/sonatype/ossindex/ossindex-service-bom/1.8.2/ossindex-service-bom-1.8.2.pom from central
+Downloading: org/apache/httpcomponents/core5/httpcore5-parent/5.3.4/httpcore5-parent-5.3.4.pom from central
+Downloading: org/eclipse/packager/packager/0.21.0/packager-0.21.0.pom from central
 Downloading: org/apache/httpcomponents/httpcomponents-parent/14/httpcomponents-parent-14.pom from central
+Downloading: com/fasterxml/jackson/core/jackson-annotations/2.19.0/jackson-annotations-2.19.0.pom from central
+Downloading: org/apache/httpcomponents/httpcomponents-parent/13/httpcomponents-parent-13.pom from central
+Downloading: com/fasterxml/jackson/core/jackson-core/2.19.0/jackson-core-2.19.0.pom from central
+Downloading: org/junit/junit-bom/5.12.2/junit-bom-5.12.2.pom from central
 Downloading: org/sonatype/goodies/package-url-java/1.2.0/package-url-java-1.2.0.pom from central
 Downloading: org/sonatype/ossindex/ossindex-service-api/1.8.2/ossindex-service-api-1.8.2.pom from central
-Downloading: org/sonatype/buildsupport/public-parent/13/public-parent-13.pom from central
 Downloading: joda-time/joda-time/2.14.0/joda-time-2.14.0.pom from central
-Downloading: org/junit/junit-bom/5.12.2/junit-bom-5.12.2.pom from central
-Downloading: org/sonatype/buildsupport/buildsupport/13/buildsupport-13.pom from central
-Downloading: com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.pom from central
 Downloading: com/esotericsoftware/minlog/1.3.1/minlog-1.3.1.pom from central
-Downloading: org/apache/httpcomponents/client5/httpclient5-cache/5.4.3/httpclient5-cache-5.4.3.pom from central
-Downloading: com/samskivert/jmustache/1.16/jmustache-1.16.pom from central
+Downloading: org/sonatype/buildsupport/public-parent/13/public-parent-13.pom from central
+Downloading: com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.pom from central
 Downloading: org/jspecify/jspecify/1.0.0/jspecify-1.0.0.pom from central
+Downloading: org/apache/httpcomponents/client5/httpclient5-cache/5.4.3/httpclient5-cache-5.4.3.pom from central
+Downloading: org/sonatype/buildsupport/buildsupport/13/buildsupport-13.pom from central
+Downloading: com/samskivert/jmustache/1.16/jmustache-1.16.pom from central
 Downloading: org/apache/httpcomponents/client5/httpclient5-parent/5.4.3/httpclient5-parent-5.4.3.pom from central
 Downloading: commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.pom from central
 Downloading: org/apache/commons/commons-pool2/2.12.0/commons-pool2-2.12.0.pom from central
 Downloading: org/apache/commons/commons-parent/71/commons-parent-71.pom from central
 Downloading: jakarta/transaction/jakarta.transaction-api/1.3.3/jakarta.transaction-api-1.3.3.pom from central
-Downloading: org/apache/commons/commons-parent/62/commons-parent-62.pom from central
 Downloading: org/apache/lucene/lucene-queries/9.12.0/lucene-queries-9.12.0.pom from central
-Downloading: org/yaml/snakeyaml/2.4/snakeyaml-2.4.pom from central
-Downloading: org/apache/lucene/lucene-sandbox/9.12.0/lucene-sandbox-9.12.0.pom from central
-Downloading: org/junit/junit-bom/5.10.0/junit-bom-5.10.0.pom from central
+Downloading: org/apache/commons/commons-parent/62/commons-parent-62.pom from central
 Downloading: org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom from central
+Downloading: org/apache/lucene/lucene-sandbox/9.12.0/lucene-sandbox-9.12.0.pom from central
+Downloading: org/yaml/snakeyaml/2.4/snakeyaml-2.4.pom from central
 Downloading: com/github/spullara/mustache/java/compiler/0.9.6/compiler-0.9.6.pom from central
 Downloading: com/google/code/gson/gson/2.9.0/gson-2.9.0.pom from central
 Downloading: javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.pom from central
 Downloading: com/github/spullara/mustache/java/mustache.java/0.9.6/mustache.java-0.9.6.pom from central
+Downloading: org/junit/junit-bom/5.10.0/junit-bom-5.10.0.pom from central
 Downloading: com/google/code/gson/gson-parent/2.9.0/gson-parent-2.9.0.pom from central
-Downloading: javax/xml/bind/jaxb-api-parent/2.3.1/jaxb-api-parent-2.3.1.pom from central
 Downloading: com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.pom from central
+Downloading: javax/xml/bind/jaxb-api-parent/2.3.1/jaxb-api-parent-2.3.1.pom from central
 Downloading: com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom from central
 Downloading: com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.pom from central
-Downloading: com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom from central
-Downloading: org/tukaani/xz/1.9/xz-1.9.pom from central
-Downloading: org/eclipse/packager/packager-core/0.21.0/packager-core-0.21.0.pom from central
 Downloading: com/google/guava/guava-parent/33.4.0-android/guava-parent-33.4.0-android.pom from central
+Downloading: com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom from central
+Downloading: org/eclipse/packager/packager-core/0.21.0/packager-core-0.21.0.pom from central
+Downloading: org/tukaani/xz/1.9/xz-1.9.pom from central
 Downloading: org/apache/httpcomponents/core5/httpcore5-h2/5.3.4/httpcore5-h2-5.3.4.pom from central
-Downloading: org/apache/lucene/lucene-facet/9.12.0/lucene-facet-9.12.0.pom from central
 Downloading: javax/ws/rs/javax.ws.rs-api/2.0.1/javax.ws.rs-api-2.0.1.pom from central
-Downloading: org/bouncycastle/bcpg-jdk18on/1.78/bcpg-jdk18on-1.78.pom from central
+Downloading: org/apache/lucene/lucene-facet/9.12.0/lucene-facet-9.12.0.pom from central
 Downloading: org/bouncycastle/bcprov-jdk18on/1.78/bcprov-jdk18on-1.78.pom from central
-Downloading: commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar from central
+Downloading: org/bouncycastle/bcpg-jdk18on/1.78/bcpg-jdk18on-1.78.pom from central
 Downloading: joda-time/joda-time/2.14.0/joda-time-2.14.0.jar from central
-Downloading: com/fasterxml/jackson/module/jackson-module-blackbird/2.19.0/jackson-module-blackbird-2.19.0.jar from central
 Downloading: org/apache/httpcomponents/core5/httpcore5-h2/5.3.4/httpcore5-h2-5.3.4.jar from central
+Downloading: commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar from central
+Downloading: com/fasterxml/jackson/module/jackson-module-blackbird/2.19.0/jackson-module-blackbird-2.19.0.jar from central
 Downloading: org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar from central
 Downloading: com/google/errorprone/error_prone_annotations/2.38.0/error_prone_annotations-2.38.0.jar from central
-Downloading: org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar from central
 Downloading: com/esotericsoftware/minlog/1.3.1/minlog-1.3.1.jar from central
-Downloading: org/bouncycastle/bcpg-jdk18on/1.78/bcpg-jdk18on-1.78.jar from central
+Downloading: org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar from central
 Downloading: org/tukaani/xz/1.9/xz-1.9.jar from central
-Downloading: com/h3xstream/retirejs/retirejs-core/3.0.4/retirejs-core-3.0.4.jar from central
-Downloading: jakarta/transaction/jakarta.transaction-api/1.3.3/jakarta.transaction-api-1.3.3.jar from central
+Downloading: org/bouncycastle/bcpg-jdk18on/1.78/bcpg-jdk18on-1.78.jar from central
 Downloading: com/fasterxml/jackson/core/jackson-databind/2.19.0/jackson-databind-2.19.0.jar from central
+Downloading: com/h3xstream/retirejs/retirejs-core/3.0.4/retirejs-core-3.0.4.jar from central
 Downloading: org/eclipse/packager/packager-rpm/0.21.0/packager-rpm-0.21.0.jar from central
+Downloading: jakarta/transaction/jakarta.transaction-api/1.3.3/jakarta.transaction-api-1.3.3.jar from central
 Downloading: org/apache/commons/commons-dbcp2/2.13.0/commons-dbcp2-2.13.0.jar from central
 Downloading: org/apache/commons/commons-pool2/2.12.0/commons-pool2-2.12.0.jar from central
 Downloading: com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.19.0/jackson-dataformat-yaml-2.19.0.jar from central
 Downloading: org/anarres/jdiagnostics/jdiagnostics/1.0.7/jdiagnostics-1.0.7.jar from central
 Downloading: org/apache/lucene/lucene-analysis-common/9.12.0/lucene-analysis-common-9.12.0.jar from central
+Downloading: clansi/clansi/1.0.0/clansi-1.0.0.jar from clojars
 Downloading: org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar from central
 Downloading: com/hankcs/aho-corasick-double-array-trie/1.2.3/aho-corasick-double-array-trie-1.2.3.jar from central
-Downloading: org/apache/httpcomponents/client5/httpclient5-cache/5.4.3/httpclient5-cache-5.4.3.jar from central
 Downloading: com/h2database/h2/2.3.232/h2-2.3.232.jar from central
+Downloading: org/apache/httpcomponents/client5/httpclient5-cache/5.4.3/httpclient5-cache-5.4.3.jar from central
 Downloading: com/samskivert/jmustache/1.16/jmustache-1.16.jar from central
+Downloading: rm-hull/table/0.7.1/table-0.7.1.jar from clojars
 Downloading: org/glassfish/jakarta.json/2.0.1/jakarta.json-2.0.1.jar from central
 Downloading: commons-io/commons-io/2.19.0/commons-io-2.19.0.jar from central
-Downloading: rm-hull/table/0.7.1/table-0.7.1.jar from clojars
-Downloading: org/owasp/dependency-check-core/12.1.3/dependency-check-core-12.1.3.jar from central
 Downloading: com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar from central
 Downloading: com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar from central
+Downloading: org/owasp/dependency-check-core/12.1.3/dependency-check-core-12.1.3.jar from central
+Downloading: org/apache/velocity/velocity-engine-core/2.4.1/velocity-engine-core-2.4.1.jar from central
 Downloading: com/github/spullara/mustache/java/compiler/0.9.6/compiler-0.9.6.jar from central
-Downloading: clansi/clansi/1.0.0/clansi-1.0.0.jar from clojars
 Downloading: com/fasterxml/jackson/core/jackson-core/2.19.0/jackson-core-2.19.0.jar from central
 Downloading: org/yaml/snakeyaml/2.4/snakeyaml-2.4.jar from central
-Downloading: org/apache/velocity/velocity-engine-core/2.4.1/velocity-engine-core-2.4.1.jar from central
-Downloading: org/apache/commons/commons-jcs3-core/3.2.1/commons-jcs3-core-3.2.1.jar from central
 Downloading: org/owasp/dependency-check-utils/12.1.3/dependency-check-utils-12.1.3.jar from central
+Downloading: org/apache/commons/commons-jcs3-core/3.2.1/commons-jcs3-core-3.2.1.jar from central
 Downloading: org/apache/lucene/lucene-facet/9.12.0/lucene-facet-9.12.0.jar from central
-Downloading: org/semver4j/semver4j/5.7.1/semver4j-5.7.1.jar from central
-Downloading: org/slf4j/slf4j-simple/2.0.17/slf4j-simple-2.0.17.jar from central
 Downloading: org/apache/lucene/lucene-core/9.12.0/lucene-core-9.12.0.jar from central
+Downloading: org/slf4j/slf4j-simple/2.0.17/slf4j-simple-2.0.17.jar from central
+Downloading: org/semver4j/semver4j/5.7.1/semver4j-5.7.1.jar from central
+Downloading: trptcolin/versioneer/0.2.0/versioneer-0.2.0.jar from clojars
 Downloading: org/apache/lucene/lucene-queryparser/9.12.0/lucene-queryparser-9.12.0.jar from central
 Downloading: org/eclipse/packager/packager-core/0.21.0/packager-core-0.21.0.jar from central
-Downloading: org/bouncycastle/bcprov-jdk18on/1.78/bcprov-jdk18on-1.78.jar from central
 Downloading: com/fasterxml/jackson/core/jackson-annotations/2.19.0/jackson-annotations-2.19.0.jar from central
 Downloading: org/apache/commons/commons-text/1.13.1/commons-text-1.13.1.jar from central
 Downloading: nvd-clojure/nvd-clojure/5.1.0/nvd-clojure-5.1.0.jar from clojars
+Downloading: org/bouncycastle/bcprov-jdk18on/1.78/bcprov-jdk18on-1.78.jar from central
 Downloading: us/springett/cpe-parser/3.0.0/cpe-parser-3.0.0.jar from central
-Downloading: com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar from central
-Downloading: trptcolin/versioneer/0.2.0/versioneer-0.2.0.jar from clojars
 Downloading: org/apache/lucene/lucene-queries/9.12.0/lucene-queries-9.12.0.jar from central
 Downloading: com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar from central
-Downloading: com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar from central
+Downloading: com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar from central
 Downloading: org/sonatype/ossindex/ossindex-service-api/1.8.2/ossindex-service-api-1.8.2.jar from central
+Downloading: com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar from central
 Downloading: io/github/jeremylong/open-vulnerability-clients/7.3.2/open-vulnerability-clients-7.3.2.jar from central
-Downloading: org/sonatype/ossindex/ossindex-service-client/1.8.2/ossindex-service-client-1.8.2.jar from central
-Downloading: org/apache/httpcomponents/client5/httpclient5/5.5/httpclient5-5.5.jar from central
 Downloading: org/apache/lucene/lucene-sandbox/9.12.0/lucene-sandbox-9.12.0.jar from central
+Downloading: org/apache/httpcomponents/client5/httpclient5/5.5/httpclient5-5.5.jar from central
+Downloading: org/sonatype/ossindex/ossindex-service-client/1.8.2/ossindex-service-client-1.8.2.jar from central
 Downloading: org/jsoup/jsoup/1.20.1/jsoup-1.20.1.jar from central
-Downloading: io/github/jeremylong/jcs3-slf4j/1.0.5/jcs3-slf4j-1.0.5.jar from central
-Downloading: org/apache/httpcomponents/core5/httpcore5/5.3.4/httpcore5-5.3.4.jar from central
 Downloading: org/apache/commons/commons-collections4/4.5.0/commons-collections4-4.5.0.jar from central
+Downloading: io/github/jeremylong/jcs3-slf4j/1.0.5/jcs3-slf4j-1.0.5.jar from central
 Downloading: com/moandjiezana/toml/toml4j/0.7.2/toml4j-0.7.2.jar from central
+Downloading: org/apache/httpcomponents/core5/httpcore5/5.3.4/httpcore5-5.3.4.jar from central
 Downloading: com/github/package-url/packageurl-java/1.5.0/packageurl-java-1.5.0.jar from central
 Downloading: javax/ws/rs/javax.ws.rs-api/2.0.1/javax.ws.rs-api-2.0.1.jar from central
 Downloading: com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.19.0/jackson-datatype-jsr310-2.19.0.jar from central
 Downloading: org/whitesource/pecoff4j/0.0.2.1/pecoff4j-0.0.2.1.jar from central
 Downloading: org/sonatype/goodies/package-url-java/1.2.0/package-url-java-1.2.0.jar from central
-Downloading: com/google/code/gson/gson/2.9.0/gson-2.9.0.jar from central
 Downloading: javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar from central
-[2025-09-16 02:55:37.126] INFO nvd-clojure - User-provided config: {:delete-config? false, :group "com.github.pmonks", :name "clj-spdx", :version "1.0.280-SNAPSHOT", :nvd {:output-dir "../target/nvd"}}
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+Downloading: com/google/code/gson/gson/2.9.0/gson-2.9.0.jar from central
+[2025-09-23 02:57:12.499] INFO nvd-clojure - User-provided config: {:delete-config? false, :group "com.github.pmonks", :name "clj-spdx", :version "1.0.281-SNAPSHOT", :nvd {:output-dir "../target/nvd"}}
+Sep 23, 2025 2:57:12 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
 INFO: Instance is null, returning unconfigured instance
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
 INFO: Setting default auxiliaries to "ODC"
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
 INFO: setting defaultCompositeCacheAttributes to [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
-INFO: setting defaultElementAttributes to [ IS_LATERAL = false, IS_SPOOL = true, IS_REMOTE = false, IS_ETERNAL = false, MaxLifeSeconds = 86400, IdleTime = 1800, CreateTime = 1757991337716, LastAccessTime = 1757991337716, getTimeToLiveSeconds() = 86399, createTime = 1757991337716 ]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+INFO: setting defaultElementAttributes to [ IS_LATERAL = false, IS_SPOOL = true, IS_REMOTE = false, IS_ETERNAL = false, MaxLifeSeconds = 86400, IdleTime = 1800, CreateTime = 1758596233718, LastAccessTime = 1758596233718, getTimeToLiveSeconds() = 86399, createTime = 1758596233718 ]
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
 INFO: initialized MemoryCache for CENTRAL
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: Constructed cache with name [CENTRAL] and cache attributes [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: No cache event logger defined for auxiliary [jcs.auxiliary.ODC]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: Using standard serializer [org.apache.commons.jcs3.utils.serialization.StandardSerializer@5edc3e29] for auxiliary [jcs.auxiliary.ODC]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Set maxKeySize to: "1,000,000"
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Cache file root directory: /home/runner/.m2/repository/org/owasp/dependency-check-utils/12.1.3/data/11.0/cache
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [CENTRAL] : Indexed Disk Cache is alive.
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
 INFO: initialized MemoryCache for POM
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: Constructed cache with name [POM] and cache attributes [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: No cache event logger defined for auxiliary [jcs.auxiliary.ODC]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: Using standard serializer [org.apache.commons.jcs3.utils.serialization.StandardSerializer@5db948c9] for auxiliary [jcs.auxiliary.ODC]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Set maxKeySize to: "1,000,000"
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Cache file root directory: /home/runner/.m2/repository/org/owasp/dependency-check-utils/12.1.3/data/11.0/cache
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [POM] : Indexed Disk Cache is alive.
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.memory.AbstractDoubleLinkedListMemoryCache 
 INFO: initialized MemoryCache for NODEAUDIT
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: Constructed cache with name [NODEAUDIT] and cache attributes [ useLateral = true, useRemote = true, useDisk = true, maxObjs = 0, maxSpoolPerRun = -1, diskUsagePattern = UPDATE, spoolChunkSize = 2 ]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: No cache event logger defined for auxiliary [jcs.auxiliary.ODC]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.AuxiliaryCacheConfigurator 
 INFO: Using standard serializer [org.apache.commons.jcs3.utils.serialization.StandardSerializer@296edc75] for auxiliary [jcs.auxiliary.ODC]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Set maxKeySize to: "1,000,000"
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Cache file root directory: /home/runner/.m2/repository/org/owasp/dependency-check-utils/12.1.3/data/11.0/cache
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
 INFO: Region [NODEAUDIT] : Indexed Disk Cache is alive.
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCacheConfigurator 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCacheConfigurator 
 INFO: Parsed regions [CENTRAL, POM, NODEAUDIT]
-Sep 16, 2025 2:55:37 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
-INFO: Finished configuration in 69 ms.
-[2025-09-16 02:55:37.766] WARN NexusAnalyzer - Disabling Nexus analyzer - please specify the URL to a Nexus Server
-[2025-09-16 02:55:38.219] INFO Engine - Checking for updates
-[2025-09-16 02:55:39.743] INFO NvdApiDataSource - NVD API has 309,880 records in this update
-[2025-09-16 02:55:44.529] INFO NvdApiDataSource - Downloaded 10,000/309,880 (3%)
-[2025-09-16 02:55:50.572] INFO NvdApiDataSource - Downloaded 20,000/309,880 (6%)
-[2025-09-16 02:55:55.903] INFO NvdApiDataSource - Downloaded 30,000/309,880 (10%)
-[2025-09-16 02:56:01.658] INFO NvdApiDataSource - Downloaded 40,000/309,880 (13%)
-[2025-09-16 02:56:09.431] INFO NvdApiDataSource - Downloaded 50,000/309,880 (16%)
-[2025-09-16 02:56:15.716] INFO NvdApiDataSource - Downloaded 60,000/309,880 (19%)
-[2025-09-16 02:56:20.752] INFO NvdApiDataSource - Downloaded 70,000/309,880 (23%)
-[2025-09-16 02:56:26.422] INFO NvdApiDataSource - Downloaded 80,000/309,880 (26%)
-[2025-09-16 02:56:33.895] INFO NvdApiDataSource - Downloaded 90,000/309,880 (29%)
-[2025-09-16 02:56:40.652] INFO NvdApiDataSource - Downloaded 100,000/309,880 (32%)
-[2025-09-16 02:56:45.940] INFO NvdApiDataSource - Downloaded 110,000/309,880 (35%)
-[2025-09-16 02:56:51.031] INFO NvdApiDataSource - Downloaded 120,000/309,880 (39%)
-[2025-09-16 02:56:59.270] INFO NvdApiDataSource - Downloaded 130,000/309,880 (42%)
-[2025-09-16 02:57:05.551] INFO NvdApiDataSource - Downloaded 140,000/309,880 (45%)
-[2025-09-16 02:57:11.055] INFO NvdApiDataSource - Downloaded 150,000/309,880 (48%)
-[2025-09-16 02:57:16.577] INFO NvdApiDataSource - Downloaded 160,000/309,880 (52%)
-[2025-09-16 02:57:24.383] INFO NvdApiDataSource - Downloaded 170,000/309,880 (55%)
-[2025-09-16 02:57:30.697] INFO NvdApiDataSource - Downloaded 180,000/309,880 (58%)
-[2025-09-16 02:57:35.980] INFO NvdApiDataSource - Downloaded 190,000/309,880 (61%)
-[2025-09-16 02:57:41.241] INFO NvdApiDataSource - Downloaded 200,000/309,880 (65%)
-[2025-09-16 02:57:49.369] INFO NvdApiDataSource - Downloaded 210,000/309,880 (68%)
-[2025-09-16 02:57:55.553] INFO NvdApiDataSource - Downloaded 220,000/309,880 (71%)
-[2025-09-16 02:58:00.789] INFO NvdApiDataSource - Downloaded 230,000/309,880 (74%)
-[2025-09-16 02:58:05.996] INFO NvdApiDataSource - Downloaded 240,000/309,880 (77%)
-[2025-09-16 02:58:13.991] INFO NvdApiDataSource - Downloaded 250,000/309,880 (81%)
-[2025-09-16 02:58:20.652] INFO NvdApiDataSource - Downloaded 260,000/309,880 (84%)
-[2025-09-16 02:58:25.756] INFO NvdApiDataSource - Downloaded 270,000/309,880 (87%)
-[2025-09-16 02:58:30.865] INFO NvdApiDataSource - Downloaded 280,000/309,880 (90%)
-[2025-09-16 02:58:39.305] INFO NvdApiDataSource - Downloaded 290,000/309,880 (94%)
-[2025-09-16 02:58:45.406] INFO NvdApiDataSource - Downloaded 300,000/309,880 (97%)
-[2025-09-16 02:58:54.356] INFO NvdApiDataSource - Downloaded 309,880/309,880 (100%)
-[2025-09-16 02:58:54.356] INFO NvdApiDataSource - Completed processing batch 1/155 (1%) in 3,227ms
-[2025-09-16 02:58:54.357] INFO NvdApiDataSource - Completed processing batch 2/155 (1%) in 4,002ms
-[2025-09-16 02:58:54.360] INFO NvdApiDataSource - Completed processing batch 3/155 (2%) in 3,808ms
-[2025-09-16 02:58:54.360] INFO NvdApiDataSource - Completed processing batch 4/155 (3%) in 3,915ms
-[2025-09-16 02:58:54.360] INFO NvdApiDataSource - Completed processing batch 5/155 (3%) in 2,054ms
-[2025-09-16 02:58:54.360] INFO NvdApiDataSource - Completed processing batch 6/155 (4%) in 2,526ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 7/155 (5%) in 2,298ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 8/155 (5%) in 2,007ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 9/155 (6%) in 1,460ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 10/155 (6%) in 1,860ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 11/155 (7%) in 1,720ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 12/155 (8%) in 1,532ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 13/155 (8%) in 1,022ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 14/155 (9%) in 1,426ms
-[2025-09-16 02:58:54.361] INFO NvdApiDataSource - Completed processing batch 15/155 (10%) in 1,329ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 16/155 (10%) in 1,217ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 17/155 (11%) in 681ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 18/155 (12%) in 1,590ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 19/155 (12%) in 1,448ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 20/155 (13%) in 1,351ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 21/155 (14%) in 874ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 22/155 (14%) in 2,561ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 23/155 (15%) in 2,595ms
-[2025-09-16 02:58:54.362] INFO NvdApiDataSource - Completed processing batch 24/155 (15%) in 1,924ms
-[2025-09-16 02:58:54.363] INFO NvdApiDataSource - Completed processing batch 25/155 (16%) in 1,512ms
-[2025-09-16 02:58:54.363] INFO NvdApiDataSource - Completed processing batch 26/155 (17%) in 2,437ms
-[2025-09-16 02:58:54.363] INFO NvdApiDataSource - Completed processing batch 27/155 (17%) in 2,311ms
-[2025-09-16 02:58:54.363] INFO NvdApiDataSource - Completed processing batch 28/155 (18%) in 1,774ms
-[2025-09-16 02:58:54.363] INFO NvdApiDataSource - Completed processing batch 29/155 (19%) in 1,741ms
-[2025-09-16 02:58:54.363] INFO NvdApiDataSource - Completed processing batch 30/155 (19%) in 1,911ms
-[2025-09-16 02:58:54.366] INFO NvdApiDataSource - Completed processing batch 31/155 (20%) in 1,699ms
-[2025-09-16 02:58:54.366] INFO NvdApiDataSource - Completed processing batch 32/155 (21%) in 1,213ms
-[2025-09-16 02:58:54.366] INFO NvdApiDataSource - Completed processing batch 33/155 (21%) in 1,243ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 34/155 (22%) in 1,091ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 35/155 (23%) in 1,025ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 36/155 (23%) in 842ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 37/155 (24%) in 868ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 38/155 (25%) in 1,270ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 39/155 (25%) in 1,065ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 40/155 (26%) in 917ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 41/155 (26%) in 862ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 42/155 (27%) in 832ms
-[2025-09-16 02:58:54.367] INFO NvdApiDataSource - Completed processing batch 43/155 (28%) in 195ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 44/155 (28%) in 240ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 45/155 (29%) in 526ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 46/155 (30%) in 709ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 47/155 (30%) in 965ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 48/155 (31%) in 676ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 49/155 (32%) in 623ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 50/155 (32%) in 675ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 51/155 (33%) in 494ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 52/155 (34%) in 491ms
-[2025-09-16 02:58:54.368] INFO NvdApiDataSource - Completed processing batch 53/155 (34%) in 439ms
-[2025-09-16 02:58:54.369] INFO NvdApiDataSource - Completed processing batch 54/155 (35%) in 1,136ms
-[2025-09-16 02:58:54.369] INFO NvdApiDataSource - Completed processing batch 55/155 (35%) in 1,059ms
-[2025-09-16 02:58:54.369] INFO NvdApiDataSource - Completed processing batch 56/155 (36%) in 776ms
-[2025-09-16 02:58:54.371] INFO NvdApiDataSource - Completed processing batch 57/155 (37%) in 870ms
-[2025-09-16 02:58:54.371] INFO NvdApiDataSource - Completed processing batch 58/155 (37%) in 558ms
-[2025-09-16 02:58:54.373] INFO NvdApiDataSource - Completed processing batch 59/155 (38%) in 525ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 60/155 (39%) in 449ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 61/155 (39%) in 454ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 62/155 (40%) in 781ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 63/155 (41%) in 758ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 64/155 (41%) in 629ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 65/155 (42%) in 717ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 66/155 (43%) in 597ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 67/155 (43%) in 554ms
-[2025-09-16 02:58:54.374] INFO NvdApiDataSource - Completed processing batch 68/155 (44%) in 475ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 69/155 (45%) in 463ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 70/155 (45%) in 675ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 71/155 (46%) in 841ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 72/155 (46%) in 633ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 73/155 (47%) in 424ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 74/155 (48%) in 580ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 75/155 (48%) in 685ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 76/155 (49%) in 434ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 77/155 (50%) in 460ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 78/155 (50%) in 516ms
-[2025-09-16 02:58:54.375] INFO NvdApiDataSource - Completed processing batch 79/155 (51%) in 554ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 80/155 (52%) in 459ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 81/155 (52%) in 381ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 82/155 (53%) in 587ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 83/155 (54%) in 560ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 84/155 (54%) in 410ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 85/155 (55%) in 503ms
-[2025-09-16 02:58:54.376] INFO NvdApiDataSource - Completed processing batch 86/155 (55%) in 1,492ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 87/155 (56%) in 1,252ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 88/155 (57%) in 656ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 89/155 (57%) in 463ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 90/155 (58%) in 592ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 91/155 (59%) in 607ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 92/155 (59%) in 577ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 93/155 (60%) in 432ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 94/155 (61%) in 557ms
-[2025-09-16 02:58:54.377] INFO NvdApiDataSource - Completed processing batch 95/155 (61%) in 583ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 96/155 (62%) in 408ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 97/155 (63%) in 432ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 98/155 (63%) in 1,325ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 99/155 (64%) in 1,374ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 100/155 (65%) in 837ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 101/155 (65%) in 380ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 102/155 (66%) in 439ms
-[2025-09-16 02:58:54.378] INFO NvdApiDataSource - Completed processing batch 103/155 (66%) in 652ms
-[2025-09-16 02:58:54.379] INFO NvdApiDataSource - Completed processing batch 104/155 (67%) in 448ms
-[2025-09-16 02:58:54.379] INFO NvdApiDataSource - Completed processing batch 105/155 (68%) in 345ms
-[2025-09-16 02:58:54.379] INFO NvdApiDataSource - Completed processing batch 106/155 (68%) in 667ms
-[2025-09-16 02:58:54.379] INFO NvdApiDataSource - Completed processing batch 107/155 (69%) in 493ms
-[2025-09-16 02:58:54.379] INFO NvdApiDataSource - Completed processing batch 108/155 (70%) in 432ms
-[2025-09-16 02:58:54.382] INFO NvdApiDataSource - Completed processing batch 109/155 (70%) in 385ms
-[2025-09-16 02:58:54.382] INFO NvdApiDataSource - Completed processing batch 110/155 (71%) in 643ms
-[2025-09-16 02:58:54.382] INFO NvdApiDataSource - Completed processing batch 111/155 (72%) in 613ms
-[2025-09-16 02:58:54.382] INFO NvdApiDataSource - Completed processing batch 112/155 (72%) in 385ms
-[2025-09-16 02:58:54.382] INFO NvdApiDataSource - Completed processing batch 113/155 (73%) in 393ms
-[2025-09-16 02:58:54.382] INFO NvdApiDataSource - Completed processing batch 114/155 (74%) in 997ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 115/155 (74%) in 1,006ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 116/155 (75%) in 760ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 117/155 (75%) in 424ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 118/155 (76%) in 578ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 119/155 (77%) in 437ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 120/155 (77%) in 469ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 121/155 (78%) in 389ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 122/155 (79%) in 364ms
-[2025-09-16 02:58:54.383] INFO NvdApiDataSource - Completed processing batch 123/155 (79%) in 351ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 124/155 (80%) in 290ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 125/155 (81%) in 270ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 126/155 (81%) in 352ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 127/155 (82%) in 387ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 128/155 (83%) in 329ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 129/155 (83%) in 217ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 130/155 (84%) in 407ms
-[2025-09-16 02:58:54.384] INFO NvdApiDataSource - Completed processing batch 131/155 (85%) in 418ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 132/155 (85%) in 364ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 133/155 (86%) in 371ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 134/155 (86%) in 411ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 135/155 (87%) in 320ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 136/155 (88%) in 184ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 137/155 (88%) in 369ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 138/155 (89%) in 216ms
-[2025-09-16 02:58:54.385] INFO NvdApiDataSource - Completed processing batch 139/155 (90%) in 227ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 140/155 (90%) in 303ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 141/155 (91%) in 191ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 142/155 (92%) in 202ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 143/155 (92%) in 262ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 144/155 (93%) in 250ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 145/155 (94%) in 178ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 146/155 (94%) in 776ms
-[2025-09-16 02:58:54.386] INFO NvdApiDataSource - Completed processing batch 147/155 (95%) in 759ms
-[2025-09-16 02:58:54.387] INFO NvdApiDataSource - Completed processing batch 148/155 (95%) in 590ms
-[2025-09-16 02:58:54.387] INFO NvdApiDataSource - Completed processing batch 149/155 (96%) in 233ms
-[2025-09-16 02:58:54.387] INFO NvdApiDataSource - Completed processing batch 150/155 (97%) in 261ms
-[2025-09-16 02:58:54.387] INFO NvdApiDataSource - Completed processing batch 151/155 (97%) in 286ms
-[2025-09-16 02:58:54.387] INFO NvdApiDataSource - Completed processing batch 152/155 (98%) in 225ms
-[2025-09-16 02:58:54.387] INFO NvdApiDataSource - Completed processing batch 153/155 (99%) in 220ms
-[2025-09-16 02:58:54.388] INFO NvdApiDataSource - Completed processing batch 154/155 (99%) in 96ms
-[2025-09-16 02:58:54.562] INFO NvdApiDataSource - Completed processing batch 155/155 (100%) in 267ms
-[2025-09-16 02:58:54.672] INFO KnownExploitedDataSource - Updating CISA Known Exploited Vulnerability list: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
-[2025-09-16 02:58:55.035] INFO CveDB - Begin database defrag
-[2025-09-16 02:58:59.560] INFO CveDB - End database defrag (4531 ms)
-[2025-09-16 02:58:59.562] INFO Engine - Check for updates complete (201343 ms)
-[2025-09-16 02:58:59.743] INFO Engine - 
+Sep 23, 2025 2:57:13 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
+INFO: Finished configuration in 190 ms.
+[2025-09-23 02:57:13.757] WARN NexusAnalyzer - Disabling Nexus analyzer - please specify the URL to a Nexus Server
+[2025-09-23 02:57:14.282] INFO Engine - Checking for updates
+[2025-09-23 02:57:15.815] INFO NvdApiDataSource - NVD API has 311,231 records in this update
+[2025-09-23 02:57:20.492] INFO NvdApiDataSource - Downloaded 10,000/311,231 (3%)
+[2025-09-23 02:57:26.905] INFO NvdApiDataSource - Downloaded 20,000/311,231 (6%)
+[2025-09-23 02:57:32.550] INFO NvdApiDataSource - Downloaded 30,000/311,231 (10%)
+[2025-09-23 02:57:37.844] INFO NvdApiDataSource - Downloaded 40,000/311,231 (13%)
+[2025-09-23 02:57:45.823] INFO NvdApiDataSource - Downloaded 50,000/311,231 (16%)
+[2025-09-23 02:57:51.953] INFO NvdApiDataSource - Downloaded 60,000/311,231 (19%)
+[2025-09-23 02:57:57.173] INFO NvdApiDataSource - Downloaded 70,000/311,231 (22%)
+[2025-09-23 02:58:02.628] INFO NvdApiDataSource - Downloaded 80,000/311,231 (26%)
+[2025-09-23 02:58:10.013] INFO NvdApiDataSource - Downloaded 90,000/311,231 (29%)
+[2025-09-23 02:58:16.943] INFO NvdApiDataSource - Downloaded 100,000/311,231 (32%)
+[2025-09-23 02:58:22.198] INFO NvdApiDataSource - Downloaded 110,000/311,231 (35%)
+[2025-09-23 02:58:27.411] INFO NvdApiDataSource - Downloaded 120,000/311,231 (39%)
+[2025-09-23 02:58:35.640] INFO NvdApiDataSource - Downloaded 130,000/311,231 (42%)
+[2025-09-23 02:58:41.904] INFO NvdApiDataSource - Downloaded 140,000/311,231 (45%)
+[2025-09-23 02:58:47.252] INFO NvdApiDataSource - Downloaded 150,000/311,231 (48%)
+[2025-09-23 02:58:52.686] INFO NvdApiDataSource - Downloaded 160,000/311,231 (51%)
+[2025-09-23 02:59:00.454] INFO NvdApiDataSource - Downloaded 170,000/311,231 (55%)
+[2025-09-23 02:59:06.862] INFO NvdApiDataSource - Downloaded 180,000/311,231 (58%)
+[2025-09-23 02:59:12.108] INFO NvdApiDataSource - Downloaded 190,000/311,231 (61%)
+[2025-09-23 02:59:19.257] INFO NvdApiDataSource - Downloaded 200,000/311,231 (64%)
+[2025-09-23 02:59:25.353] INFO NvdApiDataSource - Downloaded 210,000/311,231 (67%)
+[2025-09-23 02:59:31.998] INFO NvdApiDataSource - Downloaded 220,000/311,231 (71%)
+[2025-09-23 02:59:37.266] INFO NvdApiDataSource - Downloaded 230,000/311,231 (74%)
+[2025-09-23 02:59:43.698] INFO NvdApiDataSource - Downloaded 240,000/311,231 (77%)
+[2025-09-23 02:59:50.706] INFO NvdApiDataSource - Downloaded 250,000/311,231 (80%)
+[2025-09-23 02:59:56.919] INFO NvdApiDataSource - Downloaded 260,000/311,231 (84%)
+[2025-09-23 03:00:02.548] INFO NvdApiDataSource - Downloaded 270,000/311,231 (87%)
+[2025-09-23 03:00:07.621] INFO NvdApiDataSource - Downloaded 280,000/311,231 (90%)
+[2025-09-23 03:00:15.607] INFO NvdApiDataSource - Downloaded 290,000/311,231 (93%)
+[2025-09-23 03:00:21.754] INFO NvdApiDataSource - Downloaded 300,000/311,231 (96%)
+[2025-09-23 03:00:27.181] INFO NvdApiDataSource - Downloaded 310,000/311,231 (100%)
+[2025-09-23 03:00:30.921] INFO NvdApiDataSource - Downloaded 311,231/311,231 (100%)
+[2025-09-23 03:00:30.921] INFO NvdApiDataSource - Completed processing batch 1/156 (1%) in 3,330ms
+[2025-09-23 03:00:30.924] INFO NvdApiDataSource - Completed processing batch 2/156 (1%) in 4,304ms
+[2025-09-23 03:00:30.924] INFO NvdApiDataSource - Completed processing batch 3/156 (2%) in 3,964ms
+[2025-09-23 03:00:30.924] INFO NvdApiDataSource - Completed processing batch 4/156 (3%) in 4,042ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 5/156 (3%) in 2,302ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 6/156 (4%) in 2,418ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 7/156 (4%) in 2,483ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 8/156 (5%) in 2,168ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 9/156 (6%) in 1,695ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 10/156 (6%) in 2,075ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 11/156 (7%) in 1,774ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 12/156 (8%) in 1,696ms
+[2025-09-23 03:00:30.925] INFO NvdApiDataSource - Completed processing batch 13/156 (8%) in 831ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 14/156 (9%) in 1,389ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 15/156 (10%) in 1,283ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 16/156 (10%) in 1,320ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 17/156 (11%) in 784ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 18/156 (12%) in 1,817ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 19/156 (12%) in 1,726ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 20/156 (13%) in 1,467ms
+[2025-09-23 03:00:30.926] INFO NvdApiDataSource - Completed processing batch 21/156 (13%) in 1,146ms
+[2025-09-23 03:00:30.927] INFO NvdApiDataSource - Completed processing batch 22/156 (14%) in 2,111ms
+[2025-09-23 03:00:30.929] INFO NvdApiDataSource - Completed processing batch 23/156 (15%) in 2,518ms
+[2025-09-23 03:00:30.929] INFO NvdApiDataSource - Completed processing batch 24/156 (15%) in 2,147ms
+[2025-09-23 03:00:30.929] INFO NvdApiDataSource - Completed processing batch 25/156 (16%) in 1,282ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 26/156 (17%) in 2,340ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 27/156 (17%) in 2,172ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 28/156 (18%) in 1,906ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 29/156 (19%) in 3,608ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 30/156 (19%) in 2,717ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 31/156 (20%) in 2,340ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 32/156 (21%) in 1,742ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 33/156 (21%) in 1,255ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 34/156 (22%) in 1,225ms
+[2025-09-23 03:00:30.930] INFO NvdApiDataSource - Completed processing batch 35/156 (22%) in 1,154ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 36/156 (23%) in 804ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 37/156 (24%) in 964ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 38/156 (24%) in 1,254ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 39/156 (25%) in 971ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 40/156 (26%) in 944ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 41/156 (26%) in 967ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 42/156 (27%) in 234ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 43/156 (28%) in 247ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 44/156 (28%) in 685ms
+[2025-09-23 03:00:30.931] INFO NvdApiDataSource - Completed processing batch 45/156 (29%) in 503ms
+[2025-09-23 03:00:30.933] INFO NvdApiDataSource - Completed processing batch 46/156 (29%) in 985ms
+[2025-09-23 03:00:30.933] INFO NvdApiDataSource - Completed processing batch 47/156 (30%) in 1,014ms
+[2025-09-23 03:00:30.933] INFO NvdApiDataSource - Completed processing batch 48/156 (31%) in 745ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 49/156 (31%) in 674ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 50/156 (32%) in 782ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 51/156 (33%) in 354ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 52/156 (33%) in 499ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 53/156 (34%) in 491ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 54/156 (35%) in 789ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 55/156 (35%) in 794ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 56/156 (36%) in 570ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 57/156 (37%) in 566ms
+[2025-09-23 03:00:30.934] INFO NvdApiDataSource - Completed processing batch 58/156 (37%) in 602ms
+[2025-09-23 03:00:30.935] INFO NvdApiDataSource - Completed processing batch 59/156 (38%) in 662ms
+[2025-09-23 03:00:30.935] INFO NvdApiDataSource - Completed processing batch 60/156 (38%) in 466ms
+[2025-09-23 03:00:30.935] INFO NvdApiDataSource - Completed processing batch 61/156 (39%) in 490ms
+[2025-09-23 03:00:30.935] INFO NvdApiDataSource - Completed processing batch 62/156 (40%) in 819ms
+[2025-09-23 03:00:30.935] INFO NvdApiDataSource - Completed processing batch 63/156 (40%) in 787ms
+[2025-09-23 03:00:30.935] INFO NvdApiDataSource - Completed processing batch 64/156 (41%) in 689ms
+[2025-09-23 03:00:30.936] INFO NvdApiDataSource - Completed processing batch 65/156 (42%) in 569ms
+[2025-09-23 03:00:30.936] INFO NvdApiDataSource - Completed processing batch 66/156 (42%) in 549ms
+[2025-09-23 03:00:30.936] INFO NvdApiDataSource - Completed processing batch 67/156 (43%) in 599ms
+[2025-09-23 03:00:30.937] INFO NvdApiDataSource - Completed processing batch 68/156 (44%) in 594ms
+[2025-09-23 03:00:30.937] INFO NvdApiDataSource - Completed processing batch 69/156 (44%) in 517ms
+[2025-09-23 03:00:30.938] INFO NvdApiDataSource - Completed processing batch 70/156 (45%) in 618ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 71/156 (46%) in 677ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 72/156 (46%) in 595ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 73/156 (47%) in 490ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 74/156 (47%) in 562ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 75/156 (48%) in 675ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 76/156 (49%) in 524ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 77/156 (49%) in 526ms
+[2025-09-23 03:00:30.939] INFO NvdApiDataSource - Completed processing batch 78/156 (50%) in 455ms
+[2025-09-23 03:00:30.940] INFO NvdApiDataSource - Completed processing batch 79/156 (51%) in 676ms
+[2025-09-23 03:00:30.940] INFO NvdApiDataSource - Completed processing batch 80/156 (51%) in 614ms
+[2025-09-23 03:00:30.940] INFO NvdApiDataSource - Completed processing batch 81/156 (52%) in 450ms
+[2025-09-23 03:00:30.940] INFO NvdApiDataSource - Completed processing batch 82/156 (53%) in 660ms
+[2025-09-23 03:00:30.940] INFO NvdApiDataSource - Completed processing batch 83/156 (53%) in 707ms
+[2025-09-23 03:00:30.940] INFO NvdApiDataSource - Completed processing batch 84/156 (54%) in 525ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 85/156 (54%) in 619ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 86/156 (55%) in 701ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 87/156 (56%) in 646ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 88/156 (56%) in 407ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 89/156 (57%) in 674ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 90/156 (58%) in 693ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 91/156 (58%) in 672ms
+[2025-09-23 03:00:30.943] INFO NvdApiDataSource - Completed processing batch 92/156 (59%) in 492ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 93/156 (60%) in 467ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 94/156 (60%) in 574ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 95/156 (61%) in 608ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 96/156 (62%) in 493ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 97/156 (62%) in 486ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 98/156 (63%) in 522ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 99/156 (63%) in 578ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 100/156 (64%) in 403ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 101/156 (65%) in 457ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 102/156 (65%) in 453ms
+[2025-09-23 03:00:30.944] INFO NvdApiDataSource - Completed processing batch 103/156 (66%) in 524ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 104/156 (67%) in 380ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 105/156 (67%) in 457ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 106/156 (68%) in 709ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 107/156 (69%) in 505ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 108/156 (69%) in 485ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 109/156 (70%) in 382ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 110/156 (71%) in 680ms
+[2025-09-23 03:00:30.945] INFO NvdApiDataSource - Completed processing batch 111/156 (71%) in 667ms
+[2025-09-23 03:00:30.946] INFO NvdApiDataSource - Completed processing batch 112/156 (72%) in 448ms
+[2025-09-23 03:00:30.946] INFO NvdApiDataSource - Completed processing batch 113/156 (72%) in 446ms
+[2025-09-23 03:00:30.947] INFO NvdApiDataSource - Completed processing batch 114/156 (73%) in 539ms
+[2025-09-23 03:00:30.947] INFO NvdApiDataSource - Completed processing batch 115/156 (74%) in 681ms
+[2025-09-23 03:00:30.947] INFO NvdApiDataSource - Completed processing batch 116/156 (74%) in 443ms
+[2025-09-23 03:00:30.947] INFO NvdApiDataSource - Completed processing batch 117/156 (75%) in 572ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 118/156 (76%) in 597ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 119/156 (76%) in 361ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 120/156 (77%) in 502ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 121/156 (78%) in 445ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 122/156 (78%) in 400ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 123/156 (79%) in 308ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 124/156 (79%) in 245ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 125/156 (80%) in 278ms
+[2025-09-23 03:00:30.948] INFO NvdApiDataSource - Completed processing batch 126/156 (81%) in 501ms
+[2025-09-23 03:00:30.949] INFO NvdApiDataSource - Completed processing batch 127/156 (81%) in 445ms
+[2025-09-23 03:00:30.949] INFO NvdApiDataSource - Completed processing batch 128/156 (82%) in 366ms
+[2025-09-23 03:00:30.949] INFO NvdApiDataSource - Completed processing batch 129/156 (83%) in 222ms
+[2025-09-23 03:00:30.949] INFO NvdApiDataSource - Completed processing batch 130/156 (83%) in 459ms
+[2025-09-23 03:00:30.949] INFO NvdApiDataSource - Completed processing batch 131/156 (84%) in 463ms
+[2025-09-23 03:00:30.951] INFO NvdApiDataSource - Completed processing batch 132/156 (85%) in 404ms
+[2025-09-23 03:00:30.951] INFO NvdApiDataSource - Completed processing batch 133/156 (85%) in 376ms
+[2025-09-23 03:00:30.951] INFO NvdApiDataSource - Completed processing batch 134/156 (86%) in 474ms
+[2025-09-23 03:00:30.951] INFO NvdApiDataSource - Completed processing batch 135/156 (87%) in 357ms
+[2025-09-23 03:00:30.951] INFO NvdApiDataSource - Completed processing batch 136/156 (87%) in 233ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 137/156 (88%) in 365ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 138/156 (88%) in 218ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 139/156 (89%) in 376ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 140/156 (90%) in 339ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 141/156 (90%) in 224ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 142/156 (91%) in 315ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 143/156 (92%) in 323ms
+[2025-09-23 03:00:30.952] INFO NvdApiDataSource - Completed processing batch 144/156 (92%) in 261ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 145/156 (93%) in 205ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 146/156 (94%) in 352ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 147/156 (94%) in 388ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 148/156 (95%) in 301ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 149/156 (96%) in 218ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 150/156 (96%) in 342ms
+[2025-09-23 03:00:30.953] INFO NvdApiDataSource - Completed processing batch 151/156 (97%) in 284ms
+[2025-09-23 03:00:30.955] INFO NvdApiDataSource - Completed processing batch 152/156 (97%) in 266ms
+[2025-09-23 03:00:30.955] INFO NvdApiDataSource - Completed processing batch 153/156 (98%) in 233ms
+[2025-09-23 03:00:30.955] INFO NvdApiDataSource - Completed processing batch 154/156 (99%) in 164ms
+[2025-09-23 03:00:30.955] INFO NvdApiDataSource - Completed processing batch 155/156 (99%) in 71ms
+[2025-09-23 03:00:31.160] INFO NvdApiDataSource - Completed processing batch 156/156 (100%) in 312ms
+[2025-09-23 03:00:31.359] INFO KnownExploitedDataSource - Updating CISA Known Exploited Vulnerability list: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+[2025-09-23 03:00:31.781] INFO CveDB - Begin database defrag
+[2025-09-23 03:00:36.423] INFO CveDB - End database defrag (4647 ms)
+[2025-09-23 03:00:36.425] INFO Engine - Check for updates complete (202142 ms)
+[2025-09-23 03:00:36.620] INFO Engine - 
 
 Dependency-Check is an open source tool performing a best effort analysis of 3rd party dependencies; false positives and false negatives may exist in the analysis performed by the tool. Use of the tool and the reporting provided constitutes acceptance for use in an AS IS condition, and there are NO warranties, implied or otherwise, with regard to the analysis or its use. Any use of the tool and the reporting provided is at the user's risk. In no event shall the copyright holder or OWASP be held liable for any damages whatsoever arising out of or in connection with the use of this tool, the analysis performed, or the resulting report.
 
@@ -448,43 +450,1059 @@ Dependency-Check is an open source tool performing a best effort analysis of 3rd
 💖 Sponsor: https://github.com/sponsors/jeremylong
 
 
-[2025-09-16 02:58:59.746] INFO Engine - Analysis Started
-[2025-09-16 02:58:59.954] INFO Engine - Finished Archive Analyzer (0 seconds)
-[2025-09-16 02:58:59.960] INFO Engine - Finished File Name Analyzer (0 seconds)
-[2025-09-16 02:59:00.158] INFO Engine - Finished Jar Analyzer (0 seconds)
-[2025-09-16 02:59:00.161] INFO Engine - Finished Central Analyzer (0 seconds)
-[2025-09-16 02:59:00.162] INFO Engine - Finished Dependency Merging Analyzer (0 seconds)
-[2025-09-16 02:59:00.412] INFO Engine - Finished Hint Analyzer (0 seconds)
-[2025-09-16 02:59:00.415] INFO Engine - Finished Version Filter Analyzer (0 seconds)
+[2025-09-23 03:00:36.620] INFO Engine - Analysis Started
+[2025-09-23 03:00:36.819] INFO Engine - Finished Archive Analyzer (0 seconds)
+[2025-09-23 03:00:36.826] INFO Engine - Finished File Name Analyzer (0 seconds)
+[2025-09-23 03:00:37.307] INFO Engine - Finished Jar Analyzer (0 seconds)
+[2025-09-23 03:00:37.317] INFO Engine - Finished Central Analyzer (0 seconds)
+[2025-09-23 03:00:37.319] INFO Engine - Finished Dependency Merging Analyzer (0 seconds)
+[2025-09-23 03:00:37.661] INFO Engine - Finished Hint Analyzer (0 seconds)
+[2025-09-23 03:00:37.663] INFO Engine - Finished Version Filter Analyzer (0 seconds)
 WARNING: A restricted method in java.lang.foreign.Linker has been called
 WARNING: java.lang.foreign.Linker::downcallHandle has been called by the unnamed module
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for this module
 
-Sep 16, 2025 2:59:00 AM org.apache.lucene.store.MemorySegmentIndexInputProvider <init>
+Sep 23, 2025 3:00:38 AM org.apache.lucene.store.MemorySegmentIndexInputProvider <init>
 INFO: Using MemorySegmentIndexInput and native madvise support with Java 21 or later; to disable start with -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
-Sep 16, 2025 2:59:01 AM org.apache.lucene.internal.vectorization.VectorizationProvider lookup
+Sep 23, 2025 3:00:38 AM org.apache.lucene.internal.vectorization.VectorizationProvider lookup
 WARNING: Java vector incubator module is not readable. For optimal vector performance, pass '--add-modules jdk.incubator.vector' to enable Vector API.
-[2025-09-16 02:59:02.576] INFO CPEAnalyzer - Created CPE Index (2 seconds)
-[2025-09-16 02:59:03.209] INFO Engine - Finished CPE Analyzer (2 seconds)
-[2025-09-16 02:59:03.215] INFO Engine - Finished False Positive Analyzer (0 seconds)
-[2025-09-16 02:59:03.253] INFO Engine - Finished NVD CVE Analyzer (0 seconds)
-[2025-09-16 02:59:03.794] INFO Engine - Finished Sonatype OSS Index Analyzer (0 seconds)
-[2025-09-16 02:59:03.797] INFO Engine - Finished Vulnerability Suppression Analyzer (0 seconds)
-[2025-09-16 02:59:03.806] INFO Engine - Finished Known Exploited Vulnerability Analyzer (0 seconds)
-[2025-09-16 02:59:03.807] INFO Engine - Finished Dependency Bundling Analyzer (0 seconds)
-[2025-09-16 02:59:03.809] INFO Engine - Finished Unused Suppression Rule Analyzer (0 seconds)
-[2025-09-16 02:59:03.830] INFO Engine - Analysis Complete (4 seconds)
-[2025-09-16 02:59:03.865] INFO ReportGenerator - Writing XML report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-report.xml
-[2025-09-16 02:59:04.031] INFO ReportGenerator - Writing HTML report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-report.html
-[2025-09-16 02:59:04.131] INFO ReportGenerator - Writing JSON report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-report.json
-[2025-09-16 02:59:04.172] INFO ReportGenerator - Writing CSV report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-report.csv
-[2025-09-16 02:59:04.176] INFO ReportGenerator - Writing SARIF report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-report.sarif
-[2025-09-16 02:59:04.187] INFO ReportGenerator - Writing JENKINS report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-jenkins.html
-[2025-09-16 02:59:04.203] INFO ReportGenerator - Writing JUNIT report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-junit.xml
-[2025-09-16 02:59:04.215] INFO ReportGenerator - Writing GITLAB report to: /home/runner/work/clj-spdx/clj-spdx/.nvd/../target/nvd/dependency-check-gitlab.json
-Sep 16, 2025 2:59:04 AM org.apache.commons.jcs3.engine.control.CompositeCacheManager 
-INFO: Shutdown hook activated. Shutdown was not called. Shutting down JCS.
-Sep 16, 2025 2:59:04 AM org.apache.commons.jcs3.engine.control.event.ElementEventQueue 
-INFO: Element event queue destroyed: org.apache.commons.jcs3.engine.control.event.ElementEventQueue@3ce1550c
-Sep 16, 2025 2:59:04 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+[2025-09-23 03:00:40.327] INFO CPEAnalyzer - Created CPE Index (2 seconds)
+[2025-09-23 03:00:40.935] INFO Engine - Finished CPE Analyzer (3 seconds)
+[2025-09-23 03:00:40.939] INFO Engine - Finished False Positive Analyzer (0 seconds)
+[2025-09-23 03:00:40.958] INFO Engine - Finished NVD CVE Analyzer (0 seconds)
+[2025-09-23 03:00:41.227] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/com/github/pmonks/rencg/1.0.64/rencg-1.0.64.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.264] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/clojure/clojure/1.12.2/clojure-1.12.2.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.302] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/instaparse/instaparse/1.5.0/instaparse-1.5.0.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.339] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/com/github/pmonks/wreck/1.0.96/wreck-1.0.96.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.376] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/clojure/core.specs.alpha/0.4.74/core.specs.alpha-0.4.74.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.413] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/spdx/java-spdx-library/2.0.0/java-spdx-library-2.0.0.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.449] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.487] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.524] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.561] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/clojure/spec.alpha/0.5.238/spec.alpha-0.5.238.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.597] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/spdx/spdx-java-core/1.0.0/spdx-java-core-1.0.0.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.634] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/jsoup/jsoup/1.15.3/jsoup-1.15.3.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.670] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/apache/commons/commons-lang3/3.5/commons-lang3-3.5.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.705] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/spdx/spdx-java-model-3_0/1.0.0/spdx-java-model-3_0-1.0.0.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.741] WARN AnalysisTask - An error occurred while analyzing '/home/runner/.m2/repository/org/spdx/spdx-java-model-2_X/1.0.0/spdx-java-model-2_X-1.0.0.jar' (Sonatype OSS Index Analyzer): Failed to request component-reports
+[2025-09-23 03:00:41.742] INFO Engine - Finished Sonatype OSS Index Analyzer (0 seconds)
+[2025-09-23 03:00:41.745] INFO Engine - Finished Vulnerability Suppression Analyzer (0 seconds)
+[2025-09-23 03:00:41.757] INFO Engine - Finished Known Exploited Vulnerability Analyzer (0 seconds)
+[2025-09-23 03:00:41.758] INFO Engine - Finished Dependency Bundling Analyzer (0 seconds)
+[2025-09-23 03:00:41.760] INFO Engine - Finished Unused Suppression Rule Analyzer (0 seconds)
+[2025-09-23 03:00:41.792] INFO Engine - Analysis Complete (5 seconds)
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.event.ElementEventQueue 
+INFO: Element event queue destroyed: org.apache.commons.jcs3.engine.control.event.ElementEventQueue@276aa33f
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
 INFO: In DISPOSE, [NODEAUDIT] fromRemote [false]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [NODEAUDIT] auxiliary [NODEAUDIT]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [NODEAUDIT] put 0 into auxiliary [NODEAUDIT]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+INFO: In dispose, destroying event queue.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
+INFO: Cache event queue destroyed: CacheEventQueue [listenerId=1954576912, cacheName=NODEAUDIT]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [NODEAUDIT] : Saving keys to: NODEAUDIT, key count: 0
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [NODEAUDIT] : Finished saving keys.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [NODEAUDIT] : Shutdown complete.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [NODEAUDIT] disposing of memory cache.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
+INFO: Memory Cache dispose called.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [CENTRAL] fromRemote [false]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [CENTRAL] auxiliary [CENTRAL]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [CENTRAL] put 0 into auxiliary [CENTRAL]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+INFO: In dispose, destroying event queue.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
+INFO: Cache event queue destroyed: CacheEventQueue [listenerId=1954576912, cacheName=CENTRAL]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [CENTRAL] : Saving keys to: CENTRAL, key count: 0
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [CENTRAL] : Finished saving keys.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [CENTRAL] : Shutdown complete.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [CENTRAL] disposing of memory cache.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
+INFO: Memory Cache dispose called.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [POM] fromRemote [false]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [POM] auxiliary [POM]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [POM] put 0 into auxiliary [POM]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+INFO: In dispose, destroying event queue.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.PooledCacheEventQueue 
+INFO: Cache event queue destroyed: CacheEventQueue [listenerId=1954576912, cacheName=POM]
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [POM] : Saving keys to: POM, key count: 0
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [POM] : Finished saving keys.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+INFO: Region [POM] : Shutdown complete.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.control.CompositeCache 
+INFO: In DISPOSE, [POM] disposing of memory cache.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.engine.memory.AbstractMemoryCache 
+INFO: Memory Cache dispose called.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+INFO: In dispose, destroying event queue.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+SEVERE: Region [NODEAUDIT] : Not alive and dispose was called, filename: NODEAUDIT
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+INFO: In dispose, destroying event queue.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+SEVERE: Region [CENTRAL] : Not alive and dispose was called, filename: CENTRAL
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.AbstractDiskCache 
+INFO: In dispose, destroying event queue.
+Sep 23, 2025 3:00:41 AM org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache 
+SEVERE: Region [POM] : Not alive and dispose was called, filename: POM
+{:clojure.main/message
+ "Execution error (ExceptionInfo) at nvd.task.check/scan-and-analyze$fn (check.clj:57).\norg.owasp.dependencycheck.exception.ExceptionCollection\n",
+ :clojure.main/triage
+ {:clojure.error/class clojure.lang.ExceptionInfo,
+  :clojure.error/line 57,
+  :clojure.error/cause
+  "org.owasp.dependencycheck.exception.ExceptionCollection",
+  :clojure.error/symbol nvd.task.check/scan-and-analyze$fn,
+  :clojure.error/source "check.clj",
+  :clojure.error/phase :execution},
+ :clojure.main/trace
+ {:via
+  [{:type clojure.lang.ExceptionInfo,
+    :message "org.owasp.dependencycheck.exception.ExceptionCollection",
+    :data {:exceptions [#error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]}]},
+    :at
+    [nvd.task.check$scan_and_analyze$fn__775 invoke "check.clj" 57]}],
+  :trace
+  [[nvd.task.check$scan_and_analyze$fn__775 invoke "check.clj" 57]
+   [nvd.task.check$scan_and_analyze invokeStatic "check.clj" 51]
+   [nvd.task.check$scan_and_analyze invoke "check.clj" 46]
+   [nvd.task.check$impl invokeStatic "check.clj" 89]
+   [nvd.task.check$impl invoke "check.clj" 81]
+   [nvd.task.check$_main invokeStatic "check.clj" 148]
+   [nvd.task.check$_main doInvoke "check.clj" 100]
+   [clojure.lang.RestFn applyTo "RestFn.java" 140]
+   [clojure.lang.Var applyTo "Var.java" 707]
+   [clojure.core$apply invokeStatic "core.clj" 667]
+   [clojure.main$main_opt invokeStatic "main.clj" 515]
+   [clojure.main$main_opt invoke "main.clj" 511]
+   [clojure.main$main invokeStatic "main.clj" 665]
+   [clojure.main$main doInvoke "main.clj" 617]
+   [clojure.lang.RestFn applyTo "RestFn.java" 140]
+   [clojure.lang.Var applyTo "Var.java" 707]
+   [clojure.main main "main.java" 40]],
+  :cause "org.owasp.dependencycheck.exception.ExceptionCollection",
+  :data {:exceptions [#error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]} #error {
+ :cause "status code: 401, reason phrase: Unauthorized"
+ :via
+ [{:type org.owasp.dependencycheck.analyzer.exception.AnalysisException
+   :message "Failed to request component-reports"
+   :at [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 170]}
+  {:type org.owasp.dependencycheck.utils.DownloadFailedException
+   :message "https://ossindex.sonatype.org/api/v3/component-report - Server status: 401 - Server reason: Unauthorized"
+   :at [org.owasp.dependencycheck.utils.Downloader wrapAndThrowHttpResponseException "Downloader.java" 438]}
+  {:type org.apache.hc.client5.http.HttpResponseException
+   :message "status code: 401, reason phrase: Unauthorized"
+   :at [org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]}]
+ :trace
+ [[org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler handleResponse "AbstractHttpClientResponseHandler.java" 69]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 72]
+  [org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler handleResponse "BasicHttpClientResponseHandler.java" 55]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 247]
+  [org.apache.hc.client5.http.impl.classic.CloseableHttpClient execute "CloseableHttpClient.java" 188]
+  [org.owasp.dependencycheck.utils.Downloader postBasedFetchContent "Downloader.java" 544]
+  [org.owasp.dependencycheck.data.ossindex.ODCConnectionTransport post "ODCConnectionTransport.java" 82]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl doRequestComponentReports "OssindexClientImpl.java" 204]
+  [org.sonatype.ossindex.service.client.internal.OssindexClientImpl requestComponentReports "OssindexClientImpl.java" 170]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer requestReports "OssIndexAnalyzer.java" 230]
+  [org.owasp.dependencycheck.analyzer.OssIndexAnalyzer analyzeDependency "OssIndexAnalyzer.java" 136]
+  [org.owasp.dependencycheck.analyzer.AbstractAnalyzer analyze "AbstractAnalyzer.java" 131]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 88]
+  [org.owasp.dependencycheck.AnalysisTask call "AnalysisTask.java" 37]
+  [java.util.concurrent.FutureTask run "FutureTask.java" 317]
+  [java.util.concurrent.ThreadPoolExecutor runWorker "ThreadPoolExecutor.java" 1144]
+  [java.util.concurrent.ThreadPoolExecutor$Worker run "ThreadPoolExecutor.java" 642]
+  [java.lang.Thread run "Thread.java" 1583]]}]}}}
+
+Execution error (ExceptionInfo) at nvd.task.check/scan-and-analyze$fn (check.clj:57).
+org.owasp.dependencycheck.exception.ExceptionCollection
+
