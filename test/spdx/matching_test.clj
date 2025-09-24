@@ -159,8 +159,7 @@
 ;    (is (true?  (text-contains-license? @cc-by-nc-nd-40-text "CC-BY-NC-ND-4.0")))  ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/322
     (is (true?  (text-contains-license? @wtfpl-text          "WTFPL")))
     (is (true?  (text-contains-license? @mpl-20-text         "MPL-2.0")))
-    (is (true?  (text-contains-license? @mit-text            "MIT")))              ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/234 (fixed in 2.0)
-    )
+    (is (true?  (text-contains-license? @mit-text            "MIT"))))
   (testing "3rd party license text contains license"
     (is (true?  (text-contains-license? @clj-spdx-license        "MPL-2.0")))
     (is (true?  (text-contains-license? @commonmark-java-license "BSD-2-Clause"))))

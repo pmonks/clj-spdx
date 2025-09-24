@@ -59,7 +59,8 @@
 
 (defn canonicalise-id
   "Canonicalises `id` (an SPDX identifier), by returning it in its canonical
-  case.  Returns `nil` if `id` is `nil` or not a listed SPDX identifier.
+  case.  Returns `nil` if `id` is `nil` or not a listed SPDX identifier
+  (including if it's a LicenseRef or AdditionRef).
 
   Notes:
 
@@ -81,8 +82,8 @@
 
   Notes:
 
-  * Returns `false` if `s1` or `s2` are not listed SPDX identifiers or valid
-    LicenseRefs or AdditionRefs"
+  * Returns `false` if `s1` or `s2` are not listed SPDX identifiers or
+    LicenseRefs or AdditionRefs, even if they are otherwise equal"
   [^String s1 ^String s2]
   (case [(id-type s1) (id-type s2)]
     [:license-id   :license-id]   (lic/equivalent-ids? s1 s2)
@@ -100,7 +101,7 @@
 
   `opts` are:
 
-  * `:include-large-text-values?` (default `false`) - controls wheter large text
+  * `:include-large-text-values?` (default `false`) - controls whether large text
     values are included in the result or not"
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]

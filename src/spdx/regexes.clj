@@ -73,14 +73,17 @@
                 include-addition-refs? false}
          :as   opts}]
    (when (seq ids)
-     (re/join #"(?<!\w)"
-              "(?<Identifier>"
-              (when include-license-refs?  (str @ir/license-ref-fragment-re-d "|"))
-              (when include-addition-refs? (str @ir/addition-ref-fragment-re-d "|"))
-              (when-not case-sensitive? #"(?i)")  ; Only disable case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-              (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))  ; Sort longest to shortest
-              ")"
-              #"(?!\w)"))))
+     (let [id-fragments (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))]  ; Sort ids longest to shortest
+       (re/join #"(?<!\w)"
+                (re/ncg "Identifier"
+                        (when include-license-refs?  (str @ir/license-ref-fragment-re-d "|"))
+                        (when include-addition-refs? (str @ir/addition-ref-fragment-re-d "|"))
+                        ; Only consider case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+                        ; But note that this may be changing in the SPDX spec shortly...
+                        (if case-sensitive?
+                          (re/grp id-fragments)
+                          (re/flags-grp "i" id-fragments)))
+                #"(?!\w)")))))
 
 (def ^:private ids-re-d (delay (build-re (concat (lic/ids) (exc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
 
