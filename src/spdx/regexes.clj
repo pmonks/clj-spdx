@@ -82,7 +82,7 @@
                         ; But note that this may be changing in the SPDX spec shortly...
                         (if case-sensitive?
                           (re/grp id-fragments)
-                          (re/flags-grp "i" id-fragments)))
+                          (re/fgrp "i" id-fragments)))
                 #"(?!\w)")))))
 
 (def ^:private ids-re-d (delay (build-re (concat (lic/ids) (exc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
