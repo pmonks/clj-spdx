@@ -1,4 +1,4 @@
-<img alt="clj-spdx logo: a stylised black and white variation on the Clojure logo with the letters SPDX embossed on it" align="right" width="25%" src="https://raw.githubusercontent.com/pmonks/clj-spdx/dev/clj-spdx-logo.png">
+<img alt="clj-spdx logo: a stylised black and white variation on the Clojure logo with the letters SPDX embossed on it" align="right" width="15%" src="https://raw.githubusercontent.com/pmonks/clj-spdx/dev/clj-spdx-logo.png">
 
 # clj-spdx
 
