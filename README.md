@@ -1,3 +1,5 @@
+<img alt="clj-spdx logo: a stylised black and white variation on the Clojure logo with the letters SPDX embossed on it" align="right" width="25%" src="https://raw.githubusercontent.com/pmonks/clj-spdx/dev/clj-spdx-logo.png">
+
 # clj-spdx
 
 [![CI](https://github.com/pmonks/clj-spdx/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/pmonks/clj-spdx/actions?query=workflow%3ACI+branch%3Adev)
