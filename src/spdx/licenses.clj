@@ -11,7 +11,7 @@
 (ns spdx.licenses
   "License list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
-            [rencg.api         :as rencg]
+            [rencg.api         :as ncg]
             [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
             [spdx.impl.regexes :as ir]
@@ -116,7 +116,7 @@
   * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
   [^String s]
   (when s
-    (when-let [m (rencg/re-matches-ncg @ir/license-ref-re-d s)]
+    (when-let [m (ncg/re-matches @ir/license-ref-re-d s)]
       (merge {:license-ref (get m "LicenseRef")}
              (when-let [document-ref (get m "DocumentRef")] {:document-ref document-ref})))))
 

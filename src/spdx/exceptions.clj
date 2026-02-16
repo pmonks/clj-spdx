@@ -11,7 +11,7 @@
 (ns spdx.exceptions
   "Exception list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
-            [rencg.api         :as rencg]
+            [rencg.api         :as ncg]
             [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
             [spdx.impl.regexes :as ir]
@@ -117,7 +117,7 @@
   * This fn is the inverse of [[addition-ref-map->string]]."
   [^String s]
   (when s
-    (when-let [m (rencg/re-matches-ncg @ir/addition-ref-re-d s)]
+    (when-let [m (ncg/re-matches @ir/addition-ref-re-d s)]
       (merge {:addition-ref (get m "AdditionRef")}
              (when-let [document-ref (get m "AdditionDocumentRef")] {:addition-document-ref document-ref})))))
 

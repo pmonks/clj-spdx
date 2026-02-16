@@ -13,7 +13,7 @@
   any logic from `Spdx-Java-Library`)."
   (:require [clojure.string    :as s]
             [wreck.api         :as re]
-            [rencg.api         :as rencg]
+            [rencg.api         :as ncg]
             [spdx.identifiers  :as ids]
             [spdx.licenses     :as lic]
             [spdx.exceptions   :as exc]
@@ -31,7 +31,7 @@
     or `AdditionRef`
   * `DocumentRef` (optional) - captures the `DocumentRef` variable text of a
     `LicenseRef`, if that's what's matched and it contains one
-  * `LicenseRef` (optional) - captures the `LicenseRef` variable textof a
+  * `LicenseRef` (optional) - captures the `LicenseRef` variable text of a
     `LicenseRef`, if that's what's matched
   * `AdditionDocumentRef` (optional) - captures the `DocumentRef` variable text
     of an `AdditionRef`, if that's what's matched and it contains one
@@ -172,7 +172,7 @@
   were found. `re` must be a regex returned by one of the fns in this namespace,
   and defaults to [[ids-re]] if not provided.
 
-  The result is as for [rencg.api/re-seq-ncg](https://pmonks.github.io/rencg/rencg.api.html#var-re-seq-ncg)
+  The result is as for [rencg.api/re-seq](https://pmonks.github.io/rencg/rencg.api.html#var-re-seq)
   and each map contains the named capture groups described in [[build-re]],
   plus:
 
@@ -183,7 +183,7 @@
   ([^String text] (id-seq-matches @ids-re-d text))
   ([^java.util.regex.Pattern re ^String text]
    (when (and re text)
-     (when-let [matches (rencg/re-seq-ncg re text)]
+     (when-let [matches (ncg/re-seq re text)]
        (seq (map #(assoc % :identifier (canonicalise-id (get % "Identifier"))
                            :type       (ids/id-type     (get % "Identifier")))
                  matches))))))
