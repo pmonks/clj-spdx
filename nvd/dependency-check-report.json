@@ -5,19 +5,19 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-02-10T04:45:31Z"
+                "timestamp": "2026-02-17T04:34:11Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-02-10T04:16:05Z"
+                "timestamp": "2026-02-17T03:16:01Z"
             }
         ]
 
 
     },
     "projectInfo": {
-        "name": "com.github.pmonks\/clj-spdx 1.0.300-SNAPSHOT",
-        "reportDate": "2026-02-10T04:45:40.414074477Z",
+        "name": "com.github.pmonks\/clj-spdx 1.0.302-SNAPSHOT",
+        "reportDate": "2026-02-17T04:34:20.598958576Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
@@ -2677,11 +2677,11 @@
             ]
         },{
             "isVirtual": false,
-            "fileName": "rencg-1.0.64.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/com\/github\/pmonks\/rencg\/1.0.64\/rencg-1.0.64.jar"
-,"md5": "5fc6641890f0d3c73ae6d8fe32f30908",
-            "sha1": "2420de94e551842b4d6e4749ce49dda9c0547b80",
-            "sha256": "32ca868b506b8516b4c295838943b5ea9f30939ca3e9923d3b9a30fd16d94729","description": "A micro-library for Clojure that provides first class support for named-capturing groups in regular expressions.","license": "Apache-2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.html"            ,"evidenceCollected": {
+            "fileName": "rencg-1.0.90.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/com\/github\/pmonks\/rencg\/1.0.90\/rencg-1.0.90.jar"
+,"md5": "66a7867a696c5b2285c2bf7b89209343",
+            "sha1": "2c0a7115d50c49b89bec84d45de8fbe93fd4809c",
+            "sha256": "1f4e5269fcd0b52287deddddb53f9112d7b7cbc866a11960ae64851894c51af1","description": "A micro-library for Clojure that provides first class support for named-capturing groups in regular expressions.","license": "MPL-2.0: https:\/\/www.mozilla.org\/en-US\/MPL\/2.0\/"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -2695,7 +2695,7 @@
                             "confidence": "LOW",
                             "source": "Manifest",
                             "name": "build-jdk-spec",
-                            "value": "21"
+                            "value": "25"
                         }
 ,{
                             "type": "vendor",
@@ -2760,7 +2760,7 @@
                             "confidence": "LOW",
                             "source": "Manifest",
                             "name": "build-jdk-spec",
-                            "value": "21"
+                            "value": "25"
                     }
 ,{
                             "type": "product",
@@ -2818,20 +2818,20 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "1.0.64"
+                        "value": "1.0.90"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "1.0.64"
+                        "value": "1.0.90"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/com.github.pmonks\/rencg@1.0.64"
+                        "id": "pkg:maven\/com.github.pmonks\/rencg@1.0.90"
 ,"confidence": "HIGH"                    }
             ]
         },{

@@ -4,16 +4,16 @@
         <engineVersion>12.2.0</engineVersion>
         <dataSource>
             <name>NVD API Last Checked</name>
-            <timestamp>2026-02-10T04:45:31Z</timestamp>
+            <timestamp>2026-02-17T04:34:11Z</timestamp>
         </dataSource>
         <dataSource>
             <name>NVD API Last Modified</name>
-            <timestamp>2026-02-10T04:16:05Z</timestamp>
+            <timestamp>2026-02-17T03:16:01Z</timestamp>
         </dataSource>
     </scanInfo>
     <projectInfo>
-        <name>com.github.pmonks/clj-spdx 1.0.300-SNAPSHOT</name>
-        <reportDate>2026-02-10T04:45:40.414074477Z</reportDate>
+        <name>com.github.pmonks/clj-spdx 1.0.302-SNAPSHOT</name>
+        <reportDate>2026-02-17T04:34:20.598958576Z</reportDate>
         <credits>This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov, Github Advisory Database (via NPM Audit API): https://github.com/advisories/, and the RetireJS community.</credits>
     </projectInfo>
     <dependencies>
@@ -1946,13 +1946,13 @@
             </identifiers>
         </dependency>
         <dependency isVirtual="false">
-            <fileName>rencg-1.0.64.jar</fileName>
-            <filePath>/home/runner/.m2/repository/com/github/pmonks/rencg/1.0.64/rencg-1.0.64.jar</filePath>
-            <md5>5fc6641890f0d3c73ae6d8fe32f30908</md5>
-            <sha1>2420de94e551842b4d6e4749ce49dda9c0547b80</sha1>
-            <sha256>32ca868b506b8516b4c295838943b5ea9f30939ca3e9923d3b9a30fd16d94729</sha256>
+            <fileName>rencg-1.0.90.jar</fileName>
+            <filePath>/home/runner/.m2/repository/com/github/pmonks/rencg/1.0.90/rencg-1.0.90.jar</filePath>
+            <md5>66a7867a696c5b2285c2bf7b89209343</md5>
+            <sha1>2c0a7115d50c49b89bec84d45de8fbe93fd4809c</sha1>
+            <sha256>1f4e5269fcd0b52287deddddb53f9112d7b7cbc866a11960ae64851894c51af1</sha256>
             <description>A micro-library for Clojure that provides first class support for named-capturing groups in regular expressions.</description>
-            <license>Apache-2.0: http://www.apache.org/licenses/LICENSE-2.0.html</license>
+            <license>MPL-2.0: https://www.mozilla.org/en-US/MPL/2.0/</license>
             <evidenceCollected>
                 <evidence type="vendor" confidence="HIGH">
                     <source>file</source>
@@ -1962,7 +1962,7 @@
                 <evidence type="vendor" confidence="LOW">
                     <source>Manifest</source>
                     <name>build-jdk-spec</name>
-                    <value>21</value>
+                    <value>25</value>
                 </evidence>
                 <evidence type="vendor" confidence="LOW">
                     <source>pom</source>
@@ -2007,7 +2007,7 @@
                 <evidence type="product" confidence="LOW">
                     <source>Manifest</source>
                     <name>build-jdk-spec</name>
-                    <value>21</value>
+                    <value>25</value>
                 </evidence>
                 <evidence type="product" confidence="HIGHEST">
                     <source>pom</source>
@@ -2047,17 +2047,17 @@
                 <evidence type="version" confidence="HIGH">
                     <source>file</source>
                     <name>version</name>
-                    <value>1.0.64</value>
+                    <value>1.0.90</value>
                 </evidence>
                 <evidence type="version" confidence="HIGHEST">
                     <source>pom</source>
                     <name>version</name>
-                    <value>1.0.64</value>
+                    <value>1.0.90</value>
                 </evidence>
             </evidenceCollected>
             <identifiers>
                 <package confidence="HIGH">
-                    <id>pkg:maven/com.github.pmonks/rencg@1.0.64</id>
+                    <id>pkg:maven/com.github.pmonks/rencg@1.0.90</id>
                 </package>
             </identifiers>
         </dependency>

@@ -17,8 +17,8 @@
           "npm": "This report may contain data retrieved from the the Github Advisory Database (via NPM Audit API): https://github.com/advisories/",
           "retirejs": "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
           "ossindex": "This report may contain data retrieved from the Sonatype OSS Index: https://ossindex.sonatype.org"
-            ,"NVD API Last Checked": "2026-02-10T04:45:31Z"
-            ,"NVD API Last Modified": "2026-02-10T04:16:05Z"
+            ,"NVD API Last Checked": "2026-02-17T04:34:11Z"
+            ,"NVD API Last Modified": "2026-02-17T03:16:01Z"
           }
         }
       },
@@ -168,14 +168,14 @@
              "text": "A micro-library for Clojure that provides first class support for named-capturing groups in regular expressions."
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/com\/github\/pmonks\/rencg\/1.0.64\/rencg-1.0.64.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/com\/github\/pmonks\/rencg\/1.0.90\/rencg-1.0.90.jar"
           },
           "hashes": {
-            "md5": "5fc6641890f0d3c73ae6d8fe32f30908",
-            "sha1": "2420de94e551842b4d6e4749ce49dda9c0547b80",
-            "sha256": "32ca868b506b8516b4c295838943b5ea9f30939ca3e9923d3b9a30fd16d94729"
+            "md5": "66a7867a696c5b2285c2bf7b89209343",
+            "sha1": "2c0a7115d50c49b89bec84d45de8fbe93fd4809c",
+            "sha256": "1f4e5269fcd0b52287deddddb53f9112d7b7cbc866a11960ae64851894c51af1"
           },          "properties": {
-"license": "Apache-2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.html",                    "id10": "pkg:maven\/com.github.pmonks\/rencg@1.0.64"
+"license": "MPL-2.0: https:\/\/www.mozilla.org\/en-US\/MPL\/2.0\/",                    "id10": "pkg:maven\/com.github.pmonks\/rencg@1.0.90"
           }
         }
 ,{

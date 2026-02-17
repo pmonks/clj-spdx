@@ -22,8 +22,8 @@
                         "url": "https://github.com/dependency-check/DependencyCheck/"
         },
 
-        "end_time": "2026-02-10T04:45:40",
-                "start_time": "2026-02-10T04:45:40",
+        "end_time": "2026-02-17T04:34:20",
+                "start_time": "2026-02-17T04:34:20",
                 "status":  "success"  ,
                 "type": "dependency_scanning"
 
@@ -102,7 +102,7 @@
                         "package": {
                             "name": "com.github.pmonks:rencg"
                         },
-                        "version": "1.0.64"
+                        "version": "1.0.90"
 
                                                                                                                     }
 ,                    {
