@@ -5,19 +5,19 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-02-17T04:34:11Z"
+                "timestamp": "2026-02-24T04:33:56Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-02-17T03:16:01Z"
+                "timestamp": "2026-02-24T04:15:59Z"
             }
         ]
 
 
     },
     "projectInfo": {
-        "name": "com.github.pmonks\/clj-spdx 1.0.302-SNAPSHOT",
-        "reportDate": "2026-02-17T04:34:20.598958576Z",
+        "name": "com.github.pmonks\/clj-spdx 1.0.303-SNAPSHOT",
+        "reportDate": "2026-02-24T04:34:06.347773075Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
