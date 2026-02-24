@@ -279,12 +279,12 @@
   (testing "Texts with single exceptions and only check for that exception"
     (is (= (exceptions-within-text @classpath-20-text #{"Classpath-exception-2.0"}) #{"Classpath-exception-2.0"})))
   (testing "Texts with single exceptions and nothing else"
-    (is (= (exceptions-within-text @classpath-20-text) #{"Classpath-exception-2.0"})))
+    (is (= (exceptions-within-text @classpath-20-text) #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"})))
   (testing "Texts with single exceptions and other text"
-    (is (= (exceptions-within-text (str "ABCD\n" @classpath-20-text "\nEFGH")) #{"Classpath-exception-2.0"})))
+    (is (= (exceptions-within-text (str "ABCD\n" @classpath-20-text "\nEFGH")) #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"})))
   (testing "Texts with multiple licenses/exceptions"
-    (is (= (exceptions-within-text @apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0"}))
-    (is (= (exceptions-within-text @javamail-license)                   #{"Classpath-exception-2.0"}))))
+    (is (= (exceptions-within-text @apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"}))
+    (is (= (exceptions-within-text @javamail-license)                   #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"}))))
 
 (deftest differences-tests
   (testing "nil, empty string"
