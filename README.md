@@ -23,7 +23,7 @@ Note also that this project has no official relationship with the [SPDX project]
 
 ## API Documentation
 
-[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).
+[API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).  I'm also active on [the Clojure Discord server](https://discord.gg/discljord) if you'd like to chat.
 
 ### A note about Spdx-Java-Library v2
 
@@ -66,15 +66,11 @@ deps-try com.github.pmonks/clj-spdx
 
 (require '[spdx.identifiers :as si])
 
-; This is optional but can be time consuming, so we run it explicitly to force
-; population of the local Spdx-Java-Library cache.
-(si/init!)
-
 (si/version)
-;=> "3.27.0"
+;=> "3.28.0"
 
 (si/ids)
-;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many more]
+;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many many more]
 
 (si/listed-id? "Apache-2.0")
 ;=> true
@@ -128,6 +124,16 @@ deps-try com.github.pmonks/clj-spdx
 
 (def mit-text (slurp "https://mit-license.org/license.txt"))
 
+; This is optional, but forces Spdx-Java-Library to fully populate its local
+; cache, which some clj-spdx functions (including licenses-within-text) require.
+; Note that Spdx-Java-Library is slow at populating its local cache, and this
+; call can take a minute or more the first time it's run.
+(sm/init!)
+
+; Matching can also be time consuming, since it has to evaluate every SPDX
+; matching template (all 811 of them, as of SPDX license list v3.28.0) against
+; the provided text.  See https://github.com/spdx/Spdx-Java-Library/issues/341
+; for one suggestion for speeding this up.
 (sm/licenses-within-text (str apache-20-text "\n\n" mit-text))
 ;=> #{"Apache-2.0" "MIT"}
 

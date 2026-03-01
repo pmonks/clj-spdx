@@ -13,7 +13,8 @@
     org.slf4j/slf4j-api          {:mvn/version "2.0.17"}   ; This is required by org.spdx/java-spdx-library, yet somehow isn't coming through transitively (and it's not due to the exclusion above)
     instaparse/instaparse        {:mvn/version "1.5.0"}
     com.github.pmonks/rencg      {:mvn/version "1.0.90"}
-    com.github.pmonks/wreck      {:mvn/version "1.0.151"}}
+    com.github.pmonks/wreck      {:mvn/version "1.0.151"}
+    com.github.pmonks/embroidery {:mvn/version "1.0.44"}}
  :aliases
    {:build {:deps       {com.github.pmonks/pbr {:mvn/version "RELEASE"}}
             :ns-default pbr.build}}}

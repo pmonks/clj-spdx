@@ -467,7 +467,7 @@
            (parse opts)
            unparse)))
 
-(defn ^:deprecated normalise
+(defn ^:deprecated ^:no-doc normalise
   "Deprecated - use [[canonicalise]] instead."
   ([^String s]      (canonicalise s nil))
   ([^String s opts] (canonicalise s opts)))

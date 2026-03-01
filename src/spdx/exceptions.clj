@@ -12,6 +12,7 @@
   "Exception list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
   (:require [clojure.string    :as s]
             [rencg.api         :as ncg]
+            [embroidery.api    :as e]
             [spdx.impl.state   :as is]
             [spdx.impl.mapping :as im]
             [spdx.impl.regexes :as ir]
@@ -199,7 +200,6 @@
   (is/init!)
   (ir/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
-  ; Note: using embroidery's pmap* function has been found to be counter-productive here
-  (doall (pmap id->info (ids)))
+  (doall (e/bounded-pmap* u/maximum-concurrency id->info (ids)))
   @id-canonicalisation-d
   nil)

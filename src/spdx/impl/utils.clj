@@ -13,6 +13,11 @@
   clj-spdx and may change without notice."
   (:require [clojure.string :as s]))
 
+(def maximum-concurrency
+  "Maximum allowed virtual concurrency, based primarily on macOS' stingy
+  default per-process file handle limits (10240)."
+  8192)
+
 (defn safe-lower-case
   "Because clojure.string is not `nil` tolerant. 🙄"
   [s]
