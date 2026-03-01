@@ -172,20 +172,30 @@
   were found. `re` must be a regex returned by one of the fns in this namespace,
   and defaults to [[ids-re]] if not provided.
 
-  The result is as for [rencg.api/re-seq](https://pmonks.github.io/rencg/rencg.api.html#var-re-seq)
-  and each map contains the named capture groups described in [[build-re]],
-  plus:
+  Each map in the result may contain these keys:
 
   * `:identifier` (always present) - the canonical represention of the listed
-    identifier that matched, or the verbatim `LicenseRef` or `AdditionRef` that
+    identifier that matched, or the entire `LicenseRef` or `AdditionRef` that
     matched
-  * `:type` (always present) - identifier type, as per [[spdx.identifiers/id-type]]"
+  * `:type` (always present) - identifier type, as per [[spdx.identifiers/id-type]]
+  * `:license-ref` (optional) - the LicenseRef's tag value, if it's a LicenseRef
+  * `:document-ref` (optional) - the LicenseRef's DocumentRef tag value, if it's
+    a LicenseRef and it has a DocumentRef
+  * `:addition-ref` (optional) - the AdditionRef's tag value, if it's an
+    AdditionRef
+  * `:addition-document-ref` (optional) - the AdditionRef's DocumentRef tag
+    value, if it's an AdditionRef and it has a DocumentRef"
   ([^String text] (id-seq-matches @ids-re-d text))
   ([^java.util.regex.Pattern re ^String text]
    (when (and re text)
      (when-let [matches (ncg/re-seq re text)]
-       (seq (map #(assoc % :identifier (canonicalise-id (get % "Identifier"))
-                           :type       (ids/id-type     (get % "Identifier")))
+       (seq (map #(dissoc (merge (assoc % :identifier (canonicalise-id (get % "Identifier"))
+                                          :type       (ids/id-type     (get % "Identifier")))
+                                 (when-let [document-ref          (get % "DocumentRef")]         {:document-ref          document-ref})
+                                 (when-let [license-ref           (get % "LicenseRef")]          {:license-ref           license-ref})
+                                 (when-let [addition-document-ref (get % "AdditionDocumentRef")] {:addition-document-ref addition-document-ref})
+                                 (when-let [addition-ref          (get % "AdditionRef")]         {:addition-ref          addition-ref}))
+                          "Identifier" "DocumentRef" "LicenseRef" "AdditionDocumentRef" "AdditionRef")
                  matches))))))
 
 (defn id-seq

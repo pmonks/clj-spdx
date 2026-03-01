@@ -157,34 +157,29 @@ deps-try com.github.pmonks/clj-spdx
 
 (sr/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
 ;=> ("Apache-2.0" "MIT")
+; Note that the ids returned by this fn are canonicalised
 
 ; Using some of the regexes directly (with help from rencg)
 
-(require '[rencg.api :as rencg])
+(require '[rencg.api :as ncg])
 
-(rencg/re-matches-ncg (sr/ids-re) "Apache-2.0")
+(ncg/re-matches (sr/ids-re) "Apache-2.0")
 ;=> {:start 0, :end 10, :match "Apache-2.0", "Identifier" "Apache-2.0"}
 
-(rencg/re-find-ncg (sr/ids-re) "some initial text GPL-3.0 some final text")
+(ncg/re-find (sr/ids-re) "some initial text GPL-3.0 some final text")
 ;=> {:start 18, :end 25, :match "GPL-3.0", "Identifier" "GPL-3.0"}
 
 ; NOTE: ids are not canonicalised by the regexes...
-(rencg/re-seq-ncg (sr/ids-re) "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
+(ncg/re-seq (sr/ids-re) "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
 ;=> ({:start 13 :end 20 :match "mpl-2.0" "Identifier" "mpl-2.0"}
-;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier"
-;=>   "LicenseRef-foo"}
-;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier"
-;=>   "classpath-exception-2.0"})
+;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier" "LicenseRef-foo"}
+;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier" "classpath-exception-2.0"})
 
-; ...but they are by the id-seq-* fns, which also provide id type information
+; ...but they are by the id-seq-* fns, which also provide identifier type information
 (sr/id-seq-matches "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
-;=> ({:start 13 :end 20 :match "mpl-2.0" "Identifier" "mpl-2.0" :identifier
-;=>   "MPL-2.0" :type :license-id}
-;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier"
-;=>   "LicenseRef-foo" :identifier "LicenseRef-foo" :type :license-ref}
-;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier"
-;=>   "classpath-exception-2.0" :identifier "Classpath-exception-2.0" :type
-;=>   :exception-id})
+;=> ({:start 13 :end 20 :match "mpl-2.0" :identifier "MPL-2.0" :type :license-id}
+;=>  {:start 31 :end 45 :match "LicenseRef-foo" :identifier "LicenseRef-foo" :type :license-ref :license-ref "foo"}
+;=>  {:start 61 :end 84 :match "classpath-exception-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
 ```
 
 ## Contributor Information

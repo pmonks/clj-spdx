@@ -294,18 +294,22 @@
 ; Note: we keep this minimal since the id-seq tests exercise this more thoroughly
 (deftest id-seq-matches-tests
   (testing "correct keys are present"
-    (is (= #{:start :end :match :type :identifier "Identifier"}                                     (set (keys (first (id-seq-matches "foo Apache-2.0 bar"))))))
-    (is (= #{:start :end :match :type :identifier "Identifier" "DocumentRef" "LicenseRef"}          (set (keys (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-foo bar"))))))
-    (is (= #{:start :end :match :type :identifier "Identifier" "AdditionDocumentRef" "AdditionRef"} (set (keys (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-foo bar")))))))
+    (is (= #{:start :end :match :type :identifier}                                      (set (keys (first (id-seq-matches "foo Apache-2.0 bar"))))))
+    (is (= #{:start :end :match :type :identifier :document-ref :license-ref}           (set (keys (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-foo bar"))))))
+    (is (= #{:start :end :match :type :identifier :addition-document-ref :addition-ref} (set (keys (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-foo bar")))))))
   (testing "synthesised keys have correct values"
-    (is (= "Apache-2.0"              (:identifier (first (id-seq-matches "foo apache-2.0 bar")))))
-    (is (= :license-id               (:type       (first (id-seq-matches "foo apache-2.0 bar")))))
-    (is (= "Classpath-exception-2.0" (:identifier (first (id-seq-matches "foo CLASSPATH-EXCEPTION-2.0 bar")))))
-    (is (= :exception-id             (:type       (first (id-seq-matches "foo CLASSPATH-EXCEPTION-2.0 bar")))))
-    (is (= "LicenseRef-foo"          (:identifier (first (id-seq-matches "foo LicenseRef-foo bar")))))
-    (is (= :license-ref              (:type       (first (id-seq-matches "foo LicenseRef-foo bar")))))
-    (is (= "AdditionRef-foo"         (:identifier (first (id-seq-matches "foo AdditionRef-foo bar")))))
-    (is (= :addition-ref             (:type       (first (id-seq-matches "foo AdditionRef-foo bar")))))))
+    (is (= "Apache-2.0"                     (:identifier            (first (id-seq-matches "foo apache-2.0 bar")))))
+    (is (= :license-id                      (:type                  (first (id-seq-matches "foo apache-2.0 bar")))))
+    (is (= "Classpath-exception-2.0"        (:identifier            (first (id-seq-matches "foo CLASSPATH-EXCEPTION-2.0 bar")))))
+    (is (= :exception-id                    (:type                  (first (id-seq-matches "foo CLASSPATH-EXCEPTION-2.0 bar")))))
+    (is (= "DocumentRef-foo:LicenseRef-fu"  (:identifier            (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-fu bar")))))
+    (is (= :license-ref                     (:type                  (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-fu bar")))))
+    (is (= "fu"                             (:license-ref           (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-fu bar")))))
+    (is (= "foo"                            (:document-ref          (first (id-seq-matches "foo DocumentRef-foo:LicenseRef-fu bar")))))
+    (is (= "DocumentRef-foo:AdditionRef-fu" (:identifier            (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-fu bar")))))
+    (is (= :addition-ref                    (:type                  (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-fu bar")))))
+    (is (= "fu"                             (:addition-ref          (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-fu bar")))))
+    (is (= "foo"                            (:addition-document-ref (first (id-seq-matches "foo DocumentRef-foo:AdditionRef-fu bar")))))))
 
 (deftest id-seq-tests
   (testing "nil, empty, blank, etc."
