@@ -8,9 +8,12 @@
 ; SPDX-License-Identifier: MPL-2.0
 ;
 
-(ns spdx.test-utils)
+(ns spdx.test-utils
+  (:require [spdx.identifiers  :as si]))
 
-(println "\n☔️ Running tests on Clojure" (clojure-version) "/ JVM" (System/getProperty "java.version") (str "(" (System/getProperty "java.vm.name") " v" (System/getProperty "java.vm.version") ")\n"))
+(println "\n☔️ Running tests on Clojure" (clojure-version)
+         "/ JVM" (System/getProperty "java.version") (str "(" (System/getProperty "java.vm.name") " v" (System/getProperty "java.vm.version") ")")
+         "/ SPDX license list" (str "v" (si/version)))
 
 (println "ℹ️ These unit tests take several minutes to complete, in the best case")
 
