@@ -19,7 +19,7 @@
             [spdx.impl.replacements :as sir]))
 
 ; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/
-(def ^:private spdx-license-expression-grammar-format "
+(def ^:private grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
   <ows>                  = <#\"\\s*\">
@@ -47,14 +47,14 @@
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (exc/ids)))))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (exc/ids)))))
 
-(def ^:private spdx-license-expression-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                @license-ids-fragment
-                                                                @exception-ids-fragment)))
+(def ^:private grammar-d (delay (format grammar-format
+                                        @license-ids-fragment
+                                        @exception-ids-fragment)))
 
-(def ^:private spdx-license-expression-parser-d (delay (insta/parser @spdx-license-expression-grammar-d :start :expression)))
+(def ^:private parser-d (delay (insta/parser @grammar-d :start :expression)))
 
 (defn- walk-internal
   "Internal implementation of [[walk]]."
@@ -289,7 +289,7 @@
                       collapse-redundant-clauses?  true
                       sort-licenses?               true}}]
    (when-not (s/blank? s)
-     (let [parse-tree (insta/parse @spdx-license-expression-parser-d s)]
+     (let [parse-tree (insta/parse @parser-d s)]
        (if (insta/failure? parse-tree)
          parse-tree
          (as-> parse-tree parse-tree
@@ -401,13 +401,6 @@
     {:license-id \"Apache-2.0\"}
     {:license-id \"BSD-2-Clause\"}]]
 
-  ; Case insensitive operators
-  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")
-  [:or
-   {:license-id \"CDDL-1.1\"}
-   {:license-id \"GPL-2.0-or-later\"
-    :license-exception-id \"Classpath-exception-2.0\"}]
-
   ; LicenseRefs (custom license identifiers)
   (parse \"DocumentRef-foo:LicenseRef-bar\")
   {:document-ref \"foo\"
@@ -464,7 +457,7 @@
   ([^String s] (valid? s nil))
   ([^String s _]
    (not (or (s/blank? s)
-            (insta/failure? (insta/parse @spdx-license-expression-parser-d s))))))
+            (insta/failure? (insta/parse @parser-d s))))))
 
 (defn simple?
   "Is `s` (a `String`) a 'simple' SPDX license expression (i.e. one that
@@ -520,6 +513,6 @@
   (exc/init!)
   @license-ids-fragment
   @exception-ids-fragment
-  @spdx-license-expression-grammar-d
-  @spdx-license-expression-parser-d
+  @grammar-d
+  @parser-d
   nil)
