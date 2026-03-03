@@ -13,7 +13,7 @@
 
 A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. a canonicalising [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) parser, regular expressions for matching individual SPDX listed identifiers and refs, etc.).
 
-Note that that library's functionality is being wrapped on-demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library such as the [SPDX model](https://github.com/pmonks/clj-spdx/issues/58)!
+Note that that library's functionality is being wrapped on demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library such as the [SPDX model](https://github.com/pmonks/clj-spdx/issues/58)!
 
 Note also that this project has no official relationship with the [SPDX project](https://spdx.dev/) (who maintain `Spdx-Java-Library`), and this work is in no way associated with, or endorsed by, them.
 
@@ -24,6 +24,21 @@ Note also that this project has no official relationship with the [SPDX project]
 ## API Documentation
 
 [API documentation is available here](https://pmonks.github.io/clj-spdx/), or [here on cljdoc](https://cljdoc.org/d/com.github.pmonks/clj-spdx/).  I'm also active on [the Clojure Discord server](https://discord.gg/discljord) if you'd like to chat.
+
+### A note about SPDX license list assets
+
+`Spdx-Java-Library` has two ways of obtaining the data files that comprise the SPDX license list:
+
+1. Using a pre-packaged copy of the files stored inside the JAR (which may not be the latest version)
+2. Downloading the latest version of the files from the internet, and caching them locally (as of SPDX license list v3.28.0 this comprises approximately 800 files totaling around 25MB)
+
+This is controlled via the [`org.spdx.useJARLicenseInfoOnly` JVM property](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options), which defaults to `false` (i.e. method 2 is the default).  The challenge is that  `Spdx-Java-Library` seems to be [suspiciously slow](https://github.com/spdx/Spdx-Java-Library/issues/394) at downloading these assets, and while `clj-spdx` does its best to workaround those costs (by parallelising the downloads), they remain substantial.
+
+By default `Spdx-Java-Library` will only retrieve these assets on demand, as required by calling code, which has the benefit of amortising the download cost.  However certain functions (especially those in the `spdx.matching` namespace) require all assets, so if you're using those functions you may notice a substantial pause (up to several minutes) the first time they're called.  Subsequent calls will be faster since `Spdx-Java-Library` makes use of a persistent local cache of the downloaded files, and that cache is checked for staleness infrequently (once per day, by default, but also configurable).
+
+Because of this substantial cost, `clj-spdx` provides callers with the option to "force initialise" `Spdx-Java-Library` up front, which doesn't solve the performance problem but does at least make it deterministic; these are the various `init!` functions.  **Calling these `init!` functions is completely optional**, and if you're not performing matching it's better to _not_ call them and instead rely on `Spdx-Java-Library`'s default behaviour.
+
+If you are performing matching and find the download cost (whether on demand or forced up front using `init!`) is unacceptable, currently the only alternative is to use method 1 (load the files stored in the `Spdx-Java-Library` JAR), and just accept that your code will be limited to whatever version of the SPDX license list is packaged in the current release of `Spdx-Java-Library`.
 
 ### A note about Spdx-Java-Library v2
 
