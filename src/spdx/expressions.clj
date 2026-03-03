@@ -293,8 +293,8 @@
        (if (insta/failure? parse-tree)
          parse-tree
          (as-> parse-tree parse-tree
-               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise-id (first %&)))
-                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise-id (first %&)))
+               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise (first %&)))
+                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise (first %&)))
                                  :license-ref          #(case (count %&)
                                                           1 {:license-ref  (first %&)}
                                                           2 {:document-ref (first %&) :license-ref (second %&)})
