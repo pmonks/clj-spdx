@@ -39,9 +39,9 @@
   [^String id]
   (when id
     (cond
-      (lic/listed-id? id)    :license-id
-      (exc/listed-id? id)    :exception-id
-      (lic/license-ref? id)  :license-ref
+      (lic/listed-id?    id) :license-id
+      (exc/listed-id?    id) :exception-id
+      (lic/license-ref?  id) :license-ref
       (exc/addition-ref? id) :addition-ref
       :else                  nil)))
 
@@ -57,10 +57,10 @@
     (or (lic/listed-id? id)
         (exc/listed-id? id))))
 
-(defn canonicalise-id
-  "Canonicalises `id` (an SPDX identifier), by returning it in its canonical
-  case.  Returns `nil` if `id` is `nil` or not a listed SPDX identifier
-  (including if it's a LicenseRef or AdditionRef).
+(defn canonicalise
+  "Canonicalises `id-or-ref` (an SPDX identifier or Ref), by returning it in its
+  canonical case.  Returns `nil` if `id-or-ref` is `nil` or not a listed SPDX
+  identifier, LicenseRef, or AdditionRef.
 
   Notes:
 
@@ -68,11 +68,16 @@
     non-deprecated equivalent(s), since some of those conversions result in an
     SPDX expression rather than an individual identifier.
     [[spdx.expressions/canonicalise]] can be used for that."
-  [^String id]
-  (case (id-type id)
-    :license-id   (lic/canonicalise-id id)
-    :exception-id (exc/canonicalise-id id)
+  [^String id-or-ref]
+  (case (id-type id-or-ref)
+    (:license-id   :license-ref)  (lic/canonicalise id-or-ref)
+    (:exception-id :addition-ref) (exc/canonicalise id-or-ref)
     nil))
+
+(defn ^:deprecated ^:no-doc canonicalise-id
+  "Superceded by [[canonicalise]]."
+  [id]
+  (canonicalise id))
 
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX identifiers, LicenseRefs or
@@ -85,12 +90,14 @@
   * Returns `false` if `s1` or `s2` are not listed SPDX identifiers or
     LicenseRefs or AdditionRefs, even if they are otherwise equal"
   [^String s1 ^String s2]
-  (case [(id-type s1) (id-type s2)]
-    [:license-id   :license-id]   (lic/equivalent-ids? s1 s2)
-    [:license-ref  :license-ref]  (lic/equivalent-license-refs? s1 s2)
-    [:exception-id :exception-id] (exc/equivalent-ids? s1 s2)
-    [:addition-ref :addition-ref] (exc/equivalent-addition-refs? s1 s2)
-    false))
+  (boolean
+    (or (and (nil? s1) (nil? s2))
+        (case [(id-type s1) (id-type s2)]
+          [:license-id   :license-id]   (lic/equivalent? s1 s2)
+          [:license-ref  :license-ref]  (lic/equivalent? s1 s2)
+          [:exception-id :exception-id] (exc/equivalent? s1 s2)
+          [:addition-ref :addition-ref] (exc/equivalent? s1 s2)
+          false))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info

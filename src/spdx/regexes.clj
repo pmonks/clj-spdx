@@ -19,7 +19,6 @@
             [spdx.exceptions   :as exc]
             [spdx.impl.regexes :as ir]))
 
-#_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn build-re
   "Returns a regex (`Pattern`) that can find or match any one of the given SPDX
   `ids` (a sequence of `String`s) in a source text. Returns `nil` if `ids` is
@@ -27,16 +26,16 @@
 
   The regex includes these named capturing groups:
 
-  * `Identifier` (always present) - captures the entire identifier, `LicenseRef`
-    or `AdditionRef`
+  * `Identifier` (always present) - captures the entire identifier, LicenseRef
+    or AdditionRef
   * `DocumentRef` (optional) - captures the `DocumentRef` variable text of a
-    `LicenseRef`, if that's what's matched and it contains one
-  * `LicenseRef` (optional) - captures the `LicenseRef` variable text of a
-    `LicenseRef`, if that's what's matched
+    LicenseRef, if that's what's matched and it contains one
+  * LicenseRef (optional) - captures the LicenseRef variable text of a
+    LicenseRef, if that's what's matched
   * `AdditionDocumentRef` (optional) - captures the `DocumentRef` variable text
-    of an `AdditionRef`, if that's what's matched and it contains one
-  * `AdditionRef` (optional) - captures the `AdditionRef` variable text of an
-    `AdditionRef`, if that's what's matched
+    of an AdditionRef, if that's what's matched and it contains one
+  * AdditionRef (optional) - captures the AdditionRef variable text of an
+    AdditionRef, if that's what's matched
 
   Groups should _not_ be accessed by index, as the groups in the returned
   regexes are not part of the public contract of this API, and are liable to
@@ -52,44 +51,29 @@
 
   `opts` are:
 
-  * `case-sensitive?` (`boolean`, default `false`) - controls whether SPDX
-    identifier matching is case sensitive or not. The [spec explicitly states
-    that SPDX identifiers are _not_ case sensitive](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity),
-    but there may be cases where case sensitive matching is preferred.  Note
-    that regardless of this setting, LicenseRefs and AdditionRefs (if included)
-    are _always_ matched as required by the spec (i.e. the constant 'tag'
-    sections are matched case-sensitively, and the 'variable text' sections are
-    not)
   * `include-license-refs?` (`boolean`, default `false`) - controls whether
-    `LicenseRef` support is also included in the regex
+    LicenseRef support is also included in the regex
   * `include-addition-refs?` (`boolean`, default `false`) - controls whether
-    `AdditionRef` support is also included in the regex"
+    AdditionRef support is also included in the regex"
   ([ids] (build-re ids nil))
-  ([ids {:keys [case-sensitive?
-                include-license-refs?
+  ([ids {:keys [include-license-refs?
                 include-addition-refs?]
-         :or   {case-sensitive?        false
-                include-license-refs?  false
-                include-addition-refs? false}
-         :as   opts}]
+         :or   {include-license-refs?  false
+                include-addition-refs? false}}]
    (when (seq ids)
      (let [id-fragments (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))]  ; Sort ids longest to shortest
-       (re/join #"(?<!\w)"
+       (re/join (re/-lb #"\w")
                 (re/ncg "Identifier"
                         (when include-license-refs?  (str @ir/license-ref-fragment-re-d "|"))
                         (when include-addition-refs? (str @ir/addition-ref-fragment-re-d "|"))
-                        ; Only consider case sensitivity _after_ LicenseRefs and AdditionRefs, as they're always case sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-                        ; But note that this may be changing in the SPDX spec shortly...
-                        (if case-sensitive?
-                          (re/grp id-fragments)
-                          (re/fgrp "i" id-fragments)))
-                #"(?!\w)")))))
+                        (re/fgrp "i" id-fragments))
+                (re/-la #"\w"))))))
 
 (def ^:private ids-re-d (delay (build-re (concat (lic/ids) (exc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
 
 (defn ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
-  identifier, SPDX exception identifier, `LicenseRef`, or `AdditionRef` in
+  identifier, SPDX exception identifier, LicenseRef, or AdditionRef in
   a source text.
 
   Specifics of the regex are as for [[build-re]].
@@ -105,7 +89,7 @@
 
 (defn license-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
-  identifier, or `LicenseRef` in a source text.
+  identifier, or LicenseRef in a source text.
 
   Specifics of the regex are as for [[build-re]].
 
@@ -120,7 +104,7 @@
 
 (defn exception-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license exception
-  identifier, or `AdditionRef` in a source text.
+  identifier, or AdditionRef in a source text.
 
   Specifics of the regex are as for [[build-re]].
 
@@ -132,7 +116,7 @@
   @exception-ids-re-d)
 
 (defn license-ref-re
-  "Returns a regex (`Pattern`) that can find or match any SPDX `LicenseRef`.
+  "Returns a regex (`Pattern`) that can find or match any SPDX LicenseRef.
 
   Specifics of the regex are as for [[build-re]].
 
@@ -144,7 +128,7 @@
   @ir/license-ref-re-d)
 
 (defn addition-ref-re
- "Returns a regex (`Pattern`) that can find or match any SPDX `AdditionRef`.
+ "Returns a regex (`Pattern`) that can find or match any SPDX AdditionRef.
 
   Specifics of the regex are as for [[build-re]].
 
@@ -155,17 +139,6 @@
   []
   @ir/addition-ref-re-d)
 
-(defn- canonicalise-id
-  "Canonicalises `id` (if it's a listed license or exception identifer), or
-  returns it verbatim if it is not (i.e. it's a LicenseRef or AdditionRef)."
-  [^String id]
-  (when id
-    (if-let [canonical-license-id (lic/canonicalise-id id)]
-      canonical-license-id
-      (if-let [canonical-exception-id (exc/canonicalise-id id)]
-        canonical-exception-id
-        id))))
-
 (defn id-seq-matches
   "Returns a lazy sequence of maps representing each of the identifier matches
   found in `text`, in the order in which they were found, or `nil` if no matches
@@ -175,8 +148,7 @@
   Each map in the result may contain these keys:
 
   * `:identifier` (always present) - the canonical represention of the listed
-    identifier that matched, or the entire `LicenseRef` or `AdditionRef` that
-    matched
+    identifier, LicenseRef or AdditionRef that matched
   * `:type` (always present) - identifier type, as per [[spdx.identifiers/id-type]]
   * `:license-ref` (optional) - the LicenseRef's tag value, if it's a LicenseRef
   * `:document-ref` (optional) - the LicenseRef's DocumentRef tag value, if it's
@@ -189,13 +161,14 @@
   ([^java.util.regex.Pattern re ^String text]
    (when (and re text)
      (when-let [matches (ncg/re-seq re text)]
-       (seq (map #(dissoc (merge (assoc % :identifier (canonicalise-id (get % "Identifier"))
-                                          :type       (ids/id-type     (get % "Identifier")))
-                                 (when-let [document-ref          (get % "DocumentRef")]         {:document-ref          document-ref})
-                                 (when-let [license-ref           (get % "LicenseRef")]          {:license-ref           license-ref})
-                                 (when-let [addition-document-ref (get % "AdditionDocumentRef")] {:addition-document-ref addition-document-ref})
-                                 (when-let [addition-ref          (get % "AdditionRef")]         {:addition-ref          addition-ref}))
-                          "Identifier" "DocumentRef" "LicenseRef" "AdditionDocumentRef" "AdditionRef")
+       (seq (map #(let [canonical-id-or-ref (ids/canonicalise (get % "Identifier"))]
+                    (dissoc (merge (assoc % :identifier canonical-id-or-ref
+                                            :type       (ids/id-type canonical-id-or-ref))
+                                   (when-let [document-ref          (get % "DocumentRef")]         {:document-ref          document-ref})
+                                   (when-let [license-ref           (get % "LicenseRef")]          {:license-ref           license-ref})
+                                   (when-let [addition-document-ref (get % "AdditionDocumentRef")] {:addition-document-ref addition-document-ref})
+                                   (when-let [addition-ref          (get % "AdditionRef")]         {:addition-ref          addition-ref}))
+                            "Identifier" "DocumentRef" "LicenseRef" "AdditionDocumentRef" "AdditionRef"))
                  matches))))))
 
 (defn id-seq

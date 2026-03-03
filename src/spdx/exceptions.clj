@@ -43,43 +43,8 @@
   [^String id]
   (im/listed-exception-id? id))
 
-(def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
-
-(defn canonicalise-id
-  "Canonicalises `id` (an SPDX exception identifier), by returning it in its
-  canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX exception
-  identifier.
-
-  Notes:
-
-  * This function does _not_ canonicalise a deprecated id to its non-deprecated
-    equivalent, since some of those conversions result in an SPDX expression
-    rather than an individual id. [[spdx.expressions/parse]] can be used for
-    that."
-  [^String id]
-  (when id
-    (get @id-canonicalisation-d (s/lower-case id))))
-
-(defn equivalent-ids?
-  "Are `id1` and `id2` (`String`s) equivalent SPDX exception identifiers (i.e.
-  taking the SPDX case sensitivity rules in
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?
-
-  Notes:
-
-  * Returns `false` if `id1` or `id2` are not valid SPDX license exception
-    identifiers"
-  [^String id1 ^String id2]
-  (let [canonical-id1 (canonicalise-id id1)
-        canonical-id2 (canonicalise-id id2)]
-    (boolean
-      (and canonical-id1
-           canonical-id2
-           (= canonical-id1 canonical-id2)))))
-
 (defn addition-ref?
-  "Is `s` (a `String`) a valid `AdditionRef`? See
+  "Is `s` (a `String`) a valid AdditionRef? See
   [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
   for specifics."
   [^String s]
@@ -87,8 +52,8 @@
 
 (defn addition-ref
   "Constructs an AdditionRef (as a `String`) from individual 'variable
-  section' `String`s. Returns `nil` if `addition-ref` is blank, or the resulting
-  value is not a valid AdditionRef."
+  section' `String`s. Returns `nil` if `addition-ref-var-section` is blank, or
+  the resulting value is not a valid AdditionRef."
   ([^String addition-ref-var-section] (addition-ref nil addition-ref-var-section))
   ([^String document-ref-var-section ^String addition-ref-var-section]
     (when-not (s/blank? addition-ref-var-section)
@@ -122,39 +87,52 @@
       (merge {:addition-ref (get m "AdditionRef")}
              (when-let [document-ref (get m "AdditionDocumentRef")] {:addition-document-ref document-ref})))))
 
-(defn equivalent-addition-refs?
-  "Are `s1` and `s2` (`String`s) equivalent AdditionRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?
+(def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
+
+(defn canonicalise
+  "Canonicalises `s` (an SPDX exception identifier or AdditionRef), by returning
+  it in its canonical case.  Returns `nil` if `s` is `nil` or not a listed SPDX
+  exception identifier or AdditionRef.
 
   Notes:
 
-  * Returns `false` if `s1` or `s2` are not valid AdditionRefs"
-  [^String s1 ^String s2]
-  (boolean
-    (when-let [addition-ref-1 (string->addition-ref-map s1)]
-      (when-let [addition-ref-2 (string->addition-ref-map s2)]
-        (and (= (u/safe-lower-case (:addition-document-ref addition-ref-1)) (u/safe-lower-case (:addition-document-ref addition-ref-2)))
-             (= (s/lower-case      (:addition-ref          addition-ref-1)) (s/lower-case      (:addition-ref          addition-ref-2))))))))
+  * This function does _not_ canonicalise a deprecated id to its non-deprecated
+    equivalent, since some of those conversions result in an SPDX expression
+    rather than an individual id. [[spdx.expressions/parse]] can be used for
+    that."
+  [^String s]
+  (when s
+    (if-let [id (get @id-canonicalisation-d (s/lower-case s))]
+      id
+      (when-let [addition-ref-map (string->addition-ref-map s)]
+        (addition-ref-map->string addition-ref-map)))))
+
+(defn ^:deprecated ^:no-doc canonicalise-id
+  "Superceded by [[canonicalise]]."
+  [id]
+  (canonicalise id))
 
 (defn equivalent?
-  "Are `s1` and `s2` (`String`s) equivalent SPDX license exception
-  identifiers or AdditionRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?
-
-  Notes:
-
-  * Returns `false` if `s1` or `s2` are not listed SPDX license exception
-    identifiers or valid AdditionRefs"
+  "Are `s1` and `s2` (`String`s) equivalent SPDX exception identifiers or
+  AdditionRefs (i.e. taking the SPDX case sensitivity rules in [SPDX
+  Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+  into account)?"
   [^String s1 ^String s2]
-  (if (and s1 s2)
-    (if (and (listed-id? s1) (listed-id? s2))
-      (equivalent-ids? s1 s2)
-      (if (and (addition-ref? s1) (addition-ref? s2))
-        (equivalent-addition-refs? s1 s2)
-        false))
-    false))
+  (boolean
+    (or (and (nil? s1) (nil? s2))
+        (let [cs1 (canonicalise s1)
+              cs2 (canonicalise s2)]
+          (and cs1 cs2 (= (s/lower-case cs1) (s/lower-case cs2)))))))
+
+(defn ^:deprecated ^:no-doc equivalent-ids?
+  "Superceded by [[equivalent?]]"
+  [^String id1 ^String id2]
+  (equivalent? id1 id2))
+
+(defn ^:deprecated ^:no-doc equivalent-addition-refs?
+  "Superceded by [[equivalent?]]"
+  [^String ar1 ^String ar2]
+  (equivalent? ar1 ar2))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
