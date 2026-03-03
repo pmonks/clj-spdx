@@ -4,16 +4,16 @@
         <engineVersion>12.2.0</engineVersion>
         <dataSource>
             <name>NVD API Last Checked</name>
-            <timestamp>2026-02-24T04:33:56Z</timestamp>
+            <timestamp>2026-03-03T06:05:03Z</timestamp>
         </dataSource>
         <dataSource>
             <name>NVD API Last Modified</name>
-            <timestamp>2026-02-24T04:15:59Z</timestamp>
+            <timestamp>2026-03-03T05:17:25Z</timestamp>
         </dataSource>
     </scanInfo>
     <projectInfo>
-        <name>com.github.pmonks/clj-spdx 1.0.303-SNAPSHOT</name>
-        <reportDate>2026-02-24T04:34:06.347773075Z</reportDate>
+        <name>com.github.pmonks/clj-spdx 1.0.310-SNAPSHOT</name>
+        <reportDate>2026-03-03T06:05:13.402025623Z</reportDate>
         <credits>This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov, Github Advisory Database (via NPM Audit API): https://github.com/advisories/, and the RetireJS community.</credits>
     </projectInfo>
     <dependencies>
@@ -999,6 +999,122 @@
                 <vulnerabilityIds confidence="LOW">
                     <id>cpe:2.3:a:alex_project:alex:0.4.74:*:*:*:*:*:*:*</id>
                 </vulnerabilityIds>
+            </identifiers>
+        </dependency>
+        <dependency isVirtual="false">
+            <fileName>embroidery-1.0.44.jar</fileName>
+            <filePath>/home/runner/.m2/repository/com/github/pmonks/embroidery/1.0.44/embroidery-1.0.44.jar</filePath>
+            <md5>0141ce9e67e5c76af519e98fc5a8bf5d</md5>
+            <sha1>0ce7accc8b0fe2fcb13b0e509c322de914390ad2</sha1>
+            <sha256>f978771dcca1ef87a0668cee9911882fea462791f20a6166b93edc356d35f152</sha256>
+            <description>A Clojure micro-library for leveraging virtual threads on JVMs that support them.</description>
+            <license>Apache-2.0: http://www.apache.org/licenses/LICENSE-2.0.html</license>
+            <evidenceCollected>
+                <evidence type="vendor" confidence="HIGH">
+                    <source>file</source>
+                    <name>name</name>
+                    <value>embroidery</value>
+                </evidence>
+                <evidence type="vendor" confidence="LOW">
+                    <source>Manifest</source>
+                    <name>build-jdk-spec</name>
+                    <value>21</value>
+                </evidence>
+                <evidence type="vendor" confidence="LOW">
+                    <source>pom</source>
+                    <name>artifactid</name>
+                    <value>embroidery</value>
+                </evidence>
+                <evidence type="vendor" confidence="LOW">
+                    <source>pom</source>
+                    <name>developer email</name>
+                    <value>pmonks+embroidery@gmail.com</value>
+                </evidence>
+                <evidence type="vendor" confidence="MEDIUM">
+                    <source>pom</source>
+                    <name>developer id</name>
+                    <value>pmonks</value>
+                </evidence>
+                <evidence type="vendor" confidence="MEDIUM">
+                    <source>pom</source>
+                    <name>developer name</name>
+                    <value>Peter Monks</value>
+                </evidence>
+                <evidence type="vendor" confidence="HIGHEST">
+                    <source>pom</source>
+                    <name>groupid</name>
+                    <value>com.github.pmonks</value>
+                </evidence>
+                <evidence type="vendor" confidence="HIGH">
+                    <source>pom</source>
+                    <name>name</name>
+                    <value>embroidery</value>
+                </evidence>
+                <evidence type="vendor" confidence="HIGHEST">
+                    <source>pom</source>
+                    <name>url</name>
+                    <value>pmonks/embroidery</value>
+                </evidence>
+                <evidence type="product" confidence="HIGH">
+                    <source>file</source>
+                    <name>name</name>
+                    <value>embroidery</value>
+                </evidence>
+                <evidence type="product" confidence="LOW">
+                    <source>Manifest</source>
+                    <name>build-jdk-spec</name>
+                    <value>21</value>
+                </evidence>
+                <evidence type="product" confidence="HIGHEST">
+                    <source>pom</source>
+                    <name>artifactid</name>
+                    <value>embroidery</value>
+                </evidence>
+                <evidence type="product" confidence="LOW">
+                    <source>pom</source>
+                    <name>developer email</name>
+                    <value>pmonks+embroidery@gmail.com</value>
+                </evidence>
+                <evidence type="product" confidence="LOW">
+                    <source>pom</source>
+                    <name>developer id</name>
+                    <value>pmonks</value>
+                </evidence>
+                <evidence type="product" confidence="LOW">
+                    <source>pom</source>
+                    <name>developer name</name>
+                    <value>Peter Monks</value>
+                </evidence>
+                <evidence type="product" confidence="HIGHEST">
+                    <source>pom</source>
+                    <name>groupid</name>
+                    <value>com.github.pmonks</value>
+                </evidence>
+                <evidence type="product" confidence="HIGH">
+                    <source>pom</source>
+                    <name>name</name>
+                    <value>embroidery</value>
+                </evidence>
+                <evidence type="product" confidence="HIGH">
+                    <source>pom</source>
+                    <name>url</name>
+                    <value>pmonks/embroidery</value>
+                </evidence>
+                <evidence type="version" confidence="HIGH">
+                    <source>file</source>
+                    <name>version</name>
+                    <value>1.0.44</value>
+                </evidence>
+                <evidence type="version" confidence="HIGHEST">
+                    <source>pom</source>
+                    <name>version</name>
+                    <value>1.0.44</value>
+                </evidence>
+            </evidenceCollected>
+            <identifiers>
+                <package confidence="HIGH">
+                    <id>pkg:maven/com.github.pmonks/embroidery@1.0.44</id>
+                </package>
             </identifiers>
         </dependency>
         <dependency isVirtual="false">

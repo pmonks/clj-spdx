@@ -17,8 +17,8 @@
           "npm": "This report may contain data retrieved from the the Github Advisory Database (via NPM Audit API): https://github.com/advisories/",
           "retirejs": "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
           "ossindex": "This report may contain data retrieved from the Sonatype OSS Index: https://ossindex.sonatype.org"
-            ,"NVD API Last Checked": "2026-02-24T04:33:56Z"
-            ,"NVD API Last Modified": "2026-02-24T04:15:59Z"
+            ,"NVD API Last Checked": "2026-03-03T06:05:03Z"
+            ,"NVD API Last Modified": "2026-03-03T05:17:25Z"
           }
         }
       },
@@ -73,6 +73,21 @@
         }
 ,{
           "description": {
+             "text": "A Clojure micro-library for leveraging virtual threads on JVMs that support them."
+          },
+          "location": {
+            "uri": "file://\/home\/runner\/.m2\/repository\/com\/github\/pmonks\/embroidery\/1.0.44\/embroidery-1.0.44.jar"
+          },
+          "hashes": {
+            "md5": "0141ce9e67e5c76af519e98fc5a8bf5d",
+            "sha1": "0ce7accc8b0fe2fcb13b0e509c322de914390ad2",
+            "sha256": "f978771dcca1ef87a0668cee9911882fea462791f20a6166b93edc356d35f152"
+          },          "properties": {
+"license": "Apache-2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.html",                    "id4": "pkg:maven\/com.github.pmonks\/embroidery@1.0.44"
+          }
+        }
+,{
+          "description": {
              "text": "Error Prone is a static analysis tool for Java that catches common programming mistakes at compile-time."
           },
           "location": {
@@ -83,7 +98,7 @@
             "sha1": "4381275efdef6ddfae38f002c31e84cd001c97f0",
             "sha256": "a56e782b5b50811ac204073a355a21d915a2107fce13ec711331ad036f660fcc"
           },          "properties": {
-"license": "Apache 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id4": "pkg:maven\/com.google.errorprone\/error_prone_annotations@2.41.0"
+"license": "Apache 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id5": "pkg:maven\/com.google.errorprone\/error_prone_annotations@2.41.0"
           }
         }
 ,{
@@ -98,7 +113,7 @@
             "sha1": "48b8230771e573b54ce6e867a9001e75977fe78e",
             "sha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0"
           },          "properties": {
-"license": "Apache-2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id5": "pkg:maven\/com.google.code.gson\/gson@2.13.2"
+"license": "Apache-2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id6": "pkg:maven\/com.google.code.gson\/gson@2.13.2"
 ,                    "vid4": "cpe:2.3:a:google:gson:2.13.2:*:*:*:*:*:*:*"
           }
         }
@@ -114,7 +129,7 @@
             "sha1": "edc617bd20362b2fc870df88f1687426a69fe007",
             "sha256": "c2bcd6f3a74d1a114973e6ac71e3536f6b035f29f769e9d1ec528ffe5e56cc27"
           },          "properties": {
-"license": "Eclipse Public License: http:\/\/www.eclipse.org\/legal\/epl-v10.html",                    "id6": "pkg:maven\/instaparse\/instaparse@1.5.0"
+"license": "Eclipse Public License: http:\/\/www.eclipse.org\/legal\/epl-v10.html",                    "id7": "pkg:maven\/instaparse\/instaparse@1.5.0"
           }
         }
 ,{
@@ -129,7 +144,7 @@
             "sha1": "6fdd5975842cb6fe9a70822c35441e47552eb485",
             "sha256": "9ab2059e2791be297568ceea5b51fa89a2e11fedc8686f9bf2062ad0f37de767"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id7": "pkg:maven\/org.spdx\/java-spdx-library@2.0.2"
+"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id8": "pkg:maven\/org.spdx\/java-spdx-library@2.0.2"
           }
         }
 ,{
@@ -144,7 +159,7 @@
             "sha1": "55ba93337201b6f1208a6691f291ca2828860150",
             "sha256": "f05496e255734759f0d4b5632da7b24f81313147c78c69e90ad045d096191344"
           },          "properties": {
-"license": "The MIT License: https:\/\/jsoup.org\/license",                    "id8": "pkg:maven\/org.jsoup\/jsoup@1.21.2"
+"license": "The MIT License: https:\/\/jsoup.org\/license",                    "id9": "pkg:maven\/org.jsoup\/jsoup@1.21.2"
 ,                    "vid5": "cpe:2.3:a:jsoup:jsoup:1.21.2:*:*:*:*:*:*:*"
           }
         }
@@ -160,7 +175,7 @@
             "sha1": "25ea2e8b0c338a877313bd4672d3fe056ea78f0d",
             "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id9": "pkg:maven\/com.google.code.findbugs\/jsr305@3.0.2"
+"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id10": "pkg:maven\/com.google.code.findbugs\/jsr305@3.0.2"
           }
         }
 ,{
@@ -175,7 +190,7 @@
             "sha1": "2c0a7115d50c49b89bec84d45de8fbe93fd4809c",
             "sha256": "1f4e5269fcd0b52287deddddb53f9112d7b7cbc866a11960ae64851894c51af1"
           },          "properties": {
-"license": "MPL-2.0: https:\/\/www.mozilla.org\/en-US\/MPL\/2.0\/",                    "id10": "pkg:maven\/com.github.pmonks\/rencg@1.0.90"
+"license": "MPL-2.0: https:\/\/www.mozilla.org\/en-US\/MPL\/2.0\/",                    "id11": "pkg:maven\/com.github.pmonks\/rencg@1.0.90"
           }
         }
 ,{
@@ -190,7 +205,7 @@
             "sha1": "d9e58ac9c7779ba3bf8142aff6c830617a7fe60f",
             "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832"
           },          "properties": {
-"license": "https:\/\/opensource.org\/license\/mit",                    "id11": "pkg:maven\/org.slf4j\/slf4j-api@2.0.17"
+"license": "https:\/\/opensource.org\/license\/mit",                    "id12": "pkg:maven\/org.slf4j\/slf4j-api@2.0.17"
           }
         }
 ,{
@@ -205,7 +220,7 @@
             "sha1": "1a169e6b343a9ce812cfec6bbcd95b37bada5a9c",
             "sha256": "73852cd83efb2e96a49f60e9ecacd6ef723079bc5a58dfffbca371fd0b1bd0a1"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id12": "pkg:maven\/org.spdx\/spdx-java-core@1.0.2"
+"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id13": "pkg:maven\/org.spdx\/spdx-java-core@1.0.2"
           }
         }
 ,{
@@ -220,7 +235,7 @@
             "sha1": "cd304d102bdb04bce97ef392dada2a61fde69814",
             "sha256": "f86ed6caea3e11716edf72e45660b810e94034f2830bd65ee894a5e3597f726a"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id13": "pkg:maven\/org.spdx\/spdx-java-model-2_X@1.0.2"
+"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id14": "pkg:maven\/org.spdx\/spdx-java-model-2_X@1.0.2"
           }
         }
 ,{
@@ -235,7 +250,7 @@
             "sha1": "8278d3613c755c3767539ac870ea1a270ba577e5",
             "sha256": "ea47e1dbb6dc305d91570c30e9a4a3cd45945c5aa7f5553256c65e0a52dd6b3c"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id14": "pkg:maven\/org.spdx\/spdx-java-model-3_0@1.0.2"
+"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id15": "pkg:maven\/org.spdx\/spdx-java-model-3_0@1.0.2"
           }
         }
 ,{
@@ -250,7 +265,7 @@
             "sha1": "4eb5dea521c4e6e1f68c2c47517f14a922003e60",
             "sha256": "94cd99b6ea639641f37af4860a643b6ed399ee5a8be5d717cff0b663c8d75077"
           },          "properties": {
-"license": "Eclipse Public License 1.0: https:\/\/opensource.org\/license\/epl-1-0\/",                    "id15": "pkg:maven\/org.clojure\/spec.alpha@0.5.238"
+"license": "Eclipse Public License 1.0: https:\/\/opensource.org\/license\/epl-1-0\/",                    "id16": "pkg:maven\/org.clojure\/spec.alpha@0.5.238"
           }
         }
 ,{
@@ -265,7 +280,7 @@
             "sha1": "d0155a0a808a36fe357982ea802af782bd2c3a45",
             "sha256": "e8461684855a06dcd664970d79adca22265e571a076c4e09412f80969551bbe4"
           },          "properties": {
-"license": "MPL-2.0: https:\/\/www.mozilla.org\/en-US\/MPL\/2.0\/",                    "id16": "pkg:maven\/com.github.pmonks\/wreck@1.0.151"
+"license": "MPL-2.0: https:\/\/www.mozilla.org\/en-US\/MPL\/2.0\/",                    "id17": "pkg:maven\/com.github.pmonks\/wreck@1.0.151"
           }
         }
       ],

@@ -5,19 +5,19 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-02-24T04:33:56Z"
+                "timestamp": "2026-03-03T06:05:03Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-02-24T04:15:59Z"
+                "timestamp": "2026-03-03T05:17:25Z"
             }
         ]
 
 
     },
     "projectInfo": {
-        "name": "com.github.pmonks\/clj-spdx 1.0.303-SNAPSHOT",
-        "reportDate": "2026-02-24T04:34:06.347773075Z",
+        "name": "com.github.pmonks\/clj-spdx 1.0.310-SNAPSHOT",
+        "reportDate": "2026-03-03T06:05:13.402025623Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
@@ -1376,6 +1376,165 @@
                 {
                     "id": "cpe:2.3:a:alex_project:alex:0.4.74:*:*:*:*:*:*:*"
 ,"confidence": "LOW"                }
+            ]
+        },{
+            "isVirtual": false,
+            "fileName": "embroidery-1.0.44.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/com\/github\/pmonks\/embroidery\/1.0.44\/embroidery-1.0.44.jar"
+,"md5": "0141ce9e67e5c76af519e98fc5a8bf5d",
+            "sha1": "0ce7accc8b0fe2fcb13b0e509c322de914390ad2",
+            "sha256": "f978771dcca1ef87a0668cee9911882fea462791f20a6166b93edc356d35f152","description": "A Clojure micro-library for leveraging virtual threads on JVMs that support them.","license": "Apache-2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.html"            ,"evidenceCollected": {
+                "vendorEvidence": [
+{
+                            "type": "vendor",
+                            "confidence": "HIGH",
+                            "source": "file",
+                            "name": "name",
+                            "value": "embroidery"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "LOW",
+                            "source": "Manifest",
+                            "name": "build-jdk-spec",
+                            "value": "21"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "LOW",
+                            "source": "pom",
+                            "name": "artifactid",
+                            "value": "embroidery"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "LOW",
+                            "source": "pom",
+                            "name": "developer email",
+                            "value": "pmonks+embroidery@gmail.com"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "MEDIUM",
+                            "source": "pom",
+                            "name": "developer id",
+                            "value": "pmonks"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "MEDIUM",
+                            "source": "pom",
+                            "name": "developer name",
+                            "value": "Peter Monks"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "HIGHEST",
+                            "source": "pom",
+                            "name": "groupid",
+                            "value": "com.github.pmonks"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "HIGH",
+                            "source": "pom",
+                            "name": "name",
+                            "value": "embroidery"
+                        }
+,{
+                            "type": "vendor",
+                            "confidence": "HIGHEST",
+                            "source": "pom",
+                            "name": "url",
+                            "value": "pmonks\/embroidery"
+                        }
+                ],
+                "productEvidence": [
+{
+                            "type": "product",
+                            "confidence": "HIGH",
+                            "source": "file",
+                            "name": "name",
+                            "value": "embroidery"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "LOW",
+                            "source": "Manifest",
+                            "name": "build-jdk-spec",
+                            "value": "21"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "HIGHEST",
+                            "source": "pom",
+                            "name": "artifactid",
+                            "value": "embroidery"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "LOW",
+                            "source": "pom",
+                            "name": "developer email",
+                            "value": "pmonks+embroidery@gmail.com"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "LOW",
+                            "source": "pom",
+                            "name": "developer id",
+                            "value": "pmonks"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "LOW",
+                            "source": "pom",
+                            "name": "developer name",
+                            "value": "Peter Monks"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "HIGHEST",
+                            "source": "pom",
+                            "name": "groupid",
+                            "value": "com.github.pmonks"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "HIGH",
+                            "source": "pom",
+                            "name": "name",
+                            "value": "embroidery"
+                    }
+,{
+                            "type": "product",
+                            "confidence": "HIGH",
+                            "source": "pom",
+                            "name": "url",
+                            "value": "pmonks\/embroidery"
+                    }
+                ],
+                "versionEvidence": [
+                    {
+                        "type": "version",
+                        "confidence": "HIGH",
+                        "source": "file",
+                        "name": "version",
+                        "value": "1.0.44"
+                    }
+,                    {
+                        "type": "version",
+                        "confidence": "HIGHEST",
+                        "source": "pom",
+                        "name": "version",
+                        "value": "1.0.44"
+                    }
+                ]
+            }
+                ,"packages": [
+                    {
+                        "id": "pkg:maven\/com.github.pmonks\/embroidery@1.0.44"
+,"confidence": "HIGH"                    }
             ]
         },{
             "isVirtual": false,
