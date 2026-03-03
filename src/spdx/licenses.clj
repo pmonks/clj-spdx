@@ -34,14 +34,14 @@
           set))
 
 (defn listed-id?
-  "Is `id` (a `String`) one of the listed SPDX license identifiers?
+  "Is `s` (a `String`) one of the listed SPDX license identifiers?
 
   Notes:
 
   * This fn supports any case of identifier, as per the SPDX case sensitivity
     rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
-  [^String id]
-  (im/listed-license-id? id))
+  [^String s]
+  (im/listed-license-id? s))
 
 (defn license-ref?
   "Is `s` (a `String`) a valid LicenseRef? See
@@ -109,8 +109,8 @@
 
 (defn ^:deprecated ^:no-doc canonicalise-id
   "Superceded by [[canonicalise]]."
-  [id]
-  (canonicalise id))
+  [^String s]
+  (canonicalise s))
 
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers or
@@ -126,13 +126,13 @@
 
 (defn ^:deprecated ^:no-doc equivalent-ids?
   "Superceded by [[equivalent?]]"
-  [^String id1 ^String id2]
-  (equivalent? id1 id2))
+  [^String s1 ^String s2]
+  (equivalent? s1 s2))
 
 (defn ^:deprecated ^:no-doc equivalent-license-refs?
   "Superceded by [[equivalent?]]"
-  [^String lr1 ^String lr2]
-  (equivalent? lr1 lr2))
+  [^String s1 ^String s2]
+  (equivalent? s1 s2))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info

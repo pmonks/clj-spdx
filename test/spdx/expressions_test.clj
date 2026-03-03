@@ -404,7 +404,9 @@
     (is (= (canonicalise "LGPL-3.0+")                      "LGPL-3.0-or-later"))
     (is (= (canonicalise "LGPL-3.0-or-later")              "LGPL-3.0-or-later"))
     (is (= (canonicalise "LicenseRef-foo")                 "LicenseRef-foo"))
-    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar")))
+    (is (= (canonicalise "licenseref-foo")                 "LicenseRef-foo"))
+    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar"))
+    (is (= (canonicalise "DOCUMENTREF-foo:LICENSEREF-bar") "DocumentRef-foo:LicenseRef-bar")))
   (testing "Compound expressions"
     (is (= (canonicalise "MIT and AGPL-3.0")                                                        "AGPL-3.0-only AND MIT"))
     (is (= (canonicalise "(GPL-2.0 WITH Classpath-exception-2.0)")                                  "GPL-2.0-only WITH Classpath-exception-2.0"))
@@ -413,6 +415,7 @@
     (is (= (canonicalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")                 "GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-only WITH GCC-exception-2.0"))
     (is (= (canonicalise "LicenseRef-foo WITH Classpath-exception-2.0")                             "LicenseRef-foo WITH Classpath-exception-2.0"))
     (is (= (canonicalise "Apache-2.0 WITH AdditionRef-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
+    (is (= (canonicalise "Apache-2.0 WITH additionref-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
     (is (= (canonicalise "LicenseRef-foo with AdditionRef-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
     (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana"))
     ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2

@@ -28,38 +28,38 @@
   (set/union (lic/ids) (exc/ids)))
 
 (defn id-type
-  "The 'type' of `id`; one of these values:
+  "The 'type' of `s`; one of these values:
 
   * `:license-id` - listed SPDX license identifier
   * `:exception-id` - listed SPDX exception identifier
   * `:license-ref` - LicenseRef
   * `:addition-ref` - AdditionRef
-  * `nil` - `id` is not a listed SPDX identifier, LicenseRef or
+  * `nil` - `s` is not a listed SPDX identifier, LicenseRef or
     AdditionRef"
-  [^String id]
-  (when id
+  [^String s]
+  (when s
     (cond
-      (lic/listed-id?    id) :license-id
-      (exc/listed-id?    id) :exception-id
-      (lic/license-ref?  id) :license-ref
-      (exc/addition-ref? id) :addition-ref
-      :else                  nil)))
+      (lic/listed-id?    s) :license-id
+      (exc/listed-id?    s) :exception-id
+      (lic/license-ref?  s) :license-ref
+      (exc/addition-ref? s) :addition-ref
+      :else                 nil)))
 
 (defn listed-id?
-  "Is `id` (a `String`) one of the listed SPDX identifiers?
+  "Is `s` (a `String`) one of the listed SPDX identifiers?
 
   Notes:
 
   * This fn supports any case of identifier, as per the SPDX case sensitivity
     rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
-  [^String id]
+  [^String s]
   (boolean
-    (or (lic/listed-id? id)
-        (exc/listed-id? id))))
+    (or (lic/listed-id? s)
+        (exc/listed-id? s))))
 
 (defn canonicalise
-  "Canonicalises `id-or-ref` (an SPDX identifier or Ref), by returning it in its
-  canonical case.  Returns `nil` if `id-or-ref` is `nil` or not a listed SPDX
+  "Canonicalises `s` (an SPDX identifier or Ref), by returning it in its
+  canonical case.  Returns `nil` if `s` is `nil` or not a listed SPDX
   identifier, LicenseRef, or AdditionRef.
 
   Notes:
@@ -68,16 +68,16 @@
     non-deprecated equivalent(s), since some of those conversions result in an
     SPDX expression rather than an individual identifier.
     [[spdx.expressions/canonicalise]] can be used for that."
-  [^String id-or-ref]
-  (case (id-type id-or-ref)
-    (:license-id   :license-ref)  (lic/canonicalise id-or-ref)
-    (:exception-id :addition-ref) (exc/canonicalise id-or-ref)
+  [^String s]
+  (case (id-type s)
+    (:license-id   :license-ref)  (lic/canonicalise s)
+    (:exception-id :addition-ref) (exc/canonicalise s)
     nil))
 
 (defn ^:deprecated ^:no-doc canonicalise-id
   "Superceded by [[canonicalise]]."
-  [id]
-  (canonicalise id))
+  [^String s]
+  (canonicalise s))
 
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX identifiers, LicenseRefs or
