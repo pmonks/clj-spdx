@@ -51,10 +51,7 @@
     (is (nil? (parse "GPL-2.0 WITH AdditionRef-foo+")))               ; Cannot use + with AdditionRefs
     (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
     (is (nil? (parse "AdditionRef-foo")))                             ; AdditionRef without  "<license> WITH " first
-    (is (nil? (parse "DocumentRef-foo:AdditionRef-bar")))             ; AdditionRef without  "<license> WITH " first
-    (is (nil? (parse "MIT and Apache-2.0" {:case-sensitive-operators? true})))                     ; AND clause must be capitalised
-    (is (nil? (parse "MIT or Apache-2.0" {:case-sensitive-operators? true})))                      ; OR clause must be capitalised
-    (is (nil? (parse "GPL-2.0 with Classpath-exception-2.0" {:case-sensitive-operators? true}))))  ; WITH clause must be capitalised
+    (is (nil? (parse "DocumentRef-foo:AdditionRef-bar"))))             ; AdditionRef without  "<license> WITH " first
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "LicenseRef-foo")                           {:license-ref "foo"}))
@@ -64,7 +61,9 @@
   (testing "Simple expressions - mixed case"
     (is (= (parse "apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "APACHE-2.0")                               {:license-id "Apache-2.0"}))
-    (is (= (parse "aPaCHe-2.0")                               {:license-id "Apache-2.0"})))
+    (is (= (parse "aPaCHe-2.0")                               {:license-id "Apache-2.0"}))
+; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (= (parse "documentref-foo:licenseref-bar")           {:license-ref "bar" :document-ref "foo"})))
   (testing "Compound expressions"
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-or-later"}]))
@@ -96,7 +95,14 @@
                                                                [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]]))
     (is (= (parse "LicenseRef-foo WITH AdditionRef-bar")      {:license-ref "foo" :addition-ref "bar"}))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")
-                                                              {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"})))
+                                                              {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"}))
+    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (= (parse "MIT and Apache-2.0")                       [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "MIT or Apache-2.0")                        [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (parse "GPL-2.0 with Classpath-exception-2.0")     {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}))
+    (is (= (parse "licenseref-FOO with additionref-BAR")      {:license-ref "FOO" :addition-ref "BAR"}))
+    (is (= (parse "documentref-FOO:licenseref-Bar wItH documentref-blah:additionref-bANANA")
+                                                              {:document-ref "FOO" :license-ref "Bar" :addition-document-ref "blah" :addition-ref "bANANA"})))
   (testing "Expressions that exercise operator precedence"
     (is (= (parse "GPL-2.0-only AND Apache-2.0 OR MIT")       [:or
                                                                {:license-id "MIT"}
@@ -156,15 +162,15 @@
     (is (= (parse "Net-SNMP")                                 [:and
                                                                {:license-id "BSD-3-Clause"}
                                                                {:license-id "MIT-CMU"}]))
-    (is (= (parse "Net-SNMP+")                                [:and    ; Nonsensical, but confirms that the or-later? flag is preserved
+    (is (= (parse "Net-SNMP+")                                [:and    ; Nonsensical, but confirms that the or-later? flag is preserved during a 1:2 replacement
                                                                {:license-id "BSD-3-Clause" :or-later? true}
                                                                {:license-id "MIT-CMU"      :or-later? true}]))
     ; Cursed expressions with +
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
-    (is (= (parse "GPL-2.0-only+" {:canonicalise-deprecated-ids? false})   ; This should always be canonicalised, regardless of deprecation canonicalisation
+    (is (= (parse "GPL-2.0-only+" {:canonicalise-deprecated-ids? false})      ; This should always be canonicalised, regardless of :canonicalise-deprecated-ids?
                                                               {:license-id "GPL-2.0-or-later"}))
-    (is (= (parse "GPL-2.0-or-later+" {:canonicalise-deprecated-ids? false})   ; This should always be canonicalised, regardless of deprecation canonicalisation
+    (is (= (parse "GPL-2.0-or-later+" {:canonicalise-deprecated-ids? false})  ; This should always be canonicalised, regardless of :canonicalise-deprecated-ids?
                                                               {:license-id "GPL-2.0-or-later"}))
     ; Cursed eCos-2.0 and wxWindows cases (these two changed type - license ids replaced by exception ids 😬)
     (is (= (parse "eCos-2.0")                                 {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}))
@@ -389,8 +395,7 @@
     (is (nil? (canonicalise "DocumentRef-foo")))
     (is (nil? (canonicalise "LicenseRef-this:is:invalid")))
     (is (nil? (canonicalise "((BSD-2-Clause")))
-    (is (nil? (canonicalise "Classpath-exception-2.0")))
-    (is (nil? (canonicalise "MIT and AGPL-3.0" {:case-sensitive-operators? true}))))
+    (is (nil? (canonicalise "Classpath-exception-2.0"))))
   (testing "Simple expressions"
     (is (= (canonicalise "Apache-2.0")                     "Apache-2.0"))
     (is (= (canonicalise "aPaCHe-2.0")                     "Apache-2.0"))
@@ -399,7 +404,9 @@
     (is (= (canonicalise "LGPL-3.0+")                      "LGPL-3.0-or-later"))
     (is (= (canonicalise "LGPL-3.0-or-later")              "LGPL-3.0-or-later"))
     (is (= (canonicalise "LicenseRef-foo")                 "LicenseRef-foo"))
-    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar")))
+    (is (= (canonicalise "licenseref-foo")                 "LicenseRef-foo"))
+    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar"))
+    (is (= (canonicalise "DOCUMENTREF-foo:LICENSEREF-bar") "DocumentRef-foo:LicenseRef-bar")))
   (testing "Compound expressions"
     (is (= (canonicalise "MIT and AGPL-3.0")                                                        "AGPL-3.0-only AND MIT"))
     (is (= (canonicalise "(GPL-2.0 WITH Classpath-exception-2.0)")                                  "GPL-2.0-only WITH Classpath-exception-2.0"))
@@ -408,8 +415,12 @@
     (is (= (canonicalise "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0")                 "GPL-2.0-only WITH Classpath-exception-2.0 AND GPL-2.0-only WITH GCC-exception-2.0"))
     (is (= (canonicalise "LicenseRef-foo WITH Classpath-exception-2.0")                             "LicenseRef-foo WITH Classpath-exception-2.0"))
     (is (= (canonicalise "Apache-2.0 WITH AdditionRef-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
+    (is (= (canonicalise "Apache-2.0 WITH additionref-foo")                                         "Apache-2.0 WITH AdditionRef-foo"))
     (is (= (canonicalise "LicenseRef-foo with AdditionRef-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
-    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
+    (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar wItH DocumentRef-blah:AdditionRef-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana"))
+    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (= (canonicalise "licenseref-foo with additionref-blah")                                    "LicenseRef-foo WITH AdditionRef-blah"))
+    (is (= (canonicalise "documentref-foo:licenseref-bar wItH documentref-blah:additionref-banana") "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
   (testing "Precedence rules"
     (is (= (canonicalise "Apache-2.0 OR  (MIT or  BSD-3-Clause)") "Apache-2.0 OR BSD-3-Clause OR MIT"))
     (is (= (canonicalise "Apache-2.0 and (MIT AND BSD-3-Clause)") "Apache-2.0 AND BSD-3-Clause AND MIT"))
@@ -451,8 +462,7 @@
     (is (not (valid? "+")))
     (is (not (valid? "AND")))
     (is (not (valid? "Apache")))
-    (is (not (valid? "Classpath-exception-2.0")))
-    (is (not (valid? "MIT or Apache-2.0" {:case-sensitive-operators? true}))))    ; OR clause must be capitalised
+    (is (not (valid? "Classpath-exception-2.0"))))
   (testing "Valid expressions"
     (is (valid? "Apache-2.0"))
     (is (valid? "apache-2.0"))
@@ -461,7 +471,9 @@
     (is (valid? "DocumentRef-foo:LicenseRef-bar"))
     (is (valid? "GPL-2.0 WITH Classpath-exception-2.0"))
     (is (valid? "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)"))
-    (is (valid? "(APACHE-2.0 AND MIT) OR (((GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)))"))))
+    (is (valid? "(APACHE-2.0 AND MIT) OR (((GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)))"))
+    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (valid? "MIT or Apache-2.0"))))
 
 (deftest simple?-tests
   (testing "Nil, empty, etc."
@@ -471,14 +483,15 @@
     (is (nil? (simple? "+")))
     (is (nil? (simple? "AND")))
     (is (nil? (simple? "Apache")))
-    (is (nil? (simple? "Classpath-exception-2.0")))
-    (is (nil? (simple? "MIT or Apache-2.0" {:case-sensitive-operators? true}))))    ; OR clause must be capitalised
+    (is (nil? (simple? "Classpath-exception-2.0"))))
   (testing "Valid expressions - simple"
     (is (true? (simple? "Apache-2.0")))
     (is (true? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0"))))
   (testing "Valid expressions - compound"
     (is (false? (simple? "Apache-2.0 AND MIT")))
-    (is (false? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))))
+    (is (false? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))
+    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (false? (simple? "MIT or Apache-2.0")))))
 
 (deftest compound?-tests
   (testing "Nil, empty, etc."
@@ -488,14 +501,15 @@
     (is (nil? (compound? "+")))
     (is (nil? (compound? "AND")))
     (is (nil? (compound? "Apache")))
-    (is (nil? (compound? "Classpath-exception-2.0")))
-    (is (nil? (compound? "MIT or Apache-2.0" {:case-sensitive-operators? true}))))    ; OR clause must be capitalised
+    (is (nil? (compound? "Classpath-exception-2.0"))))
   (testing "Valid expressions - simple"
     (is (false? (compound? "Apache-2.0")))
     (is (false? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0"))))
   (testing "Valid expressions - compound"
     (is (true? (compound? "Apache-2.0 AND MIT")))
-    (is (true? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))))
+    (is (true? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))
+    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (compound? "MIT or Apache-2.0")))))
 
 (deftest extract-ids-tests
   (testing "Nil"

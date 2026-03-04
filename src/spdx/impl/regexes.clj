@@ -13,13 +13,15 @@
   API of clj-spdx and may change without notice."
   (:require [wreck.api :as re]))
 
-; Note: the DocumentRef and LicenseRef portions of a LicenseRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-(def license-ref-fragment-re-d  (delay #"(?:DocumentRef-(?<DocumentRef>[\p{Alnum}-\.]+):)?LicenseRef-(?<LicenseRef>[\p{Alnum}-\.]+)"))
-(def license-ref-re-d           (delay (re/join #"(?<!\w)" "(?<Identifier>" @license-ref-fragment-re-d ")" #"(?!\w)")))
+; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+(def license-ref-fragment-re-d  (delay (re/fgrp "i" (re/opt-grp #"DocumentRef-" (re/ncg "DocumentRef" #"[\p{Alnum}\-\.]+") ":")
+                                                    "LicenseRef-" (re/ncg "LicenseRef" #"[\p{Alnum}\-\.]+"))))
+(def license-ref-re-d           (delay (re/join (re/-lb #"\w") (re/ncg "Identifier" @license-ref-fragment-re-d) (re/-la #"\w"))))
 
-; Note: the DocumentRef and AdditionRef portions of an AdditionRef are case-sensitive (see https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-(def addition-ref-fragment-re-d (delay #"(?:DocumentRef-(?<AdditionDocumentRef>[\p{Alnum}-\.]+):)?AdditionRef-(?<AdditionRef>[\p{Alnum}-\.]+)"))
-(def addition-ref-re-d          (delay (re/join #"(?<!\w)" "(?<Identifier>" @addition-ref-fragment-re-d ")" #"(?!\w)")))
+; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+(def addition-ref-fragment-re-d  (delay (re/fgrp "i" (re/opt-grp #"DocumentRef-" (re/ncg "AdditionDocumentRef" #"[\p{Alnum}\-\.]+") ":")
+                                                    "AdditionRef-" (re/ncg "AdditionRef" #"[\p{Alnum}\-\.]+"))))
+(def addition-ref-re-d           (delay (re/join (re/-lb #"\w") (re/ncg "Identifier" @addition-ref-fragment-re-d) (re/-la #"\w"))))
 
 (defn init!
   "Initialises this namespace upon first call (and does nothing on subsequent

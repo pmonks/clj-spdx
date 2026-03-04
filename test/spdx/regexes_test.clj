@@ -22,7 +22,6 @@
     (is (nil? (build-re nil {:include-license-refs? true})))
     (is (nil? (build-re nil {:include-addition-refs? true})))
     (is (nil? (build-re nil {:include-license-refs? true :include-addition-refs? true})))
-    (is (nil? (build-re nil {:case-sensitive? true :include-license-refs? true :include-addition-refs? true})))
     (is (instance? java.util.regex.Pattern (build-re ["Apache-2.0"]))))
   (let [apache-20-re (build-re ["Apache-2.0"])]
     (testing "matches"
@@ -36,7 +35,8 @@
       (is (nil? (re-matches apache-20-re "GPL-2.0")))
       (is (nil? (re-matches apache-20-re "Apache-1.1")))
       (is (nil? (re-matches apache-20-re "Apache-2.0 GPL-2.0")))
-      (is (nil? (re-matches apache-20-re "LicenseRef-foo-bar"))))
+      (is (nil? (re-matches apache-20-re "LicenseRef-foo")))
+      (is (nil? (re-matches apache-20-re "AdditionRef-bar"))))
     (testing "finds"
       (is (not (nil? (re-find apache-20-re "Apache-2.0"))))
       (is (not (nil? (re-find apache-20-re "APACHE-2.0"))))
@@ -62,20 +62,6 @@
       (is (= 1 (count (re-seq apache-20-re "Apache-2.0"))))
       (is (= 2 (count (re-seq apache-20-re "Apache-2.0 Apache-2.0"))))
       (is (= 2 (count (re-seq apache-20-re "foo;Apache-2.0 bar Apache-2.0 blah"))))))
-  (let [apache-20-re (build-re ["Apache-2.0"] {:case-sensitive? true})]
-    (testing "matches - case sensitive"
-      (is (not (nil? (re-matches apache-20-re "Apache-2.0")))))
-    (testing "non-matches - case sensitive"
-      (is (nil? (re-matches apache-20-re "")))
-      (is (nil? (re-matches apache-20-re "apache-2.0")))
-      (is (nil? (re-matches apache-20-re "APACHE-2.0"))))
-    (testing "finds - case sensitive"
-      (is (not (nil? (re-find apache-20-re "Apache-2.0"))))
-      (is (not (nil? (re-find apache-20-re " Apache-2.0 "))))
-      (is (not (nil? (re-find apache-20-re "foo;Apache-2.0;bar"))))
-      (is (not (nil? (re-find apache-20-re "Apache-1.1 Apache-2.0 GPL-2.0")))))
-    (testing "non-finds - case sensitive"
-      (is (nil? (re-find apache-20-re "APACHE-2.0")))))
   ; Because the ids that end in a + are a headache
   (let [gpl-20-plus-re (build-re ["GPL-2.0+"])]
     (testing "GPL-2.0+ matches"
@@ -112,9 +98,10 @@
     (testing "matches"
       (is (not (nil? (re-matches apache-20-or-license-ref-re "Apache-2.0"))))
       (is (not (nil? (re-matches apache-20-or-license-ref-re "aPaChE-2.0"))))
-      (is (not (nil? (re-matches apache-20-or-license-ref-re "LicenseRef-foo-bar")))))
-    (testing "non-matches"
-      (is (nil? (re-matches apache-20-or-license-ref-re "licenseref-foo-bar"))))
+      (is (not (nil? (re-matches apache-20-or-license-ref-re "LicenseRef-foo-bar"))))
+      (is (not (nil? (re-matches apache-20-or-license-ref-re "licenseref-foo-bar")))))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (testing "non matches"
+      (is (nil? (re-matches  apache-20-or-license-ref-re "additionref-foo-bar"))))
     (testing "Named capturing groups (via rencg library)"
       (let [m (rencg/re-matches-ncg apache-20-or-license-ref-re "Apache-2.0")]
         (is (contains? m "Identifier"))
@@ -143,14 +130,18 @@
 
 (def ref-values-that-should-find-and-match
   ["LicenseRef-foo"
+   "licenseref-foo"                               ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
    "LicenseRef-foo-"                              ; valid, but 🤢
    "LicenseRef-foo."                              ; valid, but 🤢
    "LicenseRef-foo.-.-.-.-.-.-.-.-.-.-.-.-bar"    ; valid, but 🤢
    "DocumentRef-foo:LicenseRef-bar"
+   "documentref-foo:licenseref-bar"               ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
    "DocumentRef-foo-:LicenseRef-bar."             ; valid, but 🤢
    "AdditionRef-foo"
+   "additionref-foo"                              ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
    "AdditionRef-foo-."                            ; valid, but 🤢
    "DocumentRef-foo:AdditionRef-bar"
+   "documentref-foo:additionref-bar"              ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
    "DocumentRef-foo.:AdditionRef-bar-"])          ; valid, but 🤢
 
 (def values-that-should-find-and-match
@@ -178,10 +169,10 @@
 (def values-that-should-not-find-or-match
   ["foobar"
    "Apache-2.00"
-   "licenseref-foo"
-   "additionaref-foo"
-   "documentRef-foo:Licenseref-bar"
-   "documentRef-foo:Additionref-bar"])
+   "licenseref:foo"
+   "additionaref:foo"
+   "documentRef:foo-Licenseref:bar"
+   "documentRef:foo-Additionref:bar"])
 
 (def values-that-should-not-match
   (concat values-that-should-not-find-or-match
@@ -254,11 +245,11 @@
     (is (= (license-ref-re) (license-ref-re))))  ; Ensure regex is cached
   (testing "matches"
     (is (not (nil? (re-matches (license-ref-re) "LicenseRef-foo"))))
+    (is (not (nil? (re-matches (license-ref-re) "licenseref-foo"))))                  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (not (nil? (re-matches (license-ref-re) "DocumentRef-foo:LicenseRef-bar"))))
+    (is (not (nil? (re-matches (license-ref-re) "documentRef-foo:Licenseref-bar"))))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (not (nil? (re-matches (license-ref-re) "DocumentRef-foo-bar-2.0:LicenseRef-foo-bar-2.0")))))
   (testing "non-matches"
-    (is (nil? (re-matches (license-ref-re) "licenseref-foo")))
-    (is (nil? (re-matches (license-ref-re) "documentRef-foo:Licenseref-bar")))
     (is (nil? (re-matches (license-ref-re) "LicenseRef-@%$^")))
     (is (nil? (re-matches (license-ref-re) "Apache-2.0")))
     (is (nil? (re-matches (license-ref-re) "Apache-200")))
@@ -276,11 +267,11 @@
     (is (= (addition-ref-re) (addition-ref-re))))  ; Ensure regex is cached
   (testing "matches"
     (is (not (nil? (re-matches (addition-ref-re) "AdditionRef-foo"))))
+    (is (not (nil? (re-matches (addition-ref-re) "additionref-foo"))))                  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (not (nil? (re-matches (addition-ref-re) "DocumentRef-foo:AdditionRef-bar"))))
+    (is (not (nil? (re-matches (addition-ref-re) "documentRef-foo:Additionref-bar"))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (not (nil? (re-matches (addition-ref-re) "DocumentRef-foo-bar-2.0:AdditionRef-foo-bar-2.0"))))))
   (testing "non-matches"
-    (is (nil? (re-matches (addition-ref-re) "additionref-foo")))
-    (is (nil? (re-matches (addition-ref-re) "documentRef-foo:Additionref-bar")))
     (is (nil? (re-matches (addition-ref-re) "AdditionRef-@%$^")))
     (is (nil? (re-matches (addition-ref-re) "Apache-2.0")))
     (is (nil? (re-matches (addition-ref-re) "Apache-200")))

@@ -34,51 +34,17 @@
           set))
 
 (defn listed-id?
-  "Is `id` (a `String`) one of the listed SPDX license identifiers?
+  "Is `s` (a `String`) one of the listed SPDX license identifiers?
 
   Notes:
 
   * This fn supports any case of identifier, as per the SPDX case sensitivity
     rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
-  [^String id]
-  (im/listed-license-id? id))
-
-(def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
-
-(defn canonicalise-id
-  "Canonicalises `id` (an SPDX license identifier), by returning it in its
-  canonical case.  Returns `nil` if `id` is `nil` or not a listed SPDX license
-  identifier.
-
-  Notes:
-
-  * This function does _not_ canonicalise a deprecated identifier to its
-    non-deprecated equivalent(s), since some of those conversions result in an
-    SPDX expression rather than an individual identifier.
-    [[spdx.expressions/canonicalise]] can be used for that."
-  [^String id]
-  (when id
-    (get @id-canonicalisation-d (s/lower-case id))))
-
-(defn equivalent-ids?
-  "Are `id1` and `id2` (`String`s) equivalent SPDX license identifiers (i.e.
-  taking the SPDX case sensitivity rules in
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?
-
-  Notes:
-
-  * Returns `false` if `id1` or `id2` are not valid SPDX license identifiers"
-  [^String id1 ^String id2]
-  (let [canonical-id1 (canonicalise-id id1)
-        canonical-id2 (canonicalise-id id2)]
-    (boolean
-      (and canonical-id1
-           canonical-id2
-           (= canonical-id1 canonical-id2)))))
+  [^String s]
+  (im/listed-license-id? s))
 
 (defn license-ref?
-  "Is `s` (a `String`) a valid `LicenseRef`? See
+  "Is `s` (a `String`) a valid LicenseRef? See
   [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
   for specifics."
   [s]
@@ -86,15 +52,15 @@
 
 (defn license-ref
   "Constructs a LicenseRef (as a `String`) from individual 'variable
-  section' `String`s. Returns `nil` if `license-ref` is blank, or the resulting
-  value is not a valid LicenseRef."
+  section' `String`s. Returns `nil` if `license-ref-var-section` is blank, or
+  the resulting value is not a valid LicenseRef."
   ([^String license-ref-var-section] (license-ref nil license-ref-var-section))
   ([^String document-ref-var-section ^String license-ref-var-section]
-    (when-not (s/blank? license-ref-var-section)
-      (let [result (str (when document-ref-var-section (str "DocumentRef-" document-ref-var-section ":"))
-                        "LicenseRef-" license-ref-var-section)]
-        (when (license-ref? result)
-          result)))))
+   (when-not (s/blank? license-ref-var-section)
+     (let [result (str (when document-ref-var-section (str "DocumentRef-" document-ref-var-section ":"))
+                       "LicenseRef-" license-ref-var-section)]
+       (when (license-ref? result)
+         result)))))
 
 (defn license-ref-map->string
   "Turns map `m` representing a LicenseRef into a `String`, returning `nil` if
@@ -104,7 +70,7 @@
 
   * This fn is the inverse of [[string->license-ref-map]]."
   [^java.util.Map m]
-  (when m
+  (when (and m (contains? m :license-ref))
     (license-ref (:document-ref m) (:license-ref m))))
 
 (defn string->license-ref-map
@@ -121,39 +87,52 @@
       (merge {:license-ref (get m "LicenseRef")}
              (when-let [document-ref (get m "DocumentRef")] {:document-ref document-ref})))))
 
-(defn equivalent-license-refs?
-  "Are `s1` and `s2` (`String`s) equivalent LicenseRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?
+(def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
+
+(defn canonicalise
+  "Canonicalises `s` (an SPDX license identifier or LicenseRef), by returning it
+  in its canonical case.  Returns `nil` if `s` is `nil` or not a listed SPDX
+  license identifier or LicenseRef.
 
   Notes:
 
-  * Returns `false` if `s1` or `s2` are not valid LicenseRefs"
-  [^String s1 ^String s2]
-  (boolean
-    (when-let [license-ref-1 (string->license-ref-map s1)]
-      (when-let [license-ref-2 (string->license-ref-map s2)]
-        (and (= (u/safe-lower-case (:document-ref license-ref-1)) (u/safe-lower-case (:document-ref license-ref-2)))
-             (= (s/lower-case      (:license-ref  license-ref-1)) (s/lower-case      (:license-ref  license-ref-2))))))))
+  * This function does _not_ canonicalise a deprecated identifier to its
+    non-deprecated equivalent(s), since some of those conversions result in an
+    SPDX expression rather than an individual identifier.
+    [[spdx.expressions/canonicalise]] can be used for that."
+  [^String s]
+  (when s
+    (if-let [id (get @id-canonicalisation-d (s/lower-case s))]
+      id
+      (when-let [license-ref-map (string->license-ref-map s)]
+        (license-ref-map->string license-ref-map)))))
+
+(defn ^:deprecated ^:no-doc canonicalise-id
+  "Superceded by [[canonicalise]]."
+  [^String s]
+  (canonicalise s))
 
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers or
-  LicenseRefs (i.e. taking the SPDX
-  case sensitivity rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?
-
-  Notes:
-
-  * Returns `false` if `s1` or `s2` are not listed SPDX license identifiers or
-    valid LicenseRefs"
+  LicenseRefs (i.e. taking the SPDX case sensitivity rules in [SPDX
+  Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+  into account)?"
   [^String s1 ^String s2]
-  (if (and s1 s2)
-    (if (and (listed-id? s1) (listed-id? s2))
-      (equivalent-ids? s1 s2)
-      (if (and (license-ref? s1) (license-ref? s2))
-        (equivalent-license-refs? s1 s2)
-        false))
-    false))
+  (boolean
+    (or (and (nil? s1) (nil? s2))
+        (let [cs1 (canonicalise s1)
+              cs2 (canonicalise s2)]
+          (and cs1 cs2 (= (s/lower-case cs1) (s/lower-case cs2)))))))
+
+(defn ^:deprecated ^:no-doc equivalent-ids?
+  "Superceded by [[equivalent?]]"
+  [^String s1 ^String s2]
+  (equivalent? s1 s2))
+
+(defn ^:deprecated ^:no-doc equivalent-license-refs?
+  "Superceded by [[equivalent?]]"
+  [^String s1 ^String s2]
+  (equivalent? s1 s2))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info

@@ -18,30 +18,22 @@
             [spdx.exceptions        :as exc]
             [spdx.impl.replacements :as sir]))
 
-(def ^:private case-sensitive-operators-fragment
-  "<and>                  = <ws 'AND' ws>
-   <or>                   = <ws 'OR' ws>
-   <with>                 = <ws 'WITH' ws>")
-
-(def ^:private case-insensitive-operators-fragment
-  "<and>                  = <ws #\"(?i)AND\" ws>
-   <or>                   = <ws #\"(?i)OR\" ws>
-   <with>                 = <ws #\"(?i)WITH\" ws>")
-
 ; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/
-(def ^:private spdx-license-expression-grammar-format "
+(def ^:private grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
   <ows>                  = <#\"\\s*\">
   <id-string>            = #\"[\\p{Alnum}-\\.]+\"
-  %s
+  <and>                  = <ws #\"(?i:AND)\" ws>
+  <or>                   = <ws #\"(?i:OR)\" ws>
+  <with>                 = <ws #\"(?i:WITH)\" ws>
   <or-later>             = <'+'>
 
   (* Identifiers *)
   license-id             = %s
   license-exception-id   = %s
-  license-ref            = [<'DocumentRef-'> id-string <':'>] <'LicenseRef-'> id-string
-  addition-ref           = [<'DocumentRef-'> id-string <':'>] <'AdditionRef-'> id-string
+  license-ref            = [<#\"(?i:DocumentRef)-\"> id-string <':'>] <#\"(?i:LicenseRef)-\"> id-string
+  addition-ref           = [<#\"(?i:DocumentRef)-\"> id-string <':'>] <#\"(?i:AdditionRef)-\"> id-string
 
   (* 'License component' (hashmap) production rules *)
   license-or-later       = license-id or-later
@@ -55,20 +47,14 @@
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (exc/ids)))))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (exc/ids)))))
 
-(def ^:private spdx-license-expression-cs-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                   case-sensitive-operators-fragment
-                                                                   @license-ids-fragment
-                                                                   @exception-ids-fragment)))
-(def ^:private spdx-license-expression-ci-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                   case-insensitive-operators-fragment
-                                                                   @license-ids-fragment
-                                                                   @exception-ids-fragment)))
+(def ^:private grammar-d (delay (format grammar-format
+                                        @license-ids-fragment
+                                        @exception-ids-fragment)))
 
-(def ^:private spdx-license-expression-cs-parser-d (delay (insta/parser @spdx-license-expression-cs-grammar-d :start :expression)))
-(def ^:private spdx-license-expression-ci-parser-d (delay (insta/parser @spdx-license-expression-ci-grammar-d :start :expression)))
+(def ^:private parser-d (delay (insta/parser @grammar-d :start :expression)))
 
 (defn- walk-internal
   "Internal implementation of [[walk]]."
@@ -297,21 +283,18 @@
   `opts` are as for [[parse]]"
   ([s] (parse-with-info s nil))
   ([^String s {:keys [canonicalise-deprecated-ids?
-                      case-sensitive-operators?
                       collapse-redundant-clauses?
                       sort-licenses?]
                  :or {canonicalise-deprecated-ids? true
-                      case-sensitive-operators?    false
                       collapse-redundant-clauses?  true
                       sort-licenses?               true}}]
    (when-not (s/blank? s)
-     (let [parser     (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
-           parse-tree (insta/parse parser s)]
+     (let [parse-tree (insta/parse @parser-d s)]
        (if (insta/failure? parse-tree)
          parse-tree
          (as-> parse-tree parse-tree
-               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise-id (first %&)))
-                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise-id (first %&)))
+               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise (first %&)))
+                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise (first %&)))
                                  :license-ref          #(case (count %&)
                                                           1 {:license-ref  (first %&)}
                                                           2 {:document-ref (first %&) :license-ref (second %&)})
@@ -355,9 +338,6 @@
     non-deprecated equivalents (where possible) as part of the parsing process.
     Note that not all deprecated identifiers have non-deprecated equivalents,
     and those will be left unchanged in the parse tree.
-  * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
-    operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
-    (spec-compliant, but strict) or not (non-spec-compliant, lenient).
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
     whether redundant clauses (e.g. `\"Apache-2.0 AND Apache-2.0\"`) are
     collapsed during parsing.  Note: disabling sorting (`:sort-licenses?`) may
@@ -371,6 +351,7 @@
 
   Deprecated & removed `opts`:
 
+  * `:case-sensitive-operators?` - case sensitivity rules changed in SPDX v3.0.2
   * `:normalise-deprecated-ids?` - superceded by `:canonicalise-deprecated-ids?`
   * `:normalise-gpl-ids?` - superceded by `:canonicalise-deprecated-ids?`
 
@@ -387,10 +368,6 @@
     expressions' precedence rules explicit (see [the relevant section within
     annex B of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#order-of-precedence-and-parentheses)
     for details).
-  * The default `opts` result in parsing that is more lenient than the SPDX
-    specification and is therefore not strictly spec compliant.  You can enable
-    strictly spec compliant parsing by setting `case-sensitive-operators?` to
-    `true`.
 
   Examples (assuming default options):
 
@@ -424,13 +401,6 @@
     {:license-id \"Apache-2.0\"}
     {:license-id \"BSD-2-Clause\"}]]
 
-  ; Case insensitive operators
-  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")
-  [:or
-   {:license-id \"CDDL-1.1\"}
-   {:license-id \"GPL-2.0-or-later\"
-    :license-exception-id \"Classpath-exception-2.0\"}]
-
   ; LicenseRefs (custom license identifiers)
   (parse \"DocumentRef-foo:LicenseRef-bar\")
   {:document-ref \"foo\"
@@ -444,11 +414,9 @@
   ```"
   ([s] (parse s nil))
   ([s {:keys [canonicalise-deprecated-ids?
-              case-sensitive-operators?
               collapse-redundant-clauses?
               sort-licenses?]
          :or {canonicalise-deprecated-ids? true
-              case-sensitive-operators?    false
               collapse-redundant-clauses?  true
               sort-licenses?               true}
          :as opts}]
@@ -481,15 +449,15 @@
 
   The optional `opts` map has these keys:
 
-  * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
-    operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
-    (spec-compliant, but strict) or not (non-spec-compliant, lenient)."
+  * None, currently
+
+  Deprecated & removed `opts`:
+
+  * `:case-sensitive-operators?` - case sensitivity rules changed in SPDX v3.0.2"
   ([^String s] (valid? s nil))
-  ([^String s {:keys [case-sensitive-operators?]
-                 :or {case-sensitive-operators? false}}]
-   (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
-     (not (or (s/blank? s)
-              (insta/failure? (insta/parse parser s)))))))
+  ([^String s _]
+   (not (or (s/blank? s)
+            (insta/failure? (insta/parse @parser-d s))))))
 
 (defn simple?
   "Is `s` (a `String`) a 'simple' SPDX license expression (i.e. one that
@@ -545,11 +513,6 @@
   (exc/init!)
   @license-ids-fragment
   @exception-ids-fragment
-; Note: we always leave these to runtime, since they're not expensive, and doing so
-; ensures that callers who exclusively use one parsing variant aren't paying an
-; unnecessary memory cost.
-;  @spdx-license-expression-ci-grammar-d
-;  @spdx-license-expression-cs-grammar-d
-;  @spdx-license-expression-ci-parser-d
-;  @spdx-license-expression-cs-parser-d
+  @grammar-d
+  @parser-d
   nil)

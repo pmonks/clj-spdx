@@ -11,8 +11,8 @@
 (ns spdx.licenses-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils  :refer [equivalent-colls?]]
-            [spdx.licenses    :refer [version ids listed-id? canonicalise-id equivalent-ids? license-ref? license-ref
-                                      license-ref-map->string string->license-ref-map equivalent-license-refs?
+            [spdx.licenses    :refer [version ids listed-id? canonicalise license-ref? license-ref
+                                      license-ref-map->string string->license-ref-map
                                       equivalent? id->info deprecated-id? non-deprecated-ids osi-approved-id?
                                       osi-approved-ids fsf-libre-id? fsf-libre-ids]]
             [spdx.expressions :as exp]))
@@ -40,40 +40,24 @@
     (is (true? (listed-id? "GPL-3.0")))
     (is (true? (listed-id? "CC-BY-4.0")))))
 
-(deftest canonicalise-id-tests
-  (testing "Invalid ids return nil"
-    (is (nil? (canonicalise-id nil)))
-    (is (nil? (canonicalise-id "")))
-    (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "LicenseRefs return nil"
-    (is (nil? (canonicalise-id "LicenseRef-foo")))
-    (is (nil? (canonicalise-id "DocumentRef-foo:LicenseRef-foo"))))
-  (testing "id in canonical form"
-    (is (= "Apache-2.0" (canonicalise-id "Apache-2.0")))
-    (is (= "GPL-3.0"    (canonicalise-id "GPL-3.0")))
-    (is (= "CC-BY-4.0"  (canonicalise-id "CC-BY-4.0"))))
-  (testing "id not in canonical form"
-    (is (= "Apache-2.0" (canonicalise-id "APACHE-2.0")))
-    (is (= "GPL-3.0"    (canonicalise-id "gpl-3.0")))
-    (is (= "CC-BY-4.0"  (canonicalise-id "cc-by-4.0")))))
-
-(deftest equivalent-ids?-tests
-  (testing "nil, empty etc."
-    (is (false? (equivalent-ids? nil nil)))
-    (is (false? (equivalent-ids? "" nil)))
-    (is (false? (equivalent-ids? nil ""))))
-  (testing "invalid ids"
-    (is (false? (equivalent-ids? "foo" "foo")))
-    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
-    (is (false? (equivalent-ids? "Apache-2.0"                                             "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
-    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "GPL-2.0"))))
-  (testing "valid ids that are not equivalent"
-    (is (false? (equivalent-ids? "Apache-2.0" "GPL-2.0")))
-    (is (false? (equivalent-ids? "cc-by-4.0"  "cc-by-sa-4.0"))))
-  (testing "valid ids that are equivalent"
-    (is (true? (equivalent-ids? "Apache-2.0"   "Apache-2.0")))
-    (is (true? (equivalent-ids? "APACHE-2.0"   "apache-2.0")))
-    (is (true? (equivalent-ids? "CC-BY-SA-4.0" "cc-by-sa-4.0")))))
+(deftest canonicalise-tests
+  (testing "Invalid ids/LicenseRefs return nil"
+    (is (nil? (canonicalise nil)))
+    (is (nil? (canonicalise "")))
+    (is (nil? (canonicalise "LicenseRef:foo")))
+    (is (nil? (canonicalise "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "id/LicenseRef in canonical form"
+    (is (= "Apache-2.0"                     (canonicalise "Apache-2.0")))
+    (is (= "GPL-3.0"                        (canonicalise "GPL-3.0")))
+    (is (= "CC-BY-4.0"                      (canonicalise "CC-BY-4.0")))
+    (is (= "LicenseRef-foo"                 (canonicalise "LicenseRef-foo")))
+    (is (= "DocumentRef-foo:LicenseRef-foo" (canonicalise "DocumentRef-foo:LicenseRef-foo"))))
+  (testing "id/LicenseRef not in canonical form"
+    (is (= "Apache-2.0"                     (canonicalise "APACHE-2.0")))
+    (is (= "GPL-3.0"                        (canonicalise "gpl-3.0")))
+    (is (= "CC-BY-4.0"                      (canonicalise "cc-by-4.0")))
+    (is (= "LicenseRef-foo"                 (canonicalise "licenseref-foo")))
+    (is (= "DocumentRef-foo:LicenseRef-foo" (canonicalise "DOCUMENTREF-foo:LICENSEREF-foo")))))
 
 (deftest license-ref?-tests
   (testing "Invalid LicenseRefs return false"
@@ -82,17 +66,15 @@
     (is (false? (license-ref? "INVALID-LICENSE-REF")))
     (is (false? (license-ref? " LicenseRef-foo")))                  ; Leading whitespace
     (is (false? (license-ref? "LicenseRef-foo ")))                  ; Trailing whitespace
-    (is (false? (license-ref? "licenseref-foo")))                   ; Incorrect case of "LicenseRef"
-    (is (false? (license-ref? "LICENSEREF-foo")))                   ; Incorrect case of "LicenseRef"
     (is (false? (license-ref? "LicenseRef-%#^*")))                  ; Invalid characters in LicenseRef tag
     (is (false? (license-ref? "LicenseRef-:")))                     ; Invalid characters in LicenseRef tag
     (is (false? (license-ref? "DocumentRef-%#^*:LicenseRef-bar")))  ; Invalid characters in DocumentRef tag
-    (is (false? (license-ref? "DocumentRef-::LicenseRef-:")))       ; Invalid characters in DocumentRef and LicenseRef tag
-    (is (false? (license-ref? "documentref-foo:LicenseRef-bar")))   ; Incorrect case of "DocumentRef"
-    (is (false? (license-ref? "DOCUMENTREF-foo:LicenseRef-bar"))))  ; Incorrect case of "DocumentRef"
+    (is (false? (license-ref? "DocumentRef-::LicenseRef-:"))))      ; Invalid characters in DocumentRef and LicenseRef tag
   (testing "Valid LicenseRefs"
     (is (true? (license-ref? "LicenseRef-foo")))
+    (is (true? (license-ref? "licenseref-foo")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (license-ref? "LicenseRef-FOO")))
+    (is (true? (license-ref? "LICENSEREF-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (license-ref? "LicenseRef-42")))
     (is (true? (license-ref? "LicenseRef-foo42")))
     (is (true? (license-ref? "LicenseRef-42foo")))
@@ -101,7 +83,9 @@
     (is (true? (license-ref? "LicenseRef-.")))                ; Cursed but valid
     (is (true? (license-ref? "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
     (is (true? (license-ref? "DocumentRef-foo:LicenseRef-bar")))
+    (is (true? (license-ref? "documentref-foo:licenseref-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (license-ref? "DocumentRef-FOO:LicenseRef-BAR")))
+    (is (true? (license-ref? "DOCUMENTREF-FOO:LICENSEREF-BAR")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (license-ref? "DocumentRef-42:LicenseRef-42")))
     (is (true? (license-ref? "DocumentRef-foo42:LicenseRef-bar42")))
     (is (true? (license-ref? "DocumentRef-42foo:LicenseRef-42bar")))
@@ -184,20 +168,18 @@
     (is (nil? (string->license-ref-map "INVALID-LICENSE-REF")))
     (is (nil? (string->license-ref-map " LicenseRef-foo")))
     (is (nil? (string->license-ref-map "LicenseRef-foo ")))
-    (is (nil? (string->license-ref-map "licenseref-foo")))
-    (is (nil? (string->license-ref-map "LICENSEREF-foo")))
     (is (nil? (string->license-ref-map "LicenseRef-%#^*")))
     (is (nil? (string->license-ref-map "LicenseRef-:")))
     (is (nil? (string->license-ref-map "DocumentRef-%#^*:LicenseRef-bar")))
-    (is (nil? (string->license-ref-map "DocumentRef-::LicenseRef-:")))
-    (is (nil? (string->license-ref-map "documentref-foo:LicenseRef-bar")))
-    (is (nil? (string->license-ref-map "DOCUMENTREF-foo:LicenseRef-bar"))))
+    (is (nil? (string->license-ref-map "DocumentRef-::LicenseRef-:"))))
   (testing "Valid maps - precise testing"
     (is (= {:license-ref "foo"}                     (string->license-ref-map "LicenseRef-foo")))
     (is (= {:document-ref "foo" :license-ref "bar"} (string->license-ref-map "DocumentRef-foo:LicenseRef-bar"))))
   (testing "Valid maps - directional testing"
     (is (map? (string->license-ref-map "LicenseRef-foo")))
     (is (map? (string->license-ref-map "LicenseRef-FOO")))
+    (is (map? (string->license-ref-map "licenseref-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (map? (string->license-ref-map "LICENSEREF-foo")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (map? (string->license-ref-map "LicenseRef-42")))
     (is (map? (string->license-ref-map "LicenseRef-foo42")))
     (is (map? (string->license-ref-map "LicenseRef-42foo")))
@@ -207,6 +189,8 @@
     (is (map? (string->license-ref-map "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-foo:LicenseRef-bar")))
     (is (map? (string->license-ref-map "DocumentRef-FOO:LicenseRef-BAR")))
+    (is (map? (string->license-ref-map "documentref-foo:LicenseRef-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (map? (string->license-ref-map "DOCUMENTREF-foo:LicenseRef-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (map? (string->license-ref-map "DocumentRef-42:LicenseRef-42")))
     (is (map? (string->license-ref-map "DocumentRef-foo42:LicenseRef-bar42")))
     (is (map? (string->license-ref-map "DocumentRef-42foo:LicenseRef-42bar")))
@@ -275,43 +259,46 @@
                             {:document-ref "..."               :license-ref "..."}]]
       (run! #(is (= % (string->license-ref-map (license-ref-map->string %))) %) license-ref-maps))))
 
-(deftest equivalent-license-refs?-tests
-  (testing "Invalid LicenseRefs"
-    (is (false? (equivalent-license-refs? nil nil)))
-    (is (false? (equivalent-license-refs? nil "LicenseRef-foo")))
-    (is (false? (equivalent-license-refs? "LicenseRef-foo" nil)))
-    (is (false? (equivalent-license-refs? "LICENSEREF-foo" "LICENSEREF-foo")))
-    (is (false? (equivalent-license-refs? "LicenseRef:foo" "LicenseRef:foo"))))
-  (testing "Valid LicenseRefs - not equivalent"
-    (is (false? (equivalent-license-refs? "LicenseRef-foo" "LicenseRef-bar")))
-    (is (false? (equivalent-license-refs? "LicenseRef-foo" "DocumentRef-foo:LicenseRef-bar")))
-    (is (false? (equivalent-license-refs? "DocumentRef-bar:LicenseRef-foo" "LicenseRef-foo")))
-    (is (false? (equivalent-license-refs? "DocumentRef-foo:LicenseRef-foo" "DocumentRef-foo:LicenseRef-bar")))
-    (is (false? (equivalent-license-refs? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-bar:LicenseRef-bar"))))
-  (testing "Valid and equivalent LicenseRefs"
-    (is (true? (equivalent-license-refs? "LicenseRef-foo" "LicenseRef-foo")))
-    (is (true? (equivalent-license-refs? "LicenseRef-foo" "LicenseRef-FOO")))
-    (is (true? (equivalent-license-refs? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-foo:LicenseRef-bar")))
-    (is (true? (equivalent-license-refs? "DocumentRef-FOO:LicenseRef-BAR" "DocumentRef-foo:LicenseRef-bar")))
-    (is (true? (equivalent-license-refs? "DocumentRef-FOO:LicenseRef-bar" "DocumentRef-foo:LicenseRef-BAR")))
-    (is (true? (equivalent-license-refs? "DocumentRef-FOO-V2.1:LicenseRef-bar-v3.7" "DocumentRef-foo-v2.1:LicenseRef-BAR-V3.7")))))
-
 (deftest equivalent?-tests
   (testing "nil, empty etc."
-    (is (false? (equivalent? nil nil)))
+    (is (true?  (equivalent? nil nil)))
     (is (false? (equivalent? "" nil)))
-    (is (false? (equivalent? nil ""))))
+    (is (false? (equivalent? nil "")))
+    (is (false? (equivalent? nil "Apache-2.0")))
+    (is (false? (equivalent? "Apache-2.0" nil)))
+    (is (false? (equivalent? nil "LicenseRef-foo")))
+    (is (false? (equivalent? "LicenseRef-foo" nil))))
   (testing "Not an id or LicenseRef"
-    (is (false? (equivalent? "foo" "foo")))
+    (is (false? (equivalent? ""                                                       "Apache-2.0")))
+    (is (false? (equivalent? "Apache-2.0"                                             "")))
+    (is (false? (equivalent? "foo"                                                    "foo")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
     (is (false? (equivalent? "Apache-2.0"                                             "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
-    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "LicenseRef-foo"))))
+    (is (false? (equivalent? "Apache-0.9"                                             "Apache-0.9")))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "LicenseRef-foo")))
+    (is (false? (equivalent? "LicenseRef:foo"                                         "LicenseRef:foo"))))
   (testing "valid values that are not equivalent"
-    (is (false? (equivalent? "Apache-2.0"     "LicenseRef-foo")))
-    (is (false? (equivalent? "LicenseRef-FOO" "gpl-2.0"))))
+    (is (false? (equivalent? "Apache-2.0"                     "GPL-2.0")))
+    (is (false? (equivalent? "cc-by-4.0"                      "cc-by-sa-4.0")))
+    (is (false? (equivalent? "Apache-2.0"                     "LicenseRef-foo")))
+    (is (false? (equivalent? "LicenseRef-FOO"                 "gpl-2.0")))
+    (is (false? (equivalent? "LicenseRef-foo"                 "LicenseRef-bar")))
+    (is (false? (equivalent? "LicenseRef-foo"                 "DocumentRef-foo:LicenseRef-bar")))
+    (is (false? (equivalent? "DocumentRef-bar:LicenseRef-foo" "LicenseRef-foo")))
+    (is (false? (equivalent? "DocumentRef-foo:LicenseRef-foo" "DocumentRef-foo:LicenseRef-bar")))
+    (is (false? (equivalent? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-bar:LicenseRef-bar"))))
   (testing "valid values that are equivalent"
-    (is (true? (equivalent? "APACHE-2.0"                     "apache-2.0")))
-    (is (true? (equivalent? "DocumentRef-FOO:LicenseRef-BAR" "DocumentRef-foo:LicenseRef-bar")))))
+    (is (true?  (equivalent? "Apache-2.0"                               "Apache-2.0")))
+    (is (true?  (equivalent? "APACHE-2.0"                               "apache-2.0")))
+    (is (true?  (equivalent? "CC-BY-SA-4.0"                             "cc-by-sa-4.0")))
+    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-BAR"           "DocumentRef-foo:LicenseRef-bar")))
+    (is (true?  (equivalent? "LicenseRef-foo"                           "LicenseRef-foo")))
+    (is (true?  (equivalent? "LicenseRef-foo"                           "LicenseRef-FOO")))
+    (is (true?  (equivalent? "LICENSEREF-foo"                           "licenseref-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-foo:LicenseRef-bar"           "DocumentRef-foo:LicenseRef-bar")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO:LICENSEREF-BAR"           "documentref-foo:licenseref-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-bar"           "DocumentRef-foo:LicenseRef-BAR")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:LICENSEREF-BAR-V3.7" "documentref-foo-v2.1:licenseref-bar-v3.7")))))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"
