@@ -51,19 +51,16 @@
 
   * `:id`                 - `String` (an SPDX identifier)
   * `:name`               - `String`
-  * `:comment`            - `String`
   * `:see-also`           - sequence of `String`s
-  * `:cross-refs`         - sequence of maps (see cross-ref->map for details)   ####TODO: REMOVE ME!!!!
   * `:deprecated?`        - `boolean`
   * `:deprecated-version` - `String`
   * `:fsf-libre?`         - `boolean`
   * `:osi-approved?`      - `boolean`
+  * `:comment`            - `String`
   * `:text`               - `String`
-  * `:text-html`          - `String`
+  * `:xml`                - `String`
   * `:text-template`      - `String`
   * `:header`             - `String`
-  * `:header-html`        - `String`
-  * `:header-template`    - `String`
 
   See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/SpdxListedLicense.html
   for more information.
@@ -104,12 +101,11 @@
 
   * `:id`                 - `String` (an SPDX identifier)
   * `:name`               - `String`
-  * `:comment`            - `String`
   * `:see-also`           - sequence of `String`s
   * `:deprecated?`        - `boolean`
   * `:deprecated-version` - `String`
+  * `:comment`            - `String`
   * `:text`               - `String`
-  * `:text-html`          - `String`
   * `:text-template`      - `String`
 
   See https://spdx.github.io/Spdx-Java-Library/org/spdx/library/model/license/ListedLicenseException.html

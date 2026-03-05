@@ -10,9 +10,15 @@
 
 (ns spdx.matching-test
   (:require [clojure.test    :refer [deftest testing is]]
+            [clojure.string  :as    s]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
                                      texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text
                                      exceptions-within-text differences]]))
+
+; Set the CLJ_SPDX_SKIP_MATCHING_TESTS environment variable to a non-blank value to skip these tests
+(if-not (s/blank? (System/getenv "CLJ_SPDX_SKIP_MATCHING_TESTS"))
+  (println "⚠️ Skipping matching tests ⚠️")
+  (do
 
 ; Official single license texts
 (def apache-10-text                  (delay (slurp "./test/data/apache-1.0.txt")))
@@ -299,3 +305,5 @@
     (is (map? (differences "Example text" "Apache-2.0")))
     (is (= [:differences-found? :message :differences] (keys (differences "Example text" "Apache-2.0"))))
     (is (= [:line :column :length] (keys (first (:differences (differences "Example text" "Apache-2.0"))))))))
+
+)) ; End of CLJ_SPDX_SKIP_MATCHING_TESTS conditional
