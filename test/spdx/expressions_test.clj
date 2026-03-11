@@ -49,21 +49,26 @@
     (is (nil? (parse "GPL-2.0 WITH (Classpath-Exception-2.0)")))      ; Bad nesting (parens)
     (is (nil? (parse "GPL-2.0 WITH Classpath-Exception-2.0+")))       ; Cannot use + with license exceptions
     (is (nil? (parse "GPL-2.0 WITH AdditionRef-foo+")))               ; Cannot use + with AdditionRefs
-    (is (nil? (parse "Classpath-exception-2.0")))                     ; License exception without "<license> WITH " first
-    (is (nil? (parse "AdditionRef-foo")))                             ; AdditionRef without  "<license> WITH " first
-    (is (nil? (parse "DocumentRef-foo:AdditionRef-bar"))))             ; AdditionRef without  "<license> WITH " first
+    (is (nil? (parse "Classpath-exception-2.0")))                     ; Naked license exception
+    (is (nil? (parse "AdditionRef-foo")))                             ; naked AdditionRef
+    (is (nil? (parse "DocumentRef-foo:AdditionRef-bar")))             ; Naked AdditionRef
+    (is (nil? (parse "Apache-2.0 WITH NONE")))                        ; NONE cannot be used in exception position
+    (is (nil? (parse "MIT with NOASSERTION"))))                       ; NOASSERTION cannot be used in exception position
   (testing "Simple expressions"
     (is (= (parse "Apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "LicenseRef-foo")                           {:license-ref "foo"}))
     (is (= (parse "LicenseRef-foo-bar-blah")                  {:license-ref "foo-bar-blah"}))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar")           {:license-ref "bar" :document-ref "foo"}))
-    (is (= (parse "DocumentRef-foo-bar:LicenseRef-blah")      {:license-ref "blah" :document-ref "foo-bar"})))
-  (testing "Simple expressions - mixed case"
+    (is (= (parse "DocumentRef-foo-bar:LicenseRef-blah")      {:license-ref "blah" :document-ref "foo-bar"}))
+    (is (= (parse "NONE")                                     {:special-form :none}))
+    (is (= (parse "NOASSERTION")                              {:special-form :no-assertion})))
+  (testing "Simple expressions - mixed case"  ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
     (is (= (parse "apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "APACHE-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "aPaCHe-2.0")                               {:license-id "Apache-2.0"}))
-; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
-    (is (= (parse "documentref-foo:licenseref-bar")           {:license-ref "bar" :document-ref "foo"})))
+    (is (= (parse "documentref-foo:licenseref-bar")           {:license-ref "bar" :document-ref "foo"}))
+    (is (= (parse "nOnE")                                     {:special-form :none}))
+    (is (= (parse "nOaSsErTioN")                              {:special-form :no-assertion})))
   (testing "Compound expressions"
     (is (= (parse "Apache-2.0 OR GPL-2.0")                    [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]))
     (is (= (parse "Apache-2.0 OR GPL-2.0+")                   [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-or-later"}]))
@@ -96,13 +101,17 @@
     (is (= (parse "LicenseRef-foo WITH AdditionRef-bar")      {:license-ref "foo" :addition-ref "bar"}))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")
                                                               {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"}))
+    (is (= (parse "NONE WITH Classpath-exception-2.0")        {:special-form :none :license-exception-id "Classpath-exception-2.0"}))  ; Legally nonsensical, though the SPDX ABNF allows it
     ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
     (is (= (parse "MIT and Apache-2.0")                       [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "MIT or Apache-2.0")                        [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "GPL-2.0 with Classpath-exception-2.0")     {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"}))
     (is (= (parse "licenseref-FOO with additionref-BAR")      {:license-ref "FOO" :addition-ref "BAR"}))
     (is (= (parse "documentref-FOO:licenseref-Bar wItH documentref-blah:additionref-bANANA")
-                                                              {:document-ref "FOO" :license-ref "Bar" :addition-document-ref "blah" :addition-ref "bANANA"})))
+                                                              {:document-ref "FOO" :license-ref "Bar" :addition-document-ref "blah" :addition-ref "bANANA"}))
+    (is (= (parse "none")                                     {:special-form :none}))
+    (is (= (parse "NoAssertion")                              {:special-form :no-assertion}))
+    (is (= (parse "none or noassertion")                      [:or {:special-form :no-assertion} {:special-form :none}])))  ; Legally nonsensical, though the SPDX ABNF allows it
   (testing "Expressions that exercise operator precedence"
     (is (= (parse "GPL-2.0-only AND Apache-2.0 OR MIT")       [:or
                                                                {:license-id "MIT"}
@@ -260,8 +269,10 @@
                                                               {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}))
     (is (= (parse "LicenseRef-foo OR LicenseRef-foo")         {:license-ref "foo"}))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar AND DocumentRef-foo:LicenseRef-bar ")
-                                                              {:document-ref "foo" :license-ref "bar"})))
-  (testing "Expressions that exercise sorting of licenses"
+                                                              {:document-ref "foo" :license-ref "bar"}))
+    (is (= (parse "NONE OR NONE")                             {:special-form :none}))           ; Legally nonsensical, though the SPDX ABNF allows it
+    (is (= (parse "NOASSERTION OR NOASSERTION")               {:special-form :no-assertion})))  ; Legally nonsensical, though the SPDX ABNF allows it
+  (testing "Expressions that exercise sorting"
     (is (= (parse "Apache-2.0 OR MIT")                        [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "MIT OR Apache-2.0")                        [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
     (is (= (parse "MIT OR Apache-2.0" {:sort-licenses? true}) [:or {:license-id "Apache-2.0"} {:license-id "MIT"}]))
@@ -281,12 +292,15 @@
     (is (= (parse "(GPL-2.0-only OR Apache-2.0) AND MIT")     [:and {:license-id "MIT"} [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]]))  ; Sub-clauses after licenses
     (is (= (parse "(GPL-2.0-only OR Apache-2.0) AND LicenseRef-foo")                                                                                      ; Sub-clauses after LicenseRefs
                                                               [:and {:license-ref "foo"} [:or {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}]]))
-    (is (= (parse "MIT WITH AdditionRef-foo AND MIT WITH AdditionRef-FOO")                                                                                ; Case *in*sensitive license id sorting, with case sensitive AdditionRef sorting
+    (is (= (parse "MIT WITH AdditionRef-foo AND MIT WITH AdditionRef-FOO")                                                                                ; Case *in*sensitive license id sorting, with case sensitive AdditionRef sorting (refs are case-preserving, but case *in*sensitive during comparison)
                                                               [:and {:license-id "MIT" :addition-ref "FOO"} {:license-id "MIT" :addition-ref "foo"}]))
     (is (= (parse "GPL-2.0-only WITH AdditionRef-foo AND GPL-2.0-only WITH Classpath-exception-2.0")                                                      ; AdditionRefs sort after license exceptions
                                                               [:and {:license-id "GPL-2.0-only" :license-exception-id "Classpath-exception-2.0"} {:license-id "GPL-2.0-only" :addition-ref "foo"}]))
     (is (= (parse "LicenseRef-foo WITH AdditionRef-foo AND LicenseRef-foo WITH Classpath-exception-2.0")                                                  ; AdditionRefs sort after license exceptions (LicenseRef variant)
-                                                              [:and {:license-ref "foo" :license-exception-id "Classpath-exception-2.0"} {:license-ref "foo" :addition-ref "foo"}]))))
+                                                              [:and {:license-ref "foo" :license-exception-id "Classpath-exception-2.0"} {:license-ref "foo" :addition-ref "foo"}]))
+    (is (= (parse "NONE AND Apache-2.0")                      [:and {:license-id "Apache-2.0"} {:special-form :none}]))                                   ; Special forms after licenses
+    (is (= (parse "NOASSERTION AND Apache-2.0")               [:and {:license-id "Apache-2.0"} {:special-form :no-assertion}]))
+    (is (= (parse "NONE AND LicenseRef-foo")                  [:and {:license-ref "foo"} {:special-form :none}]))))                                       ; Special forms after LicenseRefs
 
 (deftest uncanonicalised-parse-tests
   (testing "Simple expressions - canonicalisation"
@@ -404,9 +418,14 @@
     (is (= (canonicalise "LGPL-3.0+")                      "LGPL-3.0-or-later"))
     (is (= (canonicalise "LGPL-3.0-or-later")              "LGPL-3.0-or-later"))
     (is (= (canonicalise "LicenseRef-foo")                 "LicenseRef-foo"))
-    (is (= (canonicalise "licenseref-foo")                 "LicenseRef-foo"))
     (is (= (canonicalise "DocumentRef-foo:LicenseRef-bar") "DocumentRef-foo:LicenseRef-bar"))
-    (is (= (canonicalise "DOCUMENTREF-foo:LICENSEREF-bar") "DocumentRef-foo:LicenseRef-bar")))
+    (is (= (canonicalise "NONE")                           "NONE"))
+    (is (= (canonicalise "NOASSERTION")                    "NOASSERTION"))
+    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (= (canonicalise "licenseref-foo")                 "LicenseRef-foo"))
+    (is (= (canonicalise "DOCUMENTREF-foo:LICENSEREF-bar") "DocumentRef-foo:LicenseRef-bar"))
+    (is (= (canonicalise "nOnE")                           "NONE"))
+    (is (= (canonicalise "NoAssertion")                    "NOASSERTION")))
   (testing "Compound expressions"
     (is (= (canonicalise "MIT and AGPL-3.0")                                                        "AGPL-3.0-only AND MIT"))
     (is (= (canonicalise "(GPL-2.0 WITH Classpath-exception-2.0)")                                  "GPL-2.0-only WITH Classpath-exception-2.0"))
@@ -451,7 +470,8 @@
     (is (= (canonicalise "Apache-2.0 OR (Apache-2.0 AND (Apache-2.0 AND Apache-2.0) OR Apache-2.0)")
            "Apache-2.0")))
   (testing "Sorting of licenses within the parse tree"
-    (is (= (canonicalise "Apache-2.0 OR MIT")                     (canonicalise "MIT OR Apache-2.0")))))
+    (is (= (canonicalise "Apache-2.0 OR MIT")                     (canonicalise "MIT OR Apache-2.0")))
+    (is (= (canonicalise "apache-2.0 or mit")                     (canonicalise "MIT OR APACHE-2.0")))))
 
 ; Note: we keep these short, as the parser is far more extensively exercised by parse-tests
 (deftest valid?-tests
@@ -469,11 +489,12 @@
     (is (valid? "GPL-2.0+"))
     (is (valid? "LicenseRef-foo"))
     (is (valid? "DocumentRef-foo:LicenseRef-bar"))
+    (is (valid? "NONE"))
+    (is (valid? "NOASSERTION"))
     (is (valid? "GPL-2.0 WITH Classpath-exception-2.0"))
     (is (valid? "\tapache-2.0 OR\n( gpl-2.0\tWITH\nclasspath-exception-2.0\n\t\n\t)"))
     (is (valid? "(APACHE-2.0 AND MIT) OR (((GPL-2.0 WITH CLASSPATH-EXCEPTION-2.0)))"))
-    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
-    (is (valid? "MIT or Apache-2.0"))))
+    (is (valid? "MIT or Apache-2.0"))))  ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
 
 (deftest simple?-tests
   (testing "Nil, empty, etc."
@@ -486,12 +507,16 @@
     (is (nil? (simple? "Classpath-exception-2.0"))))
   (testing "Valid expressions - simple"
     (is (true? (simple? "Apache-2.0")))
-    (is (true? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0"))))
+    (is (true? (simple? "LicenseRef-foo")))
+    (is (true? (simple? "NONE")))
+    (is (true? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0")))
+    (is (true? (simple? "DocumentRef-foo:LicenseRef-foo WITH DocumentRef-bar:AdditionRef-bar"))))
   (testing "Valid expressions - compound"
     (is (false? (simple? "Apache-2.0 AND MIT")))
+    (is (false? (simple? "Apache-2.0 and NONE")))
     (is (false? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))
-    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
-    (is (false? (simple? "MIT or Apache-2.0")))))
+    (is (false? (simple? "MIT or Apache-2.0")))  ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (false? (simple? "Apache-2.0 or none")))))
 
 (deftest compound?-tests
   (testing "Nil, empty, etc."
@@ -504,12 +529,15 @@
     (is (nil? (compound? "Classpath-exception-2.0"))))
   (testing "Valid expressions - simple"
     (is (false? (compound? "Apache-2.0")))
-    (is (false? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0"))))
+    (is (false? (compound? "LicenseRef-foo")))
+    (is (false? (compound? "NOASSERTION")))
+    (is (false? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0")))
+    (is (false? (compound? "DocumentRef-foo:LicenseRef-foo WITH DocumentRef-bar:AdditionRef-bar"))))
   (testing "Valid expressions - compound"
     (is (true? (compound? "Apache-2.0 AND MIT")))
     (is (true? (compound? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))
-    ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
-    (is (true? (compound? "MIT or Apache-2.0")))))
+    (is (true? (compound? "MIT or Apache-2.0")))  ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (compound? "Apache-2.0 or none")))))
 
 (deftest extract-ids-tests
   (testing "Nil"
@@ -525,6 +553,9 @@
     (is (= (extract-ids {:document-ref "foo" :license-ref "bar"})                                                      #{"DocumentRef-foo:LicenseRef-bar"}))
     (is (= (extract-ids {:license-ref "foo" :addition-ref "bar"})                                                      #{"LicenseRef-foo" "AdditionRef-bar"}))
     (is (= (extract-ids {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"}) #{"DocumentRef-foo:LicenseRef-bar" "DocumentRef-blah:AdditionRef-banana"})))
+  (testing "Special forms"
+    (is (= (extract-ids {:special-form :none})         #{"NONE"}))
+    (is (= (extract-ids {:special-form :no-assertion}) #{"NOASSERTION"})))
   (testing "Parsed expressions"
     (is (= (extract-ids (parse "Apache-2.0"))            #{"Apache-2.0"}))
     (is (= (extract-ids (parse "GPL-2.0+"))              #{"GPL-2.0-or-later"}))

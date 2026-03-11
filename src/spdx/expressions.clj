@@ -35,9 +35,13 @@
   license-ref            = [<#\"(?i:DocumentRef)-\"> id-string <':'>] <#\"(?i:LicenseRef)-\"> id-string
   addition-ref           = [<#\"(?i:DocumentRef)-\"> id-string <':'>] <#\"(?i:AdditionRef)-\"> id-string
 
+  (* Special cases *)
+  none                   = <#\"(?i:NONE)\">
+  no-assertion           = <#\"(?i:NOASSERTION)\">
+
   (* 'License component' (hashmap) production rules *)
   license-or-later       = license-id or-later
-  <license-component>    = license-id | license-or-later | license-ref
+  <license-component>    = license-id | license-or-later | license-ref | none | no-assertion
   <exception-component>  = license-exception-id | addition-ref
   with-expression        = license-component with exception-component
 
@@ -99,29 +103,39 @@
   (when parse-tree
     (walk-internal 0 fns parse-tree)))
 
+(defn- special-form->string
+  "Turns a license map containing a special form into a string. Returns `nil` if
+  `m` is empty or doesn't contain a special form."
+  [m]
+  (case (:special-form m)
+    :none         "NONE"
+    :no-assertion "NOASSERTION"
+    nil))
+
 (defn- license-map->string
   "Turns a license map into a string. Returns `nil` if `m` is empty."
   [m]
   (when-not (empty? m)
-    (str (when (:license-id m)           (:license-id m))
-         (when (:or-later? m)            "+")
-         (when (:license-ref m)          (lic/license-ref-map->string m))
+    (str (when (:license-id           m) (:license-id m))
+         (when (:or-later?            m) "+")
+         (when (:license-ref          m) (lic/license-ref-map->string m))
+         (when (:special-form         m) (special-form->string m))
          (when (:license-exception-id m) (str " WITH " (:license-exception-id m)))
-         (when (:addition-ref m)         (str " WITH " (exc/addition-ref-map->string m))))))
+         (when (:addition-ref         m) (str " WITH " (exc/addition-ref-map->string m))))))
 
 (defn unparse
   "Turns a valid `parse-tree` (i.e. obtained from [[parse]]) back into an
   SPDX expression (a `String`), or `nil` if `parse-tree` is `nil`.  Results
   are undefined for invalid parse trees."
   [parse-tree]
-  (some-> (walk {:op-fn      #(s/upper-case (name %))
-                 :license-fn license-map->string
-                 :group-fn   #(when (pos? (count %2))
-                                (str (when (pos? %1) "(")
-                                     (s/join (str " " (first %2) " ") (rest %2))
-                                     (when (pos? %1) ")")))}
-                parse-tree)
-          s/trim))
+  (some->> parse-tree
+           (walk {:op-fn      #(s/upper-case (name %))
+                  :license-fn license-map->string
+                  :group-fn   #(when (pos? (count %2))
+                                 (str (when (pos? %1) "(")
+                                      (s/join (str " " (first %2) " ") (rest %2))
+                                      (when (pos? %1) ")")))})
+           s/trim))
 
 (defn- canonicalise-nested-operators
   "Canonicalises nested operators that are the same."
@@ -181,7 +195,7 @@
     (if license-id
       ; It's a listed license, so perform license id replacement too
       (replace-license-id-in-license-map result)
-      ; It's a LicenseRef, so skip license id replacement
+      ; It's a LicenseRef or special form, so skip license id replacement
       result)))
 
 (defn- canonicalise-deprecated-ids
@@ -197,11 +211,12 @@
   display or any other purpose). Returns `nil` if `m` is empty."
   [m]
   (when-not (empty? m)
-    (str (when (:license-id m)           (s/lower-case (:license-id m)))
-         (when (:or-later? m)            "+")
-         (when (:license-ref m)          (lic/license-ref-map->string m))
+    (str (when (:license-id           m) (s/lower-case (:license-id m)))
+         (when (:or-later?            m) "+")
+         (when (:license-ref          m) (lic/license-ref-map->string m))
+         (when (:special-form         m) (str "zzz" (special-form->string m)))
          (when (:license-exception-id m) (s/lower-case (str " " (:license-exception-id m))))
-         (when (:addition-ref m)         (str " " (exc/addition-ref-map->string m))))))
+         (when (:addition-ref         m) (str " " (exc/addition-ref-map->string m))))))
 
 (defn- compare-license-maps
   "Compares two license maps, as found in a parse tree."
@@ -231,6 +246,10 @@
                                               (compare (license-map->sortable-string x) (license-map->sortable-string y)))
     (:license-ref x)                        -1
     (:license-ref y)                        1
+    ; then special forms
+    (and (:special-form x) (:special-form y)) (compare (special-form->string x) (special-form->string y))
+    (:special-form x)                       -1
+    (:special-form y)                       1
     :else                                   1))
 
 (defn- compare-license-sequences
@@ -301,6 +320,8 @@
                                  :addition-ref         #(case (count %&)
                                                           1 {:addition-ref  (first %&)}
                                                           2 {:addition-document-ref (first %&) :addition-ref (second %&)})
+                                 :none                 #(hash-map :special-form :none)
+                                 :no-assertion         #(hash-map :special-form :no-assertion)
                                  :license-or-later     #(merge {:or-later? true} (first %&))
                                  :with-expression      #(merge (first %&)        (second %&))
                                  :and-expression       #(case (count %&)
@@ -411,6 +432,12 @@
   {:license-id \"Apache-2.0\"
    :addition-document-ref \"foo\"
    :addition-ref \"bar\"}
+
+  ; Special forms (NONE and NOASSERTION)
+  (parse \"NONE OR NOASSERTION\")
+  [:or
+   {:special-form :no-assertion}
+   {:special-form :none}]
   ```"
   ([s] (parse s nil))
   ([s {:keys [canonicalise-deprecated-ids?
@@ -497,7 +524,8 @@
    (walk {:license-fn #(into #{} (filter identity [(when (:license-id           %) (str (:license-id %) (when (and include-or-later? (:or-later? %)) "+")))
                                                    (when (:license-exception-id %) (:license-exception-id        %))
                                                    (when (:license-ref          %) (lic/license-ref-map->string  %))
-                                                   (when (:addition-ref         %) (exc/addition-ref-map->string %))]))
+                                                   (when (:addition-ref         %) (exc/addition-ref-map->string %))
+                                                   (when (:special-form         %) (special-form->string         %))]))
           :group-fn   #(not-empty (into #{} cat (rest %2)))}  ; Strip leading operator keyword then flatten the rest (%2 is a 2-level nested sequence) and put in a set
          parse-tree)))
 

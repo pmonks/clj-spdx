@@ -220,6 +220,6 @@
   (is/init!)
   (ir/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
-  (doall (e/bounded-pmap* u/maximum-concurrency  id->info (ids)))
+  (doall (e/bounded-pmap* u/maximum-concurrency id->info (ids)))
   @id-canonicalisation-d
   nil)

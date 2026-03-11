@@ -162,6 +162,13 @@ deps-try com.github.pmonks/clj-spdx
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
 
+(sx/parse "DocumentRef-foo:LicenseRef-bar with DocumentRef-foo:AdditionRef-bar")
+;=> {:document-ref "foo"          :license-ref "bar"
+;=>  :addition-document-ref "foo" :addition-ref "bar"}
+
+(sx/parse "none and mit")
+;=> [:and {:license-id "MIT"} {:special-form :none}]
+
 (sx/canonicalise "mit and apache-2.0 or ecos-2.0+")
 ;=> "GPL-2.0-or-later WITH eCos-exception-2.0 OR (Apache-2.0 AND MIT)"
 
