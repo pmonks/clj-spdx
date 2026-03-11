@@ -19,18 +19,18 @@
   * The functions in this namespace support any case of identifier, LicenseRef,
     or AdditionRef, as per the SPDX case sensitivity rules in [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)"
   (:require [clojure.set     :as set]
-            [spdx.licenses   :as lic]
-            [spdx.exceptions :as exc]))
+            [spdx.licenses   :as sl]
+            [spdx.exceptions :as se]))
 
 (def ^{:arglists '([])} version
   "The version of the license list (a `String` in major.minor(.patchlevel)
   format)."
-  lic/version)
+  sl/version)
 
 (defn ids
   "The set of all listed SPDX identifiers."
   []
-  (set/union (lic/ids) (exc/ids)))
+  (set/union (sl/ids) (se/ids)))
 
 (defn id-type
   "The 'type' of `s`; one of these values:
@@ -44,18 +44,18 @@
   [^String s]
   (when s
     (cond
-      (lic/listed-id?    s) :license-id
-      (exc/listed-id?    s) :exception-id
-      (lic/license-ref?  s) :license-ref
-      (exc/addition-ref? s) :addition-ref
+      (sl/listed-id?    s) :license-id
+      (se/listed-id?    s) :exception-id
+      (sl/license-ref?  s) :license-ref
+      (se/addition-ref? s) :addition-ref
       :else                 nil)))
 
 (defn listed-id?
   "Is `s` (a `String`) one of the listed SPDX identifiers?"
   [^String s]
   (boolean
-    (or (lic/listed-id? s)
-        (exc/listed-id? s))))
+    (or (sl/listed-id? s)
+        (se/listed-id? s))))
 
 (defn canonicalise
   "Canonicalises `s` (an SPDX identifier or Ref), by returning it in its
@@ -70,8 +70,8 @@
     [[spdx.expressions/canonicalise]] can be used for that."
   [^String s]
   (case (id-type s)
-    (:license-id   :license-ref)  (lic/canonicalise s)
-    (:exception-id :addition-ref) (exc/canonicalise s)
+    (:license-id   :license-ref)  (sl/canonicalise s)
+    (:exception-id :addition-ref) (se/canonicalise s)
     nil))
 
 (defn ^:deprecated ^:no-doc canonicalise-id
@@ -93,10 +93,10 @@
   (boolean
     (or (and (nil? s1) (nil? s2))
         (case [(id-type s1) (id-type s2)]
-          [:license-id   :license-id]   (lic/equivalent? s1 s2)
-          [:license-ref  :license-ref]  (lic/equivalent? s1 s2)
-          [:exception-id :exception-id] (exc/equivalent? s1 s2)
-          [:addition-ref :addition-ref] (exc/equivalent? s1 s2)
+          [:license-id   :license-id]   (sl/equivalent? s1 s2)
+          [:license-ref  :license-ref]  (sl/equivalent? s1 s2)
+          [:exception-id :exception-id] (se/equivalent? s1 s2)
+          [:addition-ref :addition-ref] (se/equivalent? s1 s2)
           false))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
@@ -114,8 +114,8 @@
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (when-let [id-t (id-type id)]
      (case id-t
-       :license-id   (assoc (lic/id->info id opts) :type id-t)
-       :exception-id (assoc (exc/id->info id opts) :type id-t)
+       :license-id   (assoc (sl/id->info id opts) :type id-t)
+       :exception-id (assoc (se/id->info id opts) :type id-t)
        nil))))
 
 (defn deprecated-id?
@@ -146,6 +146,6 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (lic/init!)
-  (exc/init!)
+  (sl/init!)
+  (se/init!)
   nil)

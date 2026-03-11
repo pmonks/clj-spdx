@@ -14,10 +14,10 @@
   (:require [clojure.string    :as s]
             [wreck.api         :as re]
             [rencg.api         :as ncg]
-            [spdx.identifiers  :as ids]
-            [spdx.licenses     :as lic]
-            [spdx.exceptions   :as exc]
-            [spdx.impl.regexes :as ir]))
+            [spdx.identifiers  :as si]
+            [spdx.licenses     :as sl]
+            [spdx.exceptions   :as se]
+            [spdx.impl.regexes :as sir]))
 
 (defn build-re
   "Returns a regex (`Pattern`) that can find or match any one of the given SPDX
@@ -64,12 +64,12 @@
      (let [id-fragments (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))]  ; Sort ids longest to shortest
        (re/join (re/-lb #"\w")
                 (re/ncg "Identifier"
-                        (when include-license-refs?  (str @ir/license-ref-fragment-re-d "|"))
-                        (when include-addition-refs? (str @ir/addition-ref-fragment-re-d "|"))
+                        (when include-license-refs?  (str @sir/license-ref-fragment-re-d "|"))
+                        (when include-addition-refs? (str @sir/addition-ref-fragment-re-d "|"))
                         (re/fgrp "i" id-fragments))
                 (re/-la #"\w"))))))
 
-(def ^:private ids-re-d (delay (build-re (concat (lic/ids) (exc/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
+(def ^:private ids-re-d (delay (build-re (concat (sl/ids) (se/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
 
 (defn ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
@@ -85,7 +85,7 @@
   []
   @ids-re-d)
 
-(def ^:private license-ids-re-d (delay (build-re (lic/ids) {:case-sensitive? false :include-license-refs? true :include-addition-refs? false})))
+(def ^:private license-ids-re-d (delay (build-re (sl/ids) {:case-sensitive? false :include-license-refs? true :include-addition-refs? false})))
 
 (defn license-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
@@ -100,7 +100,7 @@
   []
   @license-ids-re-d)
 
-(def ^:private exception-ids-re-d (delay (build-re (exc/ids) {:case-sensitive? false :include-license-refs? false :include-addition-refs? true})))
+(def ^:private exception-ids-re-d (delay (build-re (se/ids) {:case-sensitive? false :include-license-refs? false :include-addition-refs? true})))
 
 (defn exception-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license exception
@@ -125,7 +125,7 @@
   * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
-  @ir/license-ref-re-d)
+  @sir/license-ref-re-d)
 
 (defn addition-ref-re
  "Returns a regex (`Pattern`) that can find or match any SPDX AdditionRef.
@@ -137,7 +137,7 @@
   * Caches the generated `Pattern` object and returns it on subsequent calls, so
     is efficient when called many times"
   []
-  @ir/addition-ref-re-d)
+  @sir/addition-ref-re-d)
 
 (defn id-seq-matches
   "Returns a lazy sequence of maps representing each of the identifier matches
@@ -161,9 +161,9 @@
   ([^java.util.regex.Pattern re ^String text]
    (when (and re text)
      (when-let [matches (ncg/re-seq re text)]
-       (seq (map #(let [canonical-id-or-ref (ids/canonicalise (get % "Identifier"))]
+       (seq (map #(let [canonical-id-or-ref (si/canonicalise (get % "Identifier"))]
                     (dissoc (merge (assoc % :identifier canonical-id-or-ref
-                                            :type       (ids/id-type canonical-id-or-ref))
+                                            :type       (si/id-type canonical-id-or-ref))
                                    (when-let [document-ref          (get % "DocumentRef")]         {:document-ref          document-ref})
                                    (when-let [license-ref           (get % "LicenseRef")]          {:license-ref           license-ref})
                                    (when-let [addition-document-ref (get % "AdditionDocumentRef")] {:addition-document-ref addition-document-ref})
@@ -192,10 +192,10 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (lic/init!)
-  (exc/init!)
-  (ids/init!)
-  (ir/init!)
+  (sl/init!)
+  (se/init!)
+  (si/init!)
+  (sir/init!)
   ; Note: we always lazy-initialise all of the regexes, as it's unlikely that
   ; a caller will use all of them, and they're quick to construct. This saves
   ; callers unecessary memory consumption (an unrealised delay, while not free,

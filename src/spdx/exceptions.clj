@@ -18,10 +18,10 @@
   (:require [clojure.string    :as s]
             [rencg.api         :as ncg]
             [embroidery.api    :as e]
-            [spdx.impl.state   :as is]
-            [spdx.impl.mapping :as im]
-            [spdx.impl.regexes :as ir]
-            [spdx.impl.utils   :as u]))
+            [spdx.impl.state   :as sis]
+            [spdx.impl.mapping :as sim]
+            [spdx.impl.regexes :as sir]
+            [spdx.impl.utils   :as siu]))
 
 (defn version
   "The version of the exception list (a `String` in major.minor(.patchlevel)
@@ -29,26 +29,26 @@
 
   Note: identical to [[spdx.identifiers/version]]."
   []
-  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @is/list-obj))
+  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @sis/list-obj))
 
 (defn ids
   "The set of all exception ids."
   []
-  (some-> (.getSpdxListedExceptionIds ^org.spdx.library.ListedLicenses @is/list-obj)
+  (some-> (.getSpdxListedExceptionIds ^org.spdx.library.ListedLicenses @sis/list-obj)
           seq
           set))
 
 (defn listed-id?
   "Is `s` (a `String`) one of the listed SPDX exception identifiers?"
   [^String s]
-  (im/listed-exception-id? s))
+  (sim/listed-exception-id? s))
 
 (defn addition-ref?
   "Is `s` (a `String`) a valid AdditionRef? See
   [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/)
   for specifics."
   [^String s]
-  (boolean (when s (re-matches @ir/addition-ref-re-d s))))
+  (boolean (when s (re-matches @sir/addition-ref-re-d s))))
 
 (defn addition-ref
   "Constructs an AdditionRef (as a `String`) from individual 'variable
@@ -83,7 +83,7 @@
   * This fn is the inverse of [[addition-ref-map->string]]."
   [^String s]
   (when s
-    (when-let [m (ncg/re-matches @ir/addition-ref-re-d s)]
+    (when-let [m (ncg/re-matches @sir/addition-ref-re-d s)]
       (merge {:addition-ref (get m "AdditionRef")}
              (when-let [document-ref (get m "AdditionDocumentRef")] {:addition-document-ref document-ref})))))
 
@@ -147,8 +147,8 @@
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
            canonicalise
-           im/id->exception
-           (im/exception->map opts))))
+           sim/id->exception
+           (sim/exception->map opts))))
 
 (defn deprecated-id?
   "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not a
@@ -177,9 +177,9 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (is/init!)
-  (ir/init!)
+  (sis/init!)
+  (sir/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
-  (doall (e/bounded-pmap* u/maximum-concurrency id->info (ids)))
+  (doall (e/bounded-pmap* siu/maximum-concurrency id->info (ids)))
   @id-canonicalisation-d
   nil)

@@ -18,10 +18,10 @@
   (:require [clojure.string    :as s]
             [rencg.api         :as ncg]
             [embroidery.api    :as e]
-            [spdx.impl.state   :as is]
-            [spdx.impl.mapping :as im]
-            [spdx.impl.regexes :as ir]
-            [spdx.impl.utils   :as u]))
+            [spdx.impl.state   :as sis]
+            [spdx.impl.mapping :as sim]
+            [spdx.impl.regexes :as sir]
+            [spdx.impl.utils   :as siu]))
 
 (defn version
   "The version of the license list (a `String` in major.minor(.patchlevel)
@@ -29,26 +29,26 @@
 
   Note: identical to [[spdx.identifiers/version]]."
   []
-  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @is/list-obj))
+  (.getLicenseListVersion ^org.spdx.library.ListedLicenses @sis/list-obj))
 
 (defn ids
   "The set of all SPDX license identifiers."
   []
-  (some-> (.getSpdxListedLicenseIds ^org.spdx.library.ListedLicenses @is/list-obj)
+  (some-> (.getSpdxListedLicenseIds ^org.spdx.library.ListedLicenses @sis/list-obj)
           seq
           set))
 
 (defn listed-id?
   "Is `s` (a `String`) one of the listed SPDX license identifiers?"
   [^String s]
-  (im/listed-license-id? s))
+  (sim/listed-license-id? s))
 
 (defn license-ref?
   "Is `s` (a `String`) a valid LicenseRef? See
   [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/)
   for specifics."
   [s]
-  (boolean (when s (re-matches @ir/license-ref-re-d s))))
+  (boolean (when s (re-matches @sir/license-ref-re-d s))))
 
 (defn license-ref
   "Constructs a LicenseRef (as a `String`) from individual 'variable
@@ -83,7 +83,7 @@
   * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
   [^String s]
   (when s
-    (when-let [m (ncg/re-matches @ir/license-ref-re-d s)]
+    (when-let [m (ncg/re-matches @sir/license-ref-re-d s)]
       (merge {:license-ref (get m "LicenseRef")}
              (when-let [document-ref (get m "DocumentRef")] {:document-ref document-ref})))))
 
@@ -147,8 +147,8 @@
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
            canonicalise
-           im/id->license
-           (im/license->map opts))))
+           sim/id->license
+           (sim/license->map opts))))
 
 (defn deprecated-id?
   "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not a
@@ -218,9 +218,9 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (is/init!)
-  (ir/init!)
+  (sis/init!)
+  (sir/init!)
   ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
-  (doall (e/bounded-pmap* u/maximum-concurrency id->info (ids)))
+  (doall (e/bounded-pmap* siu/maximum-concurrency id->info (ids)))
   @id-canonicalisation-d
   nil)

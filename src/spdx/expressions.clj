@@ -14,8 +14,8 @@
   (:require [clojure.string         :as s]
             [instaparse.core        :as insta]
             [wreck.api              :as re]
-            [spdx.licenses          :as lic]
-            [spdx.exceptions        :as exc]
+            [spdx.licenses          :as sl]
+            [spdx.exceptions        :as se]
             [spdx.impl.replacements :as sir]))
 
 ; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/
@@ -53,8 +53,8 @@
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (exc/ids)))))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (filter #(not (s/ends-with? % "+")) (sl/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (se/ids)))))
 
 (def ^:private grammar-d (delay (format grammar-format
                                         @license-ids-fragment
@@ -120,10 +120,10 @@
   (when-not (empty? m)
     (str (when (:license-id           m) (:license-id m))
          (when (:or-later?            m) "+")
-         (when (:license-ref          m) (lic/license-ref-map->string m))
+         (when (:license-ref          m) (sl/license-ref-map->string m))
          (when (:special-form         m) (special-form->string m))
          (when (:license-exception-id m) (str " WITH " (:license-exception-id m)))
-         (when (:addition-ref         m) (str " WITH " (exc/addition-ref-map->string m))))))
+         (when (:addition-ref         m) (str " WITH " (se/addition-ref-map->string m))))))
 
 (defn unparse
   "Turns a valid `parse-tree` (i.e. obtained from [[parse]]) back into an
@@ -215,10 +215,10 @@
   (when-not (empty? m)
     (str (when (:license-id           m) (s/lower-case (:license-id m)))
          (when (:or-later?            m) "+")
-         (when (:license-ref          m) (lic/license-ref-map->string m))
+         (when (:license-ref          m) (sl/license-ref-map->string m))
          (when (:special-form         m) (str "zzz" (special-form->string m)))  ; Hokey, but effective...
          (when (:license-exception-id m) (s/lower-case (str " " (:license-exception-id m))))
-         (when (:addition-ref         m) (str " " (exc/addition-ref-map->string m))))))
+         (when (:addition-ref         m) (str " " (se/addition-ref-map->string m))))))
 
 (defn- compare-maps
   "Compares two maps, as found in a parse tree."
@@ -314,8 +314,8 @@
        (if (insta/failure? parse-tree)
          parse-tree
          (as-> parse-tree parse-tree
-               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise (first %&)))
-                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise (first %&)))
+               (insta/transform {:license-id           #(hash-map  :license-id           (sl/canonicalise (first %&)))
+                                 :license-exception-id #(hash-map  :license-exception-id (se/canonicalise (first %&)))
                                  :license-ref          #(case (count %&)
                                                           1 {:license-ref  (first %&)}
                                                           2 {:document-ref (first %&) :license-ref (second %&)})
@@ -528,8 +528,8 @@
   ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false}}]
    (walk {:license-fn #(into #{} (filter identity [(when (:license-id           %) (str (:license-id %) (when (and include-or-later? (:or-later? %)) "+")))
                                                    (when (:license-exception-id %) (:license-exception-id        %))
-                                                   (when (:license-ref          %) (lic/license-ref-map->string  %))
-                                                   (when (:addition-ref         %) (exc/addition-ref-map->string %))
+                                                   (when (:license-ref          %) (sl/license-ref-map->string  %))
+                                                   (when (:addition-ref         %) (se/addition-ref-map->string %))
                                                    (when (:special-form         %) (special-form->string         %))]))
           :group-fn   #(not-empty (into #{} cat (rest %2)))}  ; Strip leading operator keyword then flatten the rest (%2 is a 2-level nested sequence) and put in a set
          parse-tree)))
@@ -542,8 +542,9 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (lic/init!)
-  (exc/init!)
+  (sl/init!)
+  (se/init!)
+  (sir/init!)
   @license-ids-fragment
   @exception-ids-fragment
   @grammar-d
