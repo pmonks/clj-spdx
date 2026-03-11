@@ -10,13 +10,15 @@
 
 (ns spdx.matching
   "License matching functionality, primarily provided by `org.spdx.utility.compare.LicenseCompareHelper`."
-  (:require [spdx.impl.mapping :as im]))
+  (:require [spdx.licenses     :as sl]
+            [spdx.exceptions   :as se]
+            [spdx.impl.mapping :as sim]))
 
 (defn text-is-license?
   "Does the entire `text` match the license identified by `license-id`?"
   [^String text ^String license-id]
   (if (and text license-id)
-    (if-let [lic (im/id->license license-id)]
+    (if-let [lic (sim/id->license (sl/canonicalise license-id))]
       (not (.isDifferenceFound (org.spdx.utility.compare.LicenseCompareHelper/isTextStandardLicense lic text)))
       false)
     false))
@@ -25,7 +27,7 @@
   "Does the entire `text` match the exception identified by `exception-id`?"
   [^String text ^String exception-id]
   (if (and text exception-id)
-    (if-let [exc (im/id->exception exception-id)]
+    (if-let [exc (sim/id->exception (se/canonicalise exception-id))]
       (not (.isDifferenceFound (org.spdx.utility.compare.LicenseCompareHelper/isTextStandardException exc text)))
       false)
     false))
@@ -34,7 +36,7 @@
   "Does the `text` contain the license identified by `license-id` somewhere within it?"
   [^String text ^String license-id]
   (if (and text license-id)
-    (if-let [lic (im/id->license license-id)]
+    (if-let [lic (sim/id->license (sl/canonicalise license-id))]
       (org.spdx.utility.compare.LicenseCompareHelper/isStandardLicenseWithinText text lic)
       false)
     false))
@@ -43,7 +45,7 @@
   "Does the `text` contain the exception identified by `exception-id` somewhere within it?"
   [^String text ^String exception-id]
   (if (and text exception-id)
-    (if-let [exc (im/id->exception exception-id)]
+    (if-let [exc (sim/id->exception (se/canonicalise exception-id))]
       (org.spdx.utility.compare.LicenseCompareHelper/isStandardLicenseExceptionWithinText text exc)
       false)
     false))
@@ -73,7 +75,7 @@
              set)))
   ([^String text license-ids]
    (when (and text (seq license-ids))
-     (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseIdsWithinText text (seq license-ids)))
+     (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseIdsWithinText text (seq (map sl/canonicalise license-ids))))
              set))))
 
 (defn exceptions-within-text
@@ -89,7 +91,7 @@
              set)))
   ([^String text exception-ids]
    (when (and text (seq exception-ids))
-     (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseExceptionIdsWithinText text (seq exception-ids)))
+     (some-> (seq (org.spdx.utility.compare.LicenseCompareHelper/matchingStandardLicenseExceptionIdsWithinText text (seq (map se/canonicalise exception-ids))))
              set))))
 
 (defn differences
@@ -102,10 +104,10 @@
   differences found' object in this case)."
   [^String text ^String license-or-exception-id]
   (when (and text license-or-exception-id)
-    (when-let [difference (im/difference-description->map
-                            (if-let [lic (im/id->license license-or-exception-id)]
+    (when-let [difference (sim/difference-description->map
+                            (if-let [lic (sim/id->license (sl/canonicalise license-or-exception-id))]
                               (org.spdx.utility.compare.LicenseCompareHelper/isTextStandardLicense lic text)
-                              (when-let [exc (im/id->exception license-or-exception-id)]
+                              (when-let [exc (sim/id->exception (se/canonicalise license-or-exception-id))]
                                 (org.spdx.utility.compare.LicenseCompareHelper/isTextStandardException exc text))))]
       (when (:differences-found? difference)
         difference))))
@@ -118,5 +120,7 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (im/init!)
+  (sl/init!)
+  (se/init!)
+  (sim/init!)
   nil)

@@ -9,66 +9,58 @@
 ;
 
 (ns spdx.expressions
-  "SPDX license expression functionality, as defined in [SPDX v3.0.1 Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/).
+  "SPDX license expression functionality, as defined in [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/).
   This functionality is bespoke (it does not use the parser in `Spdx-Java-Library`)."
   (:require [clojure.string         :as s]
             [instaparse.core        :as insta]
             [wreck.api              :as re]
-            [spdx.licenses          :as lic]
-            [spdx.exceptions        :as exc]
+            [spdx.licenses          :as sl]
+            [spdx.exceptions        :as se]
             [spdx.impl.replacements :as sir]))
 
-(def ^:private case-sensitive-operators-fragment
-  "<and>                  = <ws 'AND' ws>
-   <or>                   = <ws 'OR' ws>
-   <with>                 = <ws 'WITH' ws>")
-
-(def ^:private case-insensitive-operators-fragment
-  "<and>                  = <ws #\"(?i)AND\" ws>
-   <or>                   = <ws #\"(?i)OR\" ws>
-   <with>                 = <ws #\"(?i)WITH\" ws>")
-
-; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/
-(def ^:private spdx-license-expression-grammar-format "
+; Adapted from ABNF grammar at https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/
+(def ^:private grammar-format "
   (* Simple terminals *)
   <ws>                   = <#\"\\s+\">
   <ows>                  = <#\"\\s*\">
   <id-string>            = #\"[\\p{Alnum}-\\.]+\"
-  %s
+  <and>                  = <ws #\"(?i:AND)\" ws>
+  <or>                   = <ws #\"(?i:OR)\" ws>
+  <with>                 = <ws #\"(?i:WITH)\" ws>
   <or-later>             = <'+'>
 
   (* Identifiers *)
   license-id             = %s
   license-exception-id   = %s
-  license-ref            = [<'DocumentRef-'> id-string <':'>] <'LicenseRef-'> id-string
-  addition-ref           = [<'DocumentRef-'> id-string <':'>] <'AdditionRef-'> id-string
 
-  (* 'License component' (hashmap) production rules *)
+  (* Refs *)
+  license-ref            = [<#\"(?i:DocumentRef)-\"> id-string <':'>] <#\"(?i:LicenseRef)-\"> id-string
+  addition-ref           = [<#\"(?i:DocumentRef)-\"> id-string <':'>] <#\"(?i:AdditionRef)-\"> id-string
+
+  (* Special forms *)
+  none                   = <#\"(?i:NONE)\">
+  no-assertion           = <#\"(?i:NOASSERTION)\">
+
+  (* 'License component' (map) production rules *)
   license-or-later       = license-id or-later
-  <license-component>    = license-id | license-or-later | license-ref
+  <license-component>    = license-id | license-or-later | license-ref | none | no-assertion
   <exception-component>  = license-exception-id | addition-ref
   with-expression        = license-component with exception-component
 
-  (* Composite expression (vector) production rules *)
+  (* Group (vector) production rules *)
   <expression-component> = license-component | with-expression | <'('> expression <')'>
   and-expression         = expression-component (and expression-component)*
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (filter #(not (s/ends-with? % "+")) (lic/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i)" (re/esc %) "\"") (exc/ids)))))
+(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (filter #(not (s/ends-with? % "+")) (sl/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
+(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (se/ids)))))
 
-(def ^:private spdx-license-expression-cs-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                   case-sensitive-operators-fragment
-                                                                   @license-ids-fragment
-                                                                   @exception-ids-fragment)))
-(def ^:private spdx-license-expression-ci-grammar-d (delay (format spdx-license-expression-grammar-format
-                                                                   case-insensitive-operators-fragment
-                                                                   @license-ids-fragment
-                                                                   @exception-ids-fragment)))
+(def ^:private grammar-d (delay (format grammar-format
+                                        @license-ids-fragment
+                                        @exception-ids-fragment)))
 
-(def ^:private spdx-license-expression-cs-parser-d (delay (insta/parser @spdx-license-expression-cs-grammar-d :start :expression)))
-(def ^:private spdx-license-expression-ci-parser-d (delay (insta/parser @spdx-license-expression-ci-grammar-d :start :expression)))
+(def ^:private parser-d (delay (insta/parser @grammar-d :start :expression)))
 
 (defn- walk-internal
   "Internal implementation of [[walk]]."
@@ -97,8 +89,8 @@
 
   * `:op-fn`      - function of 1 argument (a keyword) to be called call when an
                     operator (`:and`, `:or`) is visited
-  * `:license-fn` - function of 1 argument (a map) to be called when a license
-                    map is visited
+  * `:license-fn` - function of 1 argument (a map) to be called when a license,
+                    LicenseRef, or special form map is visited
   * `:group-fn`   - function of **2** arguments (an integer and a sequence) to
                     be called when a group is visited. The first argument is the
                     current nesting depth of the walk (starting at 0 for the
@@ -113,29 +105,39 @@
   (when parse-tree
     (walk-internal 0 fns parse-tree)))
 
-(defn- license-map->string
-  "Turns a license map into a string. Returns `nil` if `m` is empty."
+(defn- special-form->string
+  "Turns map `m` containing a special form into a string. Returns `nil` if `m` is
+  empty or doesn't contain a special form."
+  [m]
+  (case (:special-form m)
+    :none         "NONE"
+    :no-assertion "NOASSERTION"
+    nil))
+
+(defn- map->string
+  "Turns map `m` into a string. Returns `nil` if `m` is empty."
   [m]
   (when-not (empty? m)
-    (str (when (:license-id m)           (:license-id m))
-         (when (:or-later? m)            "+")
-         (when (:license-ref m)          (lic/license-ref-map->string m))
+    (str (when (:license-id           m) (:license-id m))
+         (when (:or-later?            m) "+")
+         (when (:license-ref          m) (sl/license-ref-map->string m))
+         (when (:special-form         m) (special-form->string m))
          (when (:license-exception-id m) (str " WITH " (:license-exception-id m)))
-         (when (:addition-ref m)         (str " WITH " (exc/addition-ref-map->string m))))))
+         (when (:addition-ref         m) (str " WITH " (se/addition-ref-map->string m))))))
 
 (defn unparse
   "Turns a valid `parse-tree` (i.e. obtained from [[parse]]) back into an
   SPDX expression (a `String`), or `nil` if `parse-tree` is `nil`.  Results
   are undefined for invalid parse trees."
   [parse-tree]
-  (some-> (walk {:op-fn      #(s/upper-case (name %))
-                 :license-fn license-map->string
-                 :group-fn   #(when (pos? (count %2))
-                                (str (when (pos? %1) "(")
-                                     (s/join (str " " (first %2) " ") (rest %2))
-                                     (when (pos? %1) ")")))}
-                parse-tree)
-          s/trim))
+  (some->> parse-tree
+           (walk {:op-fn      #(s/upper-case (name %))
+                  :license-fn map->string
+                  :group-fn   #(when (pos? (count %2))
+                                 (str (when (pos? %1) "(")
+                                      (s/join (str " " (first %2) " ") (rest %2))
+                                      (when (pos? %1) ")")))})
+           s/trim))
 
 (defn- canonicalise-nested-operators
   "Canonicalises nested operators that are the same."
@@ -151,8 +153,8 @@
         (recur (concat result [f])      (first r) (rest r))))))
 
 (defn- mandatory-license-id-replacements
-  "Performs mandatory license id replacements on the parse tree (i.e. nonsensical GNU
-  family ids that also contain +)."
+  "Performs mandatory license id replacements on `parse-tree` (e.g. nonsensical
+  cases where a GNU family id also contains +)."
   [parse-tree]
   (walk {:license-fn (fn [{:keys [license-id or-later?] :as m}]
                        (if-let [replacement (sir/replacement-for-license-id license-id or-later?)]
@@ -163,10 +165,10 @@
                          m))}
         parse-tree))
 
-(defn- replace-license-id-in-license-map
-  "Replaces a deprecated :license-id entry in a license map if it has a
-  replacement. Note that this replacement may result in a new nested `:and`
-  clause, since license id replacements aren't always 1:1."
+(defn- replace-license-id-in-map
+  "Replaces a deprecated `:license-id` entry in map `m` if it has a replacement.
+  Note that this replacement may result in a new nested `:and` clause, since
+  license id replacements aren't always 1:1."
   [{:keys [license-id license-exception-id or-later?] :as m}]
   (if-let [license-replacement (sir/replacement-for-deprecated-license-id license-id or-later?)]
     (let [replacement-license-ids   (:license-ids license-replacement)
@@ -186,39 +188,40 @@
             (vec (concat [:and] result))))
     m))
 
-(defn- replace-deprecated-entries-in-license-map
-  "Replaces any deprecated entries in a license map that have replacements."
+(defn- replace-deprecated-entries-in-map
+  "Replaces any deprecated entries in a map that have replacements."
   [{:keys [license-id license-exception-id] :as m}]
   ; We perform license exception id replacement first, as it's a simple 1:1
   (let [replacement-exception-id (or (sir/replacement-for-deprecated-exception-id license-exception-id) license-exception-id)
         result                   (merge m (when replacement-exception-id {:license-exception-id replacement-exception-id}))]
     (if license-id
       ; It's a listed license, so perform license id replacement too
-      (replace-license-id-in-license-map result)
-      ; It's a LicenseRef, so skip license id replacement
+      (replace-license-id-in-map result)
+      ; It's a LicenseRef or special form, so skip license id replacement
       result)))
 
 (defn- canonicalise-deprecated-ids
   "Canonicalises deprecated SPDX identifiers, based on the replacement rules
   provided by [[spdx.impl.replacements]]."
   [parse-tree]
-  (walk {:license-fn replace-deprecated-entries-in-license-map
+  (walk {:license-fn replace-deprecated-entries-in-map
          :group-fn   (fn [_ [operator & entries]] (canonicalise-nested-operators operator entries))}
         parse-tree))
 
-(defn- license-map->sortable-string
-  "Turns a license map into a string suitable for sorting (but NOT suitable for
-  display or any other purpose). Returns `nil` if `m` is empty."
+(defn- map->sortable-string
+  "Turns a map into a string suitable for sorting (but NOT suitable for display
+  or any other purpose). Returns `nil` if `m` is empty."
   [m]
   (when-not (empty? m)
-    (str (when (:license-id m)           (s/lower-case (:license-id m)))
-         (when (:or-later? m)            "+")
-         (when (:license-ref m)          (lic/license-ref-map->string m))
+    (str (when (:license-id           m) (s/lower-case (:license-id m)))
+         (when (:or-later?            m) "+")
+         (when (:license-ref          m) (sl/license-ref-map->string m))
+         (when (:special-form         m) (str "zzz" (special-form->string m)))  ; Hokey, but effective...
          (when (:license-exception-id m) (s/lower-case (str " " (:license-exception-id m))))
-         (when (:addition-ref m)         (str " " (exc/addition-ref-map->string m))))))
+         (when (:addition-ref         m) (str " " (se/addition-ref-map->string m))))))
 
-(defn- compare-license-maps
-  "Compares two license maps, as found in a parse tree."
+(defn- compare-maps
+  "Compares two maps, as found in a parse tree."
   [x y]
   (cond
     ; license-ids first
@@ -229,8 +232,8 @@
                                                 (and (:license-exception-id x) (:addition-ref         y)) -1
                                                 ; then AdditionRefs
                                                 (and (:addition-ref         x) (:license-exception-id y)) 1
-                                                :else                          (compare (license-map->sortable-string x) (license-map->sortable-string y)))
-                                              (compare (license-map->sortable-string x) (license-map->sortable-string y)))
+                                                :else                          (compare (map->sortable-string x) (map->sortable-string y)))
+                                              (compare (map->sortable-string x) (map->sortable-string y)))
     (:license-id x)                         -1
     (:license-id y)                         1
     ; then LicenseRefs
@@ -241,16 +244,20 @@
                                                 (and (:license-exception-id x) (:addition-ref         y)) -1
                                                 ; then AdditionRefs
                                                 (and (:addition-ref         x) (:license-exception-id y)) 1
-                                                :else                          (compare (license-map->sortable-string x) (license-map->sortable-string y)))
-                                              (compare (license-map->sortable-string x) (license-map->sortable-string y)))
+                                                :else                          (compare (map->sortable-string x) (map->sortable-string y)))
+                                              (compare (map->sortable-string x) (map->sortable-string y)))
     (:license-ref x)                        -1
     (:license-ref y)                        1
+    ; then special forms
+    (and (:special-form x) (:special-form y)) (compare (special-form->string x) (special-form->string y))
+    (:special-form x)                       -1
+    (:special-form y)                       1
     :else                                   1))
 
-(defn- compare-license-sequences
-  "Compares two license sequences, as found in a parse tree.  Comparisons are
-  based on length - first by number of elements, then, for equi-sized sequences,
-  by lexicographical length (which is a little hokey, but ensures that 'longest'
+(defn- compare-sequences
+  "Compares two sequences, as found in a parse tree.  Comparisons are based on
+  length - first by number of elements, then, for equi-sized sequences, by
+  lexicographical length (which is a little hokey, but ensures that 'longest'
   sequences go last, for a reasonable definition of 'longest')."
   [x y]
   (let [result (compare (count x) (count y))]
@@ -267,10 +274,10 @@
     (keyword? x)                          -1
     (keyword? y)                          1
     ; Then maps (licenses)
-    (and (map? x) (map? y))               (compare-license-maps x y)       ; Because compare doesn't support maps
+    (and (map? x) (map? y))               (compare-maps x y)       ; Because compare doesn't support maps
     (map? x)                              -1
     ; And sequences (sub-clauses) last
-    (and (sequential? x) (sequential? y)) (compare-license-sequences x y)  ; Because compare doesn't support maps (which will be elements inside x and y)
+    (and (sequential? x) (sequential? y)) (compare-sequences x y)  ; Because compare doesn't support maps (which will be elements inside x and y)
     :else                                 1))
 
 (defn- sort-parse-tree
@@ -297,27 +304,26 @@
   `opts` are as for [[parse]]"
   ([s] (parse-with-info s nil))
   ([^String s {:keys [canonicalise-deprecated-ids?
-                      case-sensitive-operators?
                       collapse-redundant-clauses?
                       sort-licenses?]
                  :or {canonicalise-deprecated-ids? true
-                      case-sensitive-operators?    false
                       collapse-redundant-clauses?  true
                       sort-licenses?               true}}]
    (when-not (s/blank? s)
-     (let [parser     (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)
-           parse-tree (insta/parse parser s)]
+     (let [parse-tree (insta/parse @parser-d s)]
        (if (insta/failure? parse-tree)
          parse-tree
          (as-> parse-tree parse-tree
-               (insta/transform {:license-id           #(hash-map  :license-id           (lic/canonicalise-id (first %&)))
-                                 :license-exception-id #(hash-map  :license-exception-id (exc/canonicalise-id (first %&)))
+               (insta/transform {:license-id           #(hash-map  :license-id           (sl/canonicalise (first %&)))
+                                 :license-exception-id #(hash-map  :license-exception-id (se/canonicalise (first %&)))
                                  :license-ref          #(case (count %&)
                                                           1 {:license-ref  (first %&)}
                                                           2 {:document-ref (first %&) :license-ref (second %&)})
                                  :addition-ref         #(case (count %&)
                                                           1 {:addition-ref  (first %&)}
                                                           2 {:addition-document-ref (first %&) :addition-ref (second %&)})
+                                 :none                 #(hash-map :special-form :none)
+                                 :no-assertion         #(hash-map :special-form :no-assertion)
                                  :license-or-later     #(merge {:or-later? true} (first %&))
                                  :with-expression      #(merge (first %&)        (second %&))
                                  :and-expression       #(case (count %&)
@@ -339,14 +345,14 @@
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
-  "Attempt to parse `s` (a `String`) as an [SPDX license expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/),
+  "Attempt to parse `s` (a `String`) as an [SPDX license expression](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/),
   returning a data structure representing the parse tree, or `nil` if it cannot
-  be parsed.  Licenses and associated license exceptions / 'or later' markers
-  (if any) are represented as a map, groups of licenses separated by operators
-  are represented as vectors with the operator represented by a keyword in the
-  first element in the vector and with license maps in the rest of the vector.
-  Groups (vectors) may be nested e.g. when the expression contains nested
-  clauses.
+  be parsed.  License ids, LicenseRefs, special forms, and any associated 'or
+  later' markers, exception ids, or AdditionRefs are represented as a map, and
+  sequences of these separated by operators are represented as vectors with the
+  operator represented by a keyword in the first element, and with maps in the
+  rest of the vector.  Groups (vectors) may be arbitrarily nested e.g. when the
+  expression contains nested clauses.
 
   The optional `opts` map has these keys:
 
@@ -354,10 +360,7 @@
     whether deprecated ids in the expression are canonicalised to their
     non-deprecated equivalents (where possible) as part of the parsing process.
     Note that not all deprecated identifiers have non-deprecated equivalents,
-    and those will be left unchanged in the parse tree.
-  * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
-    operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
-    (spec-compliant, but strict) or not (non-spec-compliant, lenient).
+    and those that don't will be left unchanged in the parse tree.
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
     whether redundant clauses (e.g. `\"Apache-2.0 AND Apache-2.0\"`) are
     collapsed during parsing.  Note: disabling sorting (`:sort-licenses?`) may
@@ -371,6 +374,8 @@
 
   Deprecated & removed `opts`:
 
+  * `:case-sensitive-operators?` - changes to the case sensitivity rules in SPDX
+     v3.0.2 made this redundant
   * `:normalise-deprecated-ids?` - superceded by `:canonicalise-deprecated-ids?`
   * `:normalise-gpl-ids?` - superceded by `:canonicalise-deprecated-ids?`
 
@@ -385,12 +390,8 @@
     e.g. `GPL-3.0-only+` -> `GPL-3.0-or-later`
   * The parser synthesises grouping when needed to make SPDX license
     expressions' precedence rules explicit (see [the relevant section within
-    annex B of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#order-of-precedence-and-parentheses)
+    annex B of the SPDX specification](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#order-of-precedence-and-parentheses)
     for details).
-  * The default `opts` result in parsing that is more lenient than the SPDX
-    specification and is therefore not strictly spec compliant.  You can enable
-    strictly spec compliant parsing by setting `case-sensitive-operators?` to
-    `true`.
 
   Examples (assuming default options):
 
@@ -424,13 +425,6 @@
     {:license-id \"Apache-2.0\"}
     {:license-id \"BSD-2-Clause\"}]]
 
-  ; Case insensitive operators
-  (parse \"(GPL-2.0+ with Classpath-exception-2.0) or CDDL-1.1\")
-  [:or
-   {:license-id \"CDDL-1.1\"}
-   {:license-id \"GPL-2.0-or-later\"
-    :license-exception-id \"Classpath-exception-2.0\"}]
-
   ; LicenseRefs (custom license identifiers)
   (parse \"DocumentRef-foo:LicenseRef-bar\")
   {:document-ref \"foo\"
@@ -441,14 +435,18 @@
   {:license-id \"Apache-2.0\"
    :addition-document-ref \"foo\"
    :addition-ref \"bar\"}
+
+  ; Special forms (NONE and NOASSERTION)
+  (parse \"NONE OR NOASSERTION\")
+  [:or
+   {:special-form :no-assertion}
+   {:special-form :none}]
   ```"
   ([s] (parse s nil))
   ([s {:keys [canonicalise-deprecated-ids?
-              case-sensitive-operators?
               collapse-redundant-clauses?
               sort-licenses?]
          :or {canonicalise-deprecated-ids? true
-              case-sensitive-operators?    false
               collapse-redundant-clauses?  true
               sort-licenses?               true}
          :as opts}]
@@ -467,11 +465,12 @@
            (parse opts)
            unparse)))
 
-(defn ^:deprecated normalise
+(defn ^:deprecated ^:no-doc normalise
   "Deprecated - use [[canonicalise]] instead."
   ([^String s]      (canonicalise s nil))
   ([^String s opts] (canonicalise s opts)))
 
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn valid?
   "Is `s` (a `String`) a valid SPDX license expression?
 
@@ -481,15 +480,16 @@
 
   The optional `opts` map has these keys:
 
-  * `:case-sensitive-operators?` (`boolean`, default `false`) - controls whether
-    operators in expressions (`AND`, `OR`, `WITH`) are case-sensitive
-    (spec-compliant, but strict) or not (non-spec-compliant, lenient)."
+  * None, currently
+
+  Deprecated & removed `opts`:
+
+  * `:case-sensitive-operators?` - changes to the case sensitivity rules in SPDX
+     v3.0.2 made this redundant"
   ([^String s] (valid? s nil))
-  ([^String s {:keys [case-sensitive-operators?]
-                 :or {case-sensitive-operators? false}}]
-   (let [parser (if case-sensitive-operators? @spdx-license-expression-cs-parser-d @spdx-license-expression-ci-parser-d)]
-     (not (or (s/blank? s)
-              (insta/failure? (insta/parse parser s)))))))
+  ([^String s opts]
+   (not (or (s/blank? s)
+            (insta/failure? (insta/parse @parser-d s))))))
 
 (defn simple?
   "Is `s` (a `String`) a 'simple' SPDX license expression (i.e. one that
@@ -528,8 +528,9 @@
   ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false}}]
    (walk {:license-fn #(into #{} (filter identity [(when (:license-id           %) (str (:license-id %) (when (and include-or-later? (:or-later? %)) "+")))
                                                    (when (:license-exception-id %) (:license-exception-id        %))
-                                                   (when (:license-ref          %) (lic/license-ref-map->string  %))
-                                                   (when (:addition-ref         %) (exc/addition-ref-map->string %))]))
+                                                   (when (:license-ref          %) (sl/license-ref-map->string  %))
+                                                   (when (:addition-ref         %) (se/addition-ref-map->string %))
+                                                   (when (:special-form         %) (special-form->string         %))]))
           :group-fn   #(not-empty (into #{} cat (rest %2)))}  ; Strip leading operator keyword then flatten the rest (%2 is a 2-level nested sequence) and put in a set
          parse-tree)))
 
@@ -541,15 +542,11 @@
 
   Note: this function may have a substantial performance cost."
   []
-  (lic/init!)
-  (exc/init!)
+  (sl/init!)
+  (se/init!)
+  (sir/init!)
   @license-ids-fragment
   @exception-ids-fragment
-; Note: we always leave these to runtime, since they're not expensive, and doing so
-; ensures that callers who exclusively use one parsing variant aren't paying an
-; unnecessary memory cost.
-;  @spdx-license-expression-ci-grammar-d
-;  @spdx-license-expression-cs-grammar-d
-;  @spdx-license-expression-ci-parser-d
-;  @spdx-license-expression-cs-parser-d
+  @grammar-d
+  @parser-d
   nil)

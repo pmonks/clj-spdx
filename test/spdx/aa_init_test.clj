@@ -11,14 +11,14 @@
 ; Naming is a hack to get it to run first
 (ns spdx.aa-init-test
   (:require [clojure.test      :refer [deftest testing is]]
-            [spdx.test-utils]      ; Unused here, but we force it to run first
+            [spdx.test-utils]      ; Unused here, but we force it to load first
             [spdx.impl.state   :as sis]
             [spdx.impl.mapping :as sim]
-            [spdx.licenses     :as lic]
-            [spdx.exceptions   :as exc]
-            [spdx.identifiers  :as ids]
-            [spdx.expressions  :as exp]
-            [spdx.regexes      :as rgx]))
+            [spdx.licenses     :as sl]
+            [spdx.exceptions   :as se]
+            [spdx.identifiers  :as si]
+            [spdx.expressions  :as sexp]
+            [spdx.regexes      :as sr]))
 
 ; clojure.core/time, but with improved output
 (defmacro my-time
@@ -43,22 +43,21 @@
     (is (nil? (sim/init!))))
   (testing "spdx.licenses/init!"
     (print "spdx.licenses/init! took: ") (flush)
-    (is (nil? (my-time (lic/init!))))           ; This first call is slow (it can take > 1 minute on my laptop), as it forces initialisation of some of the underlying Java library
-    (is (< (elapsed-time (lic/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
+    (is (nil? (my-time (sl/init!))))           ; This first call is slow (it can take > 1 minute on my laptop), as it forces initialisation of some of the underlying Java library
+    (is (< (elapsed-time (sl/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
   (testing "spdx.exceptions/init!"
     (print "spdx.exceptions/init! took: ") (flush)
-    (is (nil? (my-time (exc/init!))))           ; This first call is slow (albeit nowhere near as slow as lic/init), as it forces initialisation of some of the underlying Java library
-    (is (< (elapsed-time (exc/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
+    (is (nil? (my-time (se/init!))))           ; This first call is slow (albeit nowhere near as slow as lic/init), as it forces initialisation of some of the underlying Java library
+    (is (< (elapsed-time (se/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
   (testing "spdx.identifiers/init!"
     (print "spdx.identifiers/init! took: ") (flush)
-    (is (nil? (my-time (ids/init!))))
-    (is (< (elapsed-time (ids/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
+    (is (nil? (my-time (si/init!))))
+    (is (< (elapsed-time (si/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
   (testing "spdx.expressions/init!"
     (print "spdx.expressions/init! took: ") (flush)
-    (is (nil? (my-time (exp/init!))))
-    (is (< (elapsed-time (exp/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
+    (is (nil? (my-time (sexp/init!))))
+    (is (< (elapsed-time (sexp/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
   (testing "spdx.regexes/init!"
     (print "spdx.regexes/init! took: ") (flush)
-    (is (nil? (my-time (rgx/init!))))
-    (is (< (elapsed-time (rgx/init!)) 500.0)))  ; This second call should be a LOT less than 0.5 second, on basically any computer
-  (println (str "\nℹ️ Using SPDX license list v" (ids/version))) (flush))
+    (is (nil? (my-time (sr/init!))))
+    (is (< (elapsed-time (sr/init!)) 500.0))))  ; This second call should be a LOT less than 0.5 second, on basically any computer

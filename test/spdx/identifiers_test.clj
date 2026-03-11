@@ -11,7 +11,7 @@
 (ns spdx.identifiers-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils  :refer [equivalent-colls?]]
-            [spdx.identifiers :refer [version ids id-type listed-id? canonicalise-id equivalent?
+            [spdx.identifiers :refer [version ids id-type listed-id? canonicalise equivalent?
                                       id->info deprecated-id? non-deprecated-ids]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
@@ -53,43 +53,49 @@
     (is (true? (listed-id? "Apache-2.0")))
     (is (true? (listed-id? "GPL-3.0")))
     (is (true? (listed-id? "Classpath-exception-2.0")))
-    (is (true? (listed-id? "CC-BY-4.0")))))
+    (is (true? (listed-id? "CC-BY-4.0")))
+  (testing "ids not in canonical form"
+    (is (true? (listed-id? "gpl-3.0")))
+    (is (true? (listed-id? "CLASSPATH-EXCEPTION-2.0"))))))
 
-(deftest canonicalise-id-tests
-  (testing "Invalid ids return nil"
-    (is (nil? (canonicalise-id nil)))
-    (is (nil? (canonicalise-id "")))
-    (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "Refs return nil"
-    (is (nil? (canonicalise-id "LicenseRef-foo")))
-    (is (nil? (canonicalise-id "DocumentRef-foo:LicenseRef-foo")))
-    (is (nil? (canonicalise-id "AdditionRef-foo")))
-    (is (nil? (canonicalise-id "DocumentRef-foo:AdditionRef-foo"))))
-  (testing "id in canonical form"
-    (is (= "Apache-2.0"              (canonicalise-id "Apache-2.0")))
-    (is (= "GPL-3.0"                 (canonicalise-id "GPL-3.0")))
-    (is (= "Classpath-exception-2.0" (canonicalise-id "Classpath-exception-2.0")))
-    (is (= "CC-BY-4.0"               (canonicalise-id "CC-BY-4.0"))))
-  (testing "id not in canonical form"
-    (is (= "Apache-2.0"              (canonicalise-id "APACHE-2.0")))
-    (is (= "GPL-3.0"                 (canonicalise-id "gpl-3.0")))
-    (is (= "Classpath-exception-2.0" (canonicalise-id "classpath-EXCEPTION-2.0")))
-    (is (= "CC-BY-4.0"               (canonicalise-id "cc-by-4.0")))))
+(deftest canonicalise-tests
+  (testing "Invalid values return nil"
+    (is (nil? (canonicalise nil)))
+    (is (nil? (canonicalise "")))
+    (is (nil? (canonicalise "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "id/ref in canonical form"
+    (is (= "Apache-2.0"                      (canonicalise "Apache-2.0")))
+    (is (= "GPL-3.0"                         (canonicalise "GPL-3.0")))
+    (is (= "Classpath-exception-2.0"         (canonicalise "Classpath-exception-2.0")))
+    (is (= "CC-BY-4.0"                       (canonicalise "CC-BY-4.0")))
+    (is (= "LicenseRef-foo"                  (canonicalise "LicenseRef-foo")))
+    (is (= "DocumentRef-foo:LicenseRef-foo"  (canonicalise "DocumentRef-foo:LicenseRef-foo")))
+    (is (= "AdditionRef-foo"                 (canonicalise "AdditionRef-foo")))
+    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "DocumentRef-foo:AdditionRef-foo"))))
+  (testing "id/ref not in canonical form"
+    (is (= "Apache-2.0"                      (canonicalise "APACHE-2.0")))
+    (is (= "GPL-3.0"                         (canonicalise "gpl-3.0")))
+    (is (= "Classpath-exception-2.0"         (canonicalise "classpath-EXCEPTION-2.0")))
+    (is (= "CC-BY-4.0"                       (canonicalise "cc-by-4.0")))
+    (is (= "LicenseRef-foo"                  (canonicalise "licenseref-foo")))
+    (is (= "DocumentRef-FOO:LicenseRef-FOO"  (canonicalise "DOCUMENTREF-FOO:LICENSEREF-FOO")))
+    (is (= "AdditionRef-FOO"                 (canonicalise "ADDITIONREF-FOO")))
+    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "documentref-foo:additionref-foo")))))
 
 (deftest equivalent?-tests
   (testing "nil, empty etc."
-    (is (false? (equivalent? nil nil)))
+    (is (true?  (equivalent? nil nil)))
     (is (false? (equivalent? "" nil)))
     (is (false? (equivalent? nil ""))))
   (testing "Not an id or Ref"
-    (is (false? (equivalent? "foo" "foo")))
+    (is (false? (equivalent? "foo"                                                    "foo")))
+    (is (false? (equivalent? "Apache-0.9"                                             "Apache-0.9")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
     (is (false? (equivalent? "Apache-2.0"                                             "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
     (is (false? (equivalent? "Classpath-exception-2.0"                                "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent? "Classpath-exception-0.9"                                "Classpath-exception-0.9")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "LicenseRef-foo")))
-    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo")))
-    (is (false? (equivalent? "licenseref-foo"                                         "LICENSEREF-foo")))
-    (is (false? (equivalent? "additionref-foo"                                        "ADDITIONREF-foo"))))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo"))))
   (testing "valid values that are not equivalent"
     (is (false? (equivalent? "Apache-2.0"                      "Classpath-exception-2.0")))
     (is (false? (equivalent? "Apache-2.0"                      "LicenseRef-foo")))
@@ -102,8 +108,10 @@
   (testing "valid values that are equivalent"
     (is (true? (equivalent? "APACHE-2.0"                      "apache-2.0")))
     (is (true? (equivalent? "CLASSPATH-EXCEPTION-2.0"         "classpath-exception-2.0")))
-    (is (true? (equivalent? "DocumentRef-FOO:LicenseRef-BAR"  "DocumentRef-foo:LicenseRef-bar")))
-    (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "DocumentRef-foo:AdditionRef-bar")))))
+    (is (true? (equivalent? "licenseref-FOO"                  "LICENSEREF-foo")))                     ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "DocumentRef-FOO:LicenseRef-BAR"  "documentRef-foo:licenseRef-bar")))     ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "additionref-FOO"                 "ADDITIONREF-foo")))                    ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "documentRef-foo:additionRef-bar")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"
@@ -146,6 +154,21 @@
       (is (=           (:type        info) :exception-id))
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (pos? (count (:see-also    info)))
+      (is (nil?        (:deprecated? info))))))
+  (testing "ids not in canonical form"
+    (let [info (id->info "apache-2.0")]
+      (is (=           (:id            info) "Apache-2.0"))
+      (is (=           (:type          info) :license-id))
+      (is (=           (:name          info) "Apache License 2.0"))
+      (is (pos? (count (:see-also      info))))
+      (is (true?       (:osi-approved? info)))
+      (is (true?       (:fsf-libre?    info)))
+      (is (nil?        (:deprecated?   info))))
+    (let [info (id->info "CLASSPATH-EXCEPTION-2.0")]
+      (is (=           (:id          info) "Classpath-exception-2.0"))
+      (is (=           (:type        info) :exception-id))
+      (is (=           (:name        info) "Classpath exception 2.0"))
+      (is (pos? (count (:see-also    info)))
       (is (nil?        (:deprecated? info)))))))
 
 (deftest deprecated-id?-tests
@@ -169,7 +192,12 @@
     (is (false? (deprecated-id? "OLDAP-2.2.2")))
     (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
     (is (false? (deprecated-id? "LLVM-exception")))
-    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0")))))
+    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0"))))
+  (testing "ids not in canonical form"
+    (is (true?  (deprecated-id? "gpl-2.0")))
+    (is (false? (deprecated-id? "mit")))
+    (is (true?  (deprecated-id? "nokia-qt-exception-1.1")))
+    (is (false? (deprecated-id? "llvm-exception")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"

@@ -11,9 +11,9 @@
 (ns spdx.exceptions-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.exceptions :refer [version ids listed-id? canonicalise-id equivalent-ids?  addition-ref?
+            [spdx.exceptions :refer [version ids listed-id? canonicalise addition-ref?
                                      addition-ref addition-ref-map->string string->addition-ref-map
-                                     equivalent-addition-refs? equivalent? id->info deprecated-id? non-deprecated-ids]]))
+                                     equivalent? id->info deprecated-id? non-deprecated-ids]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -34,42 +34,27 @@
     (is (true? (listed-id? "GPL-3.0-linking-exception")))
     (is (true? (listed-id? "Linux-syscall-note"))))
   (testing "Made up ids are not present"
-    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))))
+    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "ids not in canonical form"
+    (is (true? (listed-id? "CLASSPATH-EXCEPTION-2.0")))))
 
-(deftest canonicalise-id-tests
-  (testing "Invalid ids return nil"
-    (is (nil? (canonicalise-id nil)))
-    (is (nil? (canonicalise-id "")))
-    (is (nil? (canonicalise-id "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "AdditionRefs return nil"
-    (is (nil? (canonicalise-id "AdditionRef-foo")))
-    (is (nil? (canonicalise-id "DocumentRef-foo:AdditionRef-foo"))))
-  (testing "id in canonical form"
-    (is (= "Classpath-exception-2.0" (canonicalise-id "Classpath-exception-2.0")))
-    (is (= "Bison-exception-1.24"    (canonicalise-id "Bison-exception-1.24")))
-    (is (= "GCC-exception-2.0"       (canonicalise-id "GCC-exception-2.0"))))
-  (testing "id not in canonical form"
-    (is (= "Classpath-exception-2.0" (canonicalise-id "CLASSPATH-EXCEPTION-2.0")))
-    (is (= "Bison-exception-1.24"    (canonicalise-id "bison-exception-1.24")))
-    (is (= "GCC-exception-2.0"       (canonicalise-id "gcc-exception-2.0")))))
-
-(deftest equivalent-ids?-tests
-  (testing "nil, empty etc."
-    (is (false? (equivalent-ids? nil nil)))
-    (is (false? (equivalent-ids? "" nil)))
-    (is (false? (equivalent-ids? nil ""))))
-  (testing "invalid ids"
-    (is (false? (equivalent-ids? "foo" "foo")))
-    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
-    (is (false? (equivalent-ids? "Classpath-exception-2.0"                                "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
-    (is (false? (equivalent-ids? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "Bison-exception-1.24"))))
-  (testing "valid ids that are not equivalent"
-    (is (false? (equivalent-ids? "Classpath-exception-2.0" "Bison-exception-1.24")))
-    (is (false? (equivalent-ids? "GCC-exception-2.0"       "GCC-exception-3.1"))))
-  (testing "valid ids that are equivalent"
-    (is (true? (equivalent-ids? "Classpath-exception-2.0"   "Classpath-exception-2.0")))
-    (is (true? (equivalent-ids? "CLASSPATH-EXCEPTION-2.0"   "classpath-exception-2.0")))
-    (is (true? (equivalent-ids? "GCC-exception-3.1"         "gcc-exception-3.1")))))
+(deftest canonicalise-tests
+  (testing "Invalid ids/AdditionRefs return nil"
+    (is (nil? (canonicalise nil)))
+    (is (nil? (canonicalise "")))
+    (is (nil? (canonicalise "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "id/AdditionRefs in canonical form"
+    (is (= "Classpath-exception-2.0"         (canonicalise "Classpath-exception-2.0")))
+    (is (= "Bison-exception-1.24"            (canonicalise "Bison-exception-1.24")))
+    (is (= "GCC-exception-2.0"               (canonicalise "GCC-exception-2.0")))
+    (is (= "AdditionRef-foo"                 (canonicalise "AdditionRef-foo")))
+    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "DocumentRef-foo:AdditionRef-foo"))))
+  (testing "id/AdditionRefs not in canonical form"
+    (is (= "Classpath-exception-2.0"         (canonicalise "CLASSPATH-EXCEPTION-2.0")))
+    (is (= "Bison-exception-1.24"            (canonicalise "bison-exception-1.24")))
+    (is (= "GCC-exception-2.0"               (canonicalise "gcc-exception-2.0")))
+    (is (= "AdditionRef-foo"                 (canonicalise "additionref-foo")))
+    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "DOCUMENTREF-foo:ADDITIONREF-foo")))))
 
 (deftest addition-ref?-tests
   (testing "Invalid AdditionRefs return false"
@@ -78,17 +63,15 @@
     (is (false? (addition-ref? "INVALID-addition-ref")))
     (is (false? (addition-ref? " AdditionRef-foo")))                  ; Leading whitespace
     (is (false? (addition-ref? "AdditionRef-foo ")))                  ; Trailing whitespace
-    (is (false? (addition-ref? "additionref-foo")))                   ; Incorrect case of "AdditionRef"
-    (is (false? (addition-ref? "ADDITIONREF-foo")))                   ; Incorrect case of "AdditionRef"
     (is (false? (addition-ref? "AdditionRef-%#^*")))                  ; Invalid characters in AdditionRef tag
     (is (false? (addition-ref? "AdditionRef-:")))                     ; Invalid characters in AdditionRef tag
     (is (false? (addition-ref? "DocumentRef-%#^*:AdditionRef-bar")))  ; Invalid characters in DocumentRef tag
-    (is (false? (addition-ref? "DocumentRef-::AdditionRef-:")))       ; Invalid characters in DocumentRef and AdditionRef tag
-    (is (false? (addition-ref? "documentref-foo:AdditionRef-bar")))   ; Incorrect case of "DocumentRef"
-    (is (false? (addition-ref? "DOCUMENTREF-foo:AdditionRef-bar"))))  ; Incorrect case of "DocumentRef"
+    (is (false? (addition-ref? "DocumentRef-::AdditionRef-:"))))      ; Invalid characters in DocumentRef and AdditionRef tag
   (testing "Valid AdditionRefs"
     (is (true? (addition-ref? "AdditionRef-foo")))
     (is (true? (addition-ref? "AdditionRef-FOO")))
+    (is (true? (addition-ref? "additionref-foo")))                   ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (addition-ref? "ADDITIONREF-foo")))                   ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (addition-ref? "AdditionRef-42")))
     (is (true? (addition-ref? "AdditionRef-foo42")))
     (is (true? (addition-ref? "AdditionRef-42foo")))
@@ -98,6 +81,9 @@
     (is (true? (addition-ref? "AdditionRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
     (is (true? (addition-ref? "DocumentRef-foo:AdditionRef-bar")))
     (is (true? (addition-ref? "DocumentRef-FOO:AdditionRef-BAR")))
+    (is (true? (addition-ref? "documentref-foo:AdditionRef-bar")))   ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (addition-ref? "DOCUMENTREF-foo:AdditionRef-bar")))   ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (addition-ref? "DOCUMENTREF-foo:ADDITIONREF-bar")))   ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (addition-ref? "DocumentRef-42:AdditionRef-42")))
     (is (true? (addition-ref? "DocumentRef-foo42:AdditionRef-bar42")))
     (is (true? (addition-ref? "DocumentRef-42foo:AdditionRef-42bar")))
@@ -180,20 +166,18 @@
     (is (nil? (string->addition-ref-map "INVALID-addition-ref")))
     (is (nil? (string->addition-ref-map " AdditionRef-foo")))
     (is (nil? (string->addition-ref-map "AdditionRef-foo ")))
-    (is (nil? (string->addition-ref-map "additionref-foo")))
-    (is (nil? (string->addition-ref-map "ADDITIONREF-foo")))
     (is (nil? (string->addition-ref-map "AdditionRef-%#^*")))
     (is (nil? (string->addition-ref-map "AdditionRef-:")))
     (is (nil? (string->addition-ref-map "DocumentRef-%#^*:AdditionRef-bar")))
-    (is (nil? (string->addition-ref-map "DocumentRef-::AdditionRef-:")))
-    (is (nil? (string->addition-ref-map "documentref-foo:AdditionRef-bar")))
-    (is (nil? (string->addition-ref-map "DOCUMENTREF-foo:AdditionRef-bar"))))
+    (is (nil? (string->addition-ref-map "DocumentRef-::AdditionRef-:"))))
   (testing "Valid maps - precise testing"
     (is (= {:addition-ref "foo"}                     (string->addition-ref-map "AdditionRef-foo")))
     (is (= {:addition-document-ref "foo" :addition-ref "bar"} (string->addition-ref-map "DocumentRef-foo:AdditionRef-bar"))))
   (testing "Valid maps - directional testing"
     (is (map? (string->addition-ref-map "AdditionRef-foo")))
     (is (map? (string->addition-ref-map "AdditionRef-FOO")))
+    (is (map? (string->addition-ref-map "additionref-FOO")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (map? (string->addition-ref-map "ADDITIONREF-foo")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (map? (string->addition-ref-map "AdditionRef-42")))
     (is (map? (string->addition-ref-map "AdditionRef-foo42")))
     (is (map? (string->addition-ref-map "AdditionRef-42foo")))
@@ -203,6 +187,8 @@
     (is (map? (string->addition-ref-map "AdditionRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
     (is (map? (string->addition-ref-map "DocumentRef-foo:AdditionRef-bar")))
     (is (map? (string->addition-ref-map "DocumentRef-FOO:AdditionRef-BAR")))
+    (is (map? (string->addition-ref-map "documentref-foo:AdditionRef-bar")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (map? (string->addition-ref-map "DOCUMENTREF-foo:AdditionRef-bar")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (map? (string->addition-ref-map "DocumentRef-42:AdditionRef-42")))
     (is (map? (string->addition-ref-map "DocumentRef-foo42:AdditionRef-bar42")))
     (is (map? (string->addition-ref-map "DocumentRef-42foo:AdditionRef-42bar")))
@@ -265,43 +251,46 @@
                              {:addition-document-ref "..."               :addition-ref "..."}]]
       (run! #(is (= % (string->addition-ref-map (addition-ref-map->string %))) %) addition-ref-maps))))
 
-(deftest equivalent-addition-refs?-tests
-  (testing "Invalid AdditionRefs"
-    (is (false? (equivalent-addition-refs? nil nil)))
-    (is (false? (equivalent-addition-refs? nil "AdditionRef-foo")))
-    (is (false? (equivalent-addition-refs? "AdditionRef-foo" nil)))
-    (is (false? (equivalent-addition-refs? "ADDITIONREF-foo" "ADDITIONREF-foo")))
-    (is (false? (equivalent-addition-refs? "AdditionRef:foo" "AdditionRef:foo"))))
-  (testing "Valid AdditionRefs - not equivalent"
-    (is (false? (equivalent-addition-refs? "AdditionRef-foo" "AdditionRef-bar")))
-    (is (false? (equivalent-addition-refs? "AdditionRef-foo" "DocumentRef-foo:AdditionRef-bar")))
-    (is (false? (equivalent-addition-refs? "DocumentRef-bar:AdditionRef-foo" "AdditionRef-foo")))
-    (is (false? (equivalent-addition-refs? "DocumentRef-foo:AdditionRef-foo" "DocumentRef-foo:AdditionRef-bar")))
-    (is (false? (equivalent-addition-refs? "DocumentRef-foo:AdditionRef-bar" "DocumentRef-bar:AdditionRef-bar"))))
-  (testing "Valid and equivalent AdditionRefs"
-    (is (true? (equivalent-addition-refs? "AdditionRef-foo" "AdditionRef-foo")))
-    (is (true? (equivalent-addition-refs? "AdditionRef-foo" "AdditionRef-FOO")))
-    (is (true? (equivalent-addition-refs? "DocumentRef-foo:AdditionRef-bar" "DocumentRef-foo:AdditionRef-bar")))
-    (is (true? (equivalent-addition-refs? "DocumentRef-FOO:AdditionRef-BAR" "DocumentRef-foo:AdditionRef-bar")))
-    (is (true? (equivalent-addition-refs? "DocumentRef-FOO:AdditionRef-bar" "DocumentRef-foo:AdditionRef-BAR")))
-    (is (true? (equivalent-addition-refs? "DocumentRef-FOO-V2.1:AdditionRef-bar-v3.7" "DocumentRef-foo-v2.1:AdditionRef-BAR-V3.7")))))
-
 (deftest equivalent?-tests
   (testing "nil, empty etc."
-    (is (false? (equivalent? nil nil)))
+    (is (true?  (equivalent? nil nil)))
     (is (false? (equivalent? "" nil)))
-    (is (false? (equivalent? nil ""))))
+    (is (false? (equivalent? nil "")))
+    (is (false? (equivalent? nil "Classpath-exception-2.0")))
+    (is (false? (equivalent? "Classpath-exception-2.0" nil)))
+    (is (false? (equivalent? nil "AdditionRef-foo")))
+    (is (false? (equivalent? "AdditionRef-foo" nil))))
   (testing "Not an id or AdditionRef"
-    (is (false? (equivalent? "foo" "foo")))
+    (is (false? (equivalent? ""                                                       "Classpath-exception-2.0")))
+    (is (false? (equivalent? "Classpath-exception-2.0"                                "")))
+    (is (false? (equivalent? "foo"                                                    "foo")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
     (is (false? (equivalent? "Classpath-exception-2.0"                                "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
-    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo"))))
+    (is (false? (equivalent? "Classpath-exception-0.9"                                "Classpath-exception-0.9")))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo")))
+    (is (false? (equivalent? "AdditionRef:foo"                                        "AdditionRef:foo"))))
   (testing "valid values that are not equivalent"
-    (is (false? (equivalent? "Classpath-exception-2.0" "AdditionRef-foo")))
-    (is (false? (equivalent? "AdditionRef-FOO"         "gcc-exception-3.1"))))
+    (is (false? (equivalent? "Classpath-exception-2.0"         "Classpath-exception-2.0-short")))
+    (is (false? (equivalent? "bison-exception-1.24"            "BISON-EXCEPTION-2.2")))
+    (is (false? (equivalent? "Classpath-exception-2.0"         "AdditionRef-foo")))
+    (is (false? (equivalent? "AdditionRef-FOO"                 "Bison-exception-2.2")))
+    (is (false? (equivalent? "AdditionRef-foo"                 "AdditionRef-bar")))
+    (is (false? (equivalent? "AdditionRef-foo"                 "DocumentRef-foo:AdditionRef-bar")))
+    (is (false? (equivalent? "DocumentRef-bar:AdditionRef-foo" "AdditionRef-foo")))
+    (is (false? (equivalent? "DocumentRef-foo:AdditionRef-foo" "DocumentRef-foo:AdditionRef-bar")))
+    (is (false? (equivalent? "DocumentRef-foo:AdditionRef-bar" "DocumentRef-bar:AdditionRef-bar"))))
   (testing "valid values that are equivalent"
-    (is (true? (equivalent? "CLASSPATH-EXCEPTION-2.0"         "classpath-exception-2.0")))
-    (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "DocumentRef-foo:AdditionRef-bar")))))
+    (is (true?  (equivalent? "Classpath-exception-2.0"                   "Classpath-exception-2.0")))
+    (is (true?  (equivalent? "CLASSPATH-EXCEPTION-2.0"                   "classpath-exception-2.0")))
+    (is (true?  (equivalent? "Bison-exception-1.24"                      "bison-exception-1.24")))
+    (is (true?  (equivalent? "DocumentRef-FOO:AdditionRef-BAR"           "DocumentRef-foo:AdditionRef-bar")))
+    (is (true?  (equivalent? "AdditionRef-foo"                           "AdditionRef-foo")))
+    (is (true?  (equivalent? "AdditionRef-foo"                           "AdditionRef-FOO")))
+    (is (true?  (equivalent? "ADDITIONREF-foo"                           "additionref-FOO")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-foo:AdditionRef-bar"           "DocumentRef-foo:AdditionRef-bar")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO:ADDITIONREF-BAR"           "documentref-foo:additionref-bar")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-FOO:AdditionRef-bar"           "DocumentRef-foo:AdditionRef-BAR")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:ADDITIONREF-BAR-V3.7" "documentref-foo-v2.1:additionref-bar-v3.7")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"
@@ -323,6 +312,12 @@
     (let [info (id->info "Classpath-exception-2.0")]
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (nil?        (:deprecated? info)))
+      (is (pos? (count (:see-also    info))))))
+  (testing "ids not in canonical form"
+    (let [info (id->info "CLASSPATH-EXCEPTION-2.0")]
+      (is (=           (:id          info) "Classpath-exception-2.0"))
+      (is (=           (:name        info) "Classpath exception 2.0"))
+      (is (nil?        (:deprecated? info)))
       (is (pos? (count (:see-also    info)))))))
 
 (deftest deprecated-id?-tests
@@ -336,11 +331,13 @@
     (is (false? (deprecated-id? "Classpath-exception-2.0")))
     (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
     (is (false? (deprecated-id? "LLVM-exception")))
-    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0")))))
+    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0"))))
+  (testing "ids not in canonical form"
+    (is (true?  (deprecated-id? "nokia-qt-exception-1.1")))
+    (is (false? (deprecated-id? "llvm-exception")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
     (is (pos? (count (non-deprecated-ids)))))
   (testing "non-deprecated-ids are a set"
     (is (instance? java.util.Set (non-deprecated-ids)))))
-

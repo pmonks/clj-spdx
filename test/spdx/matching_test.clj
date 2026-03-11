@@ -10,9 +10,16 @@
 
 (ns spdx.matching-test
   (:require [clojure.test    :refer [deftest testing is]]
+            [clojure.string  :as    s]
             [spdx.matching   :refer [text-is-license? text-is-exception? text-contains-license? text-contains-exception?
                                      texts-equivalent-licenses? texts-equivalent-exceptions? licenses-within-text
                                      exceptions-within-text differences]]))
+
+; Set the CLJ_SPDX_SKIP_MATCHING_TESTS environment variable to a non-blank value to skip these tests
+(if-not (s/blank? (System/getenv "CLJ_SPDX_SKIP_MATCHING_TESTS"))
+  (println "⚠️ Skipping matching tests ⚠️")
+  (do
+    (println "ℹ️ Running (slow) matching tests - this can be turned off with CLJ_SPDX_SKIP_MATCHING_TESTS")
 
 ; Official single license texts
 (def apache-10-text                  (delay (slurp "./test/data/apache-1.0.txt")))
@@ -103,6 +110,9 @@
     (is (true?  (text-is-license? @wtfpl-text          "WTFPL")))
     (is (true?  (text-is-license? @mpl-20-text         "MPL-2.0")))
     (is (true?  (text-is-license? @mit-text            "MIT"))))
+  (testing "Exactly matching official license texts - non-canonical identifier"
+    (is (true?  (text-is-license? @apache-20-text      "apache-2.0")))
+    (is (true?  (text-is-license? @cc0-10-text         "cc0-1.0"))))
   (testing "Exactly matching 3rd party license texts"
     (is (true?  (text-is-license? @clj-spdx-license        "MPL-2.0")))
     (is (true?  (text-is-license? @commonmark-java-license "BSD-2-Clause")))))
@@ -120,7 +130,9 @@
   (testing "Invalid id"
     (is (false? (text-is-exception? @classpath-20-text "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Exactly matching official exception texts"
-    (is (true?  (text-is-exception? @classpath-20-text "Classpath-exception-2.0")))))
+    (is (true?  (text-is-exception? @classpath-20-text "Classpath-exception-2.0"))))
+  (testing "Exactly matching official license texts - non-canonical identifier"
+    (is (true?  (text-is-exception? @classpath-20-text "CLASSPATH-EXCEPTION-2.0")))))
 
 (deftest text-contains-license?-tests
   (testing "nil, empty string"
@@ -160,6 +172,8 @@
     (is (true?  (text-contains-license? @wtfpl-text          "WTFPL")))
     (is (true?  (text-contains-license? @mpl-20-text         "MPL-2.0")))
     (is (true?  (text-contains-license? @mit-text            "MIT"))))
+  (testing "Official license text contains license - non-canonical identifier"
+    (is (true?  (text-contains-license? @cddl-10-text        "cddl-1.0"))))
   (testing "3rd party license text contains license"
     (is (true?  (text-contains-license? @clj-spdx-license        "MPL-2.0")))
     (is (true?  (text-contains-license? @commonmark-java-license "BSD-2-Clause"))))
@@ -188,6 +202,8 @@
     (is (false? (text-contains-exception? @classpath-20-text "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Official exception text contains exception"
     (is (true?  (text-contains-exception? @classpath-20-text "Classpath-exception-2.0"))))
+  (testing "Official exception text contains license - non-canonical identifier"
+    (is (true?  (text-contains-exception? @classpath-20-text "CLASSPATH-EXCEPTION-2.0"))))
   (testing "Larger texts with junk characters contain exceptions"
     (is (true?  (text-contains-exception? (str "ABCD\n" @classpath-20-text "\nEFGH") "Classpath-exception-2.0")))))
 
@@ -226,6 +242,8 @@
   (testing "Texts with single licenses and only check for one license"
     (is (nil? (licenses-within-text @apache-20-text #{"GPL-3.0"})))
     (is (=    (licenses-within-text @apache-20-text #{"Apache-2.0"}) #{"Apache-2.0"})))
+  (testing "Texts with single licenses and only check for one license - non-canonical identifier"
+    (is (= (licenses-within-text @apache-20-text #{"APACHE-2.0"}) #{"Apache-2.0"})))
   (testing "Matching official license texts"
 ;    (is (= (licenses-within-text @apache-10-text)      #{"Apache-1.0"}))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/230
 ;    (is (= (licenses-within-text @apache-11-text)      #{"Apache-1.1"}))       ; Failing due to https://github.com/spdx/Spdx-Java-Library/issues/230
@@ -278,13 +296,15 @@
     (is (nil? (exceptions-within-text "ABCDEFG"))))
   (testing "Texts with single exceptions and only check for that exception"
     (is (= (exceptions-within-text @classpath-20-text #{"Classpath-exception-2.0"}) #{"Classpath-exception-2.0"})))
+  (testing "Texts with single exceptions and only check for that exception - non-canonical identifier"
+    (is (= (exceptions-within-text @classpath-20-text #{"CLASSPATH-EXCEPTION-2.0"}) #{"Classpath-exception-2.0"})))
   (testing "Texts with single exceptions and nothing else"
-    (is (= (exceptions-within-text @classpath-20-text) #{"Classpath-exception-2.0"})))
+    (is (= (exceptions-within-text @classpath-20-text) #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"})))
   (testing "Texts with single exceptions and other text"
-    (is (= (exceptions-within-text (str "ABCD\n" @classpath-20-text "\nEFGH")) #{"Classpath-exception-2.0"})))
+    (is (= (exceptions-within-text (str "ABCD\n" @classpath-20-text "\nEFGH")) #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"})))
   (testing "Texts with multiple licenses/exceptions"
-    (is (= (exceptions-within-text @apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0"}))
-    (is (= (exceptions-within-text @javamail-license)                   #{"Classpath-exception-2.0"}))))
+    (is (= (exceptions-within-text @apache-20-gpl-30-classpath-20-text) #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"}))
+    (is (= (exceptions-within-text @javamail-license)                   #{"Classpath-exception-2.0" "Classpath-exception-2.0-short"}))))
 
 (deftest differences-tests
   (testing "nil, empty string"
@@ -298,4 +318,9 @@
     (is (nil? (differences @apache-20-text "Apache-2.0")))
     (is (map? (differences "Example text" "Apache-2.0")))
     (is (= [:differences-found? :message :differences] (keys (differences "Example text" "Apache-2.0"))))
-    (is (= [:line :column :length] (keys (first (:differences (differences "Example text" "Apache-2.0"))))))))
+    (is (= [:line :column :length] (keys (first (:differences (differences "Example text" "Apache-2.0")))))))
+  (testing "Valid SPDX identifiers - non-canonical identifiers"
+    (is (nil? (differences @apache-20-text "apache-2.0")))
+    (is (map? (differences "Example text" "APACHE-2.0")))))
+
+)) ; End of CLJ_SPDX_SKIP_MATCHING_TESTS conditional
