@@ -19,6 +19,7 @@
 (if-not (s/blank? (System/getenv "CLJ_SPDX_SKIP_MATCHING_TESTS"))
   (println "⚠️ Skipping matching tests ⚠️")
   (do
+    (println "ℹ️ Running (slow) matching tests - this can be turned off with CLJ_SPDX_SKIP_MATCHING_TESTS")
 
 ; Official single license texts
 (def apache-10-text                  (delay (slurp "./test/data/apache-1.0.txt")))

@@ -9,7 +9,12 @@
 ;
 
 (ns spdx.licenses
-  "License list functionality, primarily provided by `org.spdx.library.ListedLicenses`."
+  "License list functionality, primarily provided by `org.spdx.library.ListedLicenses`.
+
+  Notes:
+
+  * The functions in this namespace support any case of identifier or
+    LicenseRef, as per the SPDX case sensitivity rules in [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)"
   (:require [clojure.string    :as s]
             [rencg.api         :as ncg]
             [embroidery.api    :as e]
@@ -22,7 +27,7 @@
   "The version of the license list (a `String` in major.minor(.patchlevel)
   format).
 
-  Note: identical to [[spdx.exceptions/version]]."
+  Note: identical to [[spdx.identifiers/version]]."
   []
   (.getLicenseListVersion ^org.spdx.library.ListedLicenses @is/list-obj))
 
@@ -34,18 +39,13 @@
           set))
 
 (defn listed-id?
-  "Is `s` (a `String`) one of the listed SPDX license identifiers?
-
-  Notes:
-
-  * This fn supports any case of identifier, as per the SPDX case sensitivity
-    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
+  "Is `s` (a `String`) one of the listed SPDX license identifiers?"
   [^String s]
   (im/listed-license-id? s))
 
 (defn license-ref?
   "Is `s` (a `String`) a valid LicenseRef? See
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/)
+  [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/)
   for specifics."
   [s]
   (boolean (when s (re-matches @ir/license-ref-re-d s))))
@@ -115,7 +115,7 @@
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers or
   LicenseRefs (i.e. taking the SPDX case sensitivity rules in [SPDX
-  Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+  Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?"
   [^String s1 ^String s2]
   (boolean
@@ -137,7 +137,7 @@
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
 (defn id->info
   "Returns SPDX license list information for `id` as a map, or `nil` if `id` is
-  not a valid SPDX license identifier.
+  not a listed SPDX license identifier.
 
   `opts` are:
 
@@ -146,12 +146,13 @@
   ([^String id] (id->info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (some-> id
+           canonicalise
            im/id->license
            (im/license->map opts))))
 
 (defn deprecated-id?
-  "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not in the
-  SPDX license list.
+  "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not a
+  listed SPDX license identifier.
 
   See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
   for details on what this means."
@@ -160,16 +161,16 @@
 
 (defn non-deprecated-ids
   "Returns the set of SPDX license identifiers that identify current
-  (non-deprecated) licenses within the provided set of SPDX license identifiers
-  (or all of them, if `ids` is not provided)."
+  (non-deprecated) licenses, within the provided set of listed SPDX license
+  identifiers or all listed identifiers when `ids` not provided."
   ([]    (non-deprecated-ids (ids)))
   ([ids] (some-> (filter (complement deprecated-id?) ids)
                  seq
                  set)))
 
 (defn osi-approved-id?
-  "Is `id` (a `String`) OSI Approved?  Also returns `false` if `id` is not in
-  the SPDX license list.
+  "Is `id` (a `String`) OSI Approved?  Also returns `false` if `id` is not a
+  listed SPDX license identifier.
 
   See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
   for details about what 'OSI Approved' means."

@@ -38,7 +38,9 @@
   (testing "Common ids are present"
     (is (true? (listed-id? "Apache-2.0")))
     (is (true? (listed-id? "GPL-3.0")))
-    (is (true? (listed-id? "CC-BY-4.0")))))
+    (is (true? (listed-id? "CC-BY-4.0"))))
+  (testing "ids not in canonical form"
+    (is (true? (listed-id? "APACHE-2.0")))))
 
 (deftest canonicalise-tests
   (testing "Invalid ids/LicenseRefs return nil"
@@ -321,6 +323,13 @@
       (is (=           (:name          info) "Apache License 2.0"))
       (is (true?       (:osi-approved? info)))
       (is (true?       (:fsf-libre?    info)))
+      (is (pos? (count (:see-also      info))))))
+  (testing "ids not in canonical form"
+    (let [info (id->info "apache-2.0")]
+      (is (=           (:id            info) "Apache-2.0"))
+      (is (=           (:name          info) "Apache License 2.0"))
+      (is (true?       (:osi-approved? info)))
+      (is (true?       (:fsf-libre?    info)))
       (is (pos? (count (:see-also      info)))))))
 
 (deftest deprecated-id?-tests
@@ -340,7 +349,10 @@
     (is (false? (deprecated-id? "Latex2e")))
     (is (false? (deprecated-id? "MIT")))
     (is (false? (deprecated-id? "gnuplot")))
-    (is (false? (deprecated-id? "OLDAP-2.2.2")))))
+    (is (false? (deprecated-id? "OLDAP-2.2.2"))))
+  (testing "ids not in canonical form"
+    (is (true?  (deprecated-id? "gpl-2.0")))
+    (is (false? (deprecated-id? "mit")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
@@ -366,7 +378,10 @@
     (is (false? (osi-approved-id? "JSON")))
     (is (false? (osi-approved-id? "X11")))
     (is (false? (osi-approved-id? "Beerware")))
-    (is (false? (osi-approved-id? "Hippocratic-2.1")))))
+    (is (false? (osi-approved-id? "Hippocratic-2.1"))))
+  (testing "ids not in canonical form"
+    (is (true?  (osi-approved-id? "gpl-3.0")))
+    (is (false? (osi-approved-id? "json")))))
 
 (deftest osi-approved-ids-tests
   (testing "We have some osi-approved-ids"
@@ -393,7 +408,10 @@
     (is (false? (fsf-libre-id? "OML")))
     (is (false? (fsf-libre-id? "Libpng")))
     (is (false? (fsf-libre-id? "MPL-1.0")))
-    (is (false? (fsf-libre-id? "Xerox")))))
+    (is (false? (fsf-libre-id? "Xerox"))))
+  (testing "ids not in canonical form"
+    (is (true?  (fsf-libre-id? "cddl-1.0")))
+    (is (false? (fsf-libre-id? "oml")))))
 
 (deftest fsf-libre-ids-ids-tests
   (testing "We have some fsf-libre-ids"

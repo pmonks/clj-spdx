@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/github/license/pmonks/clj-spdx.svg)](https://github.com/pmonks/clj-spdx/blob/release/LICENSE)
 ![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
-A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. a canonicalising [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) parser, regular expressions for matching individual SPDX listed identifiers and refs, etc.).
+A Clojure wrapper around [`Spdx-Java-Library`](https://github.com/spdx/Spdx-Java-Library), plus some bespoke functionality (e.g. a canonicalising [SPDX expression](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/) parser, regular expressions for matching individual SPDX listed identifiers and refs, etc.).
 
 Note that that library's functionality is being wrapped on demand by the author based on their needs in other projects, so this wrapper library is not yet comprehensive. Contributions of any kind are warmly welcomed, especially wrapping additional parts of the Java library such as the [SPDX model](https://github.com/pmonks/clj-spdx/issues/58)!
 
@@ -42,7 +42,7 @@ If you are performing matching and find the download cost (whether on demand or 
 
 ### A note about Spdx-Java-Library v2
 
-From v1.0.247 onward, `clj-spdx` uses `Spdx-Java-Library` v2.x, which adds support for [SPDX specification v3.x](https://spdx.github.io/spdx-spec/v3.0.1/).  This new version of the Java library is _not_ backwards compatible with the earlier version v1.x versions, and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
+From v1.0.247 onward, `clj-spdx` uses `Spdx-Java-Library` v2.x, which adds support for [SPDX specification v3.x](https://spdx.github.io/spdx-spec/v3.0.2/).  This new version of the Java library is _not_ backwards compatible with the earlier version v1.x versions, and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
 
 While `clj-spdx` managed to hide most of the breaking changes, the following data structure changes were unavoidable:
 

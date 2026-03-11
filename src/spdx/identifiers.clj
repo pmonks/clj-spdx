@@ -11,8 +11,13 @@
 (ns spdx.identifiers
   "Identifier related functionality.  This is mostly a convenience namespace
   that delegates to [[spdx.licenses]] or [[spdx.exceptions]] as needed, based on
-  the 'type' of an identifier.  This functionality is bespoke (it does not use
-  any logic from `Spdx-Java-Library`)."
+  the 'type' of an identifier.  This functionality is bespoke (it does not
+  directly use any logic from `Spdx-Java-Library`).
+
+  Notes:
+
+  * The functions in this namespace support any case of identifier, LicenseRef,
+    or AdditionRef, as per the SPDX case sensitivity rules in [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)"
   (:require [clojure.set     :as set]
             [spdx.licenses   :as lic]
             [spdx.exceptions :as exc]))
@@ -46,12 +51,7 @@
       :else                 nil)))
 
 (defn listed-id?
-  "Is `s` (a `String`) one of the listed SPDX identifiers?
-
-  Notes:
-
-  * This fn supports any case of identifier, as per the SPDX case sensitivity
-    rules in [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)"
+  "Is `s` (a `String`) one of the listed SPDX identifiers?"
   [^String s]
   (boolean
     (or (lic/listed-id? s)
@@ -82,7 +82,7 @@
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX identifiers, LicenseRefs or
   AdditionRefs (i.e. taking the SPDX case sensitivity rules in
-  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/#case-sensitivity)
+  [SPDX Specification Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:

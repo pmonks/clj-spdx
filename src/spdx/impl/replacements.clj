@@ -13,7 +13,7 @@
   namespace is not part of the public API of clj-spdx and may change without
   notice.")
 
-; Note: last cross referenced against license list v3.25.0
+; Note: last cross referenced against license list v3.28.0
 
 (def ^:private mandatory-license-id-replacements-d (delay {
   "AGPL-1.0-only+"     "AGPL-1.0-or-later"

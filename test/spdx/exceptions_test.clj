@@ -34,7 +34,9 @@
     (is (true? (listed-id? "GPL-3.0-linking-exception")))
     (is (true? (listed-id? "Linux-syscall-note"))))
   (testing "Made up ids are not present"
-    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))))
+    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "ids not in canonical form"
+    (is (true? (listed-id? "CLASSPATH-EXCEPTION-2.0")))))
 
 (deftest canonicalise-tests
   (testing "Invalid ids/AdditionRefs return nil"
@@ -310,6 +312,12 @@
     (let [info (id->info "Classpath-exception-2.0")]
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (nil?        (:deprecated? info)))
+      (is (pos? (count (:see-also    info))))))
+  (testing "ids not in canonical form"
+    (let [info (id->info "CLASSPATH-EXCEPTION-2.0")]
+      (is (=           (:id          info) "Classpath-exception-2.0"))
+      (is (=           (:name        info) "Classpath exception 2.0"))
+      (is (nil?        (:deprecated? info)))
       (is (pos? (count (:see-also    info)))))))
 
 (deftest deprecated-id?-tests
@@ -323,11 +331,13 @@
     (is (false? (deprecated-id? "Classpath-exception-2.0")))
     (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
     (is (false? (deprecated-id? "LLVM-exception")))
-    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0")))))
+    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0"))))
+  (testing "ids not in canonical form"
+    (is (true?  (deprecated-id? "nokia-qt-exception-1.1")))
+    (is (false? (deprecated-id? "llvm-exception")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
     (is (pos? (count (non-deprecated-ids)))))
   (testing "non-deprecated-ids are a set"
     (is (instance? java.util.Set (non-deprecated-ids)))))
-

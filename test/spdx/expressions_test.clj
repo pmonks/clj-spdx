@@ -368,7 +368,9 @@
            "GPL-2.0+ WITH Classpath-exception-2.0"))
     (is (= (unparse {:license-ref "foo" :addition-ref "bar"})                                "LicenseRef-foo WITH AdditionRef-bar"))
     (is (= (unparse {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"})
-           "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")))
+           "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana"))
+    (is (= (unparse {:special-form :none})                                                   "NONE"))
+    (is (= (unparse {:special-form :no-assertion})                                           "NOASSERTION")))
   (testing "Compound parse results"
     (is (= (unparse [:or  {:license-id "Apache-2.0"} {:license-id "GPL-2.0-only"}])          "Apache-2.0 OR GPL-2.0-only"))
     (is (= (unparse [:and {:license-id "Apache-2.0"} {:license-id "MIT"}])                   "Apache-2.0 AND MIT"))
@@ -382,7 +384,9 @@
                       [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]
                       {:license-id "GPL-2.0" :or-later? true :license-exception-id "Classpath-exception-2.0"}
                       {:license-ref "bar" :document-ref "foo"}])
-           "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar")))
+           "(Apache-2.0 AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR DocumentRef-foo:LicenseRef-bar"))
+    (is (= (unparse [:and {:license-id "MIT"} {:special-form :none}])                        "MIT AND NONE"))
+    (is (= (unparse [:and {:license-id "MIT"} {:special-form :no-assertion}])                "MIT AND NOASSERTION")))
   (testing "Unparse a parse"
     (is (= (unparse (parse "Apache-2.0"))            "Apache-2.0"))
     (is (= (unparse (parse "APACHE-2.0"))            "Apache-2.0"))
@@ -393,7 +397,11 @@
     (is (= (unparse (parse "Apache-2.0 OR (GPL-2.0+ WITH Classpath-exception-2.0)"))
                                                      "Apache-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"))
     (is (= (unparse (parse "(Apache-2.0+ AND MIT) OR GPL-2.0+ WITH Classpath-exception-2.0 OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))
-                                                     "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (Apache-2.0+ AND MIT) OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))))
+                                                     "GPL-2.0-or-later WITH Classpath-exception-2.0 OR (Apache-2.0+ AND MIT) OR (BSD-2-Clause AND DocumentRef-bar:LicenseRef-foo)"))
+    (is (= (unparse (parse "NONE"))                  "NONE"))
+    (is (= (unparse (parse "NOASSERTION"))           "NOASSERTION"))
+    (is (= (unparse (parse "NONE AND MIT"))          "MIT AND NONE"))
+    (is (= (unparse (parse "NOASSERTION AND MIT"))   "MIT AND NOASSERTION"))))
 
 ; Note: we keep these short(ish), as the parser is far more extensively exercised by parse-tests and unparse-tests
 ; Precedence rule tests are only here however, as they're less cumbersome to test using canonicalise
@@ -516,7 +524,7 @@
     (is (false? (simple? "Apache-2.0 and NONE")))
     (is (false? (simple? "GPL-2.0-or-later WITH Classpath-exception-2.0 OR EPL-1.0")))
     (is (false? (simple? "MIT or Apache-2.0")))  ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
-    (is (false? (simple? "Apache-2.0 or none")))))
+    (is (false? (simple? "Apache-2.0 or noassertion")))))
 
 (deftest compound?-tests
   (testing "Nil, empty, etc."
@@ -583,7 +591,8 @@
     (is (= (walk nil (parse "MIT OR Apache-2.0")) (parse "MIT OR Apache-2.0")))
     (is (= (walk nil (parse "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0 AND (Apache-2.0 OR MIT)"))
            (parse "GPL-2.0-with-GCC-exception WiTh Classpath-exception-2.0 AND (Apache-2.0 OR MIT)"))))
-  (testing "Walk functions"
-    (is (= (walk {:op-fn      name}        (parse "MIT OR Apache-2.0")) ["or" {:license-id "Apache-2.0"} {:license-id "MIT"}]))
-    (is (= (walk {:license-fn :license-id} (parse "MIT OR Apache-2.0")) [:or "Apache-2.0" "MIT"]))
-    (is (= (walk {:group-fn   #(count %2)} (parse "MIT OR Apache-2.0")) 3))))
+  (testing "Walk functions"  ;Note: these walk functions are _not_ general purpose - they will fail on other valid parse trees
+    (is (= (walk {:op-fn      name}                      (parse "MIT OR Apache-2.0"))   ["or" {:license-id "Apache-2.0"} {:license-id "MIT"}]))
+    (is (= (walk {:license-fn :license-id}               (parse "MIT OR Apache-2.0"))   [:or "Apache-2.0" "MIT"]))
+    (is (= (walk {:license-fn #(name (:special-form %))} (parse "NONE OR NOASSERTION")) [:or "no-assertion" "none"]))
+    (is (= (walk {:group-fn   #(count %2)}               (parse "MIT OR Apache-2.0"))   3))))

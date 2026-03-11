@@ -53,7 +53,10 @@
     (is (true? (listed-id? "Apache-2.0")))
     (is (true? (listed-id? "GPL-3.0")))
     (is (true? (listed-id? "Classpath-exception-2.0")))
-    (is (true? (listed-id? "CC-BY-4.0")))))
+    (is (true? (listed-id? "CC-BY-4.0")))
+  (testing "ids not in canonical form"
+    (is (true? (listed-id? "gpl-3.0")))
+    (is (true? (listed-id? "CLASSPATH-EXCEPTION-2.0"))))))
 
 (deftest canonicalise-tests
   (testing "Invalid values return nil"
@@ -70,10 +73,10 @@
     (is (= "AdditionRef-foo"                 (canonicalise "AdditionRef-foo")))
     (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "DocumentRef-foo:AdditionRef-foo"))))
   (testing "id/ref not in canonical form"
-    (is (= "Apache-2.0"              (canonicalise "APACHE-2.0")))
-    (is (= "GPL-3.0"                 (canonicalise "gpl-3.0")))
-    (is (= "Classpath-exception-2.0" (canonicalise "classpath-EXCEPTION-2.0")))
-    (is (= "CC-BY-4.0"               (canonicalise "cc-by-4.0")))
+    (is (= "Apache-2.0"                      (canonicalise "APACHE-2.0")))
+    (is (= "GPL-3.0"                         (canonicalise "gpl-3.0")))
+    (is (= "Classpath-exception-2.0"         (canonicalise "classpath-EXCEPTION-2.0")))
+    (is (= "CC-BY-4.0"                       (canonicalise "cc-by-4.0")))
     (is (= "LicenseRef-foo"                  (canonicalise "licenseref-foo")))
     (is (= "DocumentRef-FOO:LicenseRef-FOO"  (canonicalise "DOCUMENTREF-FOO:LICENSEREF-FOO")))
     (is (= "AdditionRef-FOO"                 (canonicalise "ADDITIONREF-FOO")))
@@ -151,6 +154,21 @@
       (is (=           (:type        info) :exception-id))
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (pos? (count (:see-also    info)))
+      (is (nil?        (:deprecated? info))))))
+  (testing "ids not in canonical form"
+    (let [info (id->info "apache-2.0")]
+      (is (=           (:id            info) "Apache-2.0"))
+      (is (=           (:type          info) :license-id))
+      (is (=           (:name          info) "Apache License 2.0"))
+      (is (pos? (count (:see-also      info))))
+      (is (true?       (:osi-approved? info)))
+      (is (true?       (:fsf-libre?    info)))
+      (is (nil?        (:deprecated?   info))))
+    (let [info (id->info "CLASSPATH-EXCEPTION-2.0")]
+      (is (=           (:id          info) "Classpath-exception-2.0"))
+      (is (=           (:type        info) :exception-id))
+      (is (=           (:name        info) "Classpath exception 2.0"))
+      (is (pos? (count (:see-also    info)))
       (is (nil?        (:deprecated? info)))))))
 
 (deftest deprecated-id?-tests
@@ -174,7 +192,12 @@
     (is (false? (deprecated-id? "OLDAP-2.2.2")))
     (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
     (is (false? (deprecated-id? "LLVM-exception")))
-    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0")))))
+    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0"))))
+  (testing "ids not in canonical form"
+    (is (true?  (deprecated-id? "gpl-2.0")))
+    (is (false? (deprecated-id? "mit")))
+    (is (true?  (deprecated-id? "nokia-qt-exception-1.1")))
+    (is (false? (deprecated-id? "llvm-exception")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
