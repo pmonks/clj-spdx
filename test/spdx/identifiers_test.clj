@@ -14,7 +14,7 @@
             [spdx.identifiers :refer [version ids id-type listed-id? canonicalise equivalent?
                                       id->info deprecated-id? non-deprecated-ids]]))
 
-; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
+; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the spdx.licenses and spdx.exceptions tests and/or the underlying Java library
 
 (deftest version-tests
   (testing "Version number"

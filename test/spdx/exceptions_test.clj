@@ -76,6 +76,8 @@
     (is (true? (addition-ref? "AdditionRef-foo42")))
     (is (true? (addition-ref? "AdditionRef-42foo")))
     (is (true? (addition-ref? "AdditionRef-foo-v2.1")))
+    (is (true? (addition-ref? "AdditionRef-AdditionRef")))      ; Cursed but valid
+    (is (true? (addition-ref? "AdditionRef-DocumentRef")))      ; Cursed but valid
     (is (true? (addition-ref? "AdditionRef--")))                ; Cursed but valid
     (is (true? (addition-ref? "AdditionRef-.")))                ; Cursed but valid
     (is (true? (addition-ref? "AdditionRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -88,11 +90,13 @@
     (is (true? (addition-ref? "DocumentRef-foo42:AdditionRef-bar42")))
     (is (true? (addition-ref? "DocumentRef-42foo:AdditionRef-42bar")))
     (is (true? (addition-ref? "DocumentRef-foo-v2.1:AdditionRef-bar-v3.7")))
-    (is (true? (addition-ref? "DocumentRef--:AdditionRef-bar")))                  ; Cursed but valid
-    (is (true? (addition-ref? "DocumentRef-.:AdditionRef-bar")))                  ; Cursed but valid
-    (is (true? (addition-ref? "DocumentRef----:AdditionRef----")))                ; Cursed but valid
-    (is (true? (addition-ref? "DocumentRef-.-.:AdditionRef-.-.")))                ; Cursed but valid
-    (is (true? (addition-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:AdditionRef-bar")))  ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef-DocumentRef:AdditionRef-AdditionRef")))  ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef-AdditionRef:AdditionRef-DocumentRef")))  ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef--:AdditionRef-bar")))                    ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef-.:AdditionRef-bar")))                    ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef----:AdditionRef----")))                  ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef-.-.:AdditionRef-.-.")))                  ; Cursed but valid
+    (is (true? (addition-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:AdditionRef-bar")))    ; Cursed but valid
     (is (true? (addition-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:AdditionRef-0123456789-.abcdefgABCDEFG")))))
 
 (deftest addition-ref-tests
@@ -116,6 +120,8 @@
     (is (addition-ref? (addition-ref "foo42")))
     (is (addition-ref? (addition-ref "42foo")))
     (is (addition-ref? (addition-ref "foo-v2.1")))
+    (is (addition-ref? (addition-ref "AdditionRef")))        ; Cursed but valid
+    (is (addition-ref? (addition-ref "DocumentRef")))        ; Cursed but valid
     (is (addition-ref? (addition-ref "-")))                  ; Cursed but valid
     (is (addition-ref? (addition-ref ".")))                  ; Cursed but valid
     (is (addition-ref? (addition-ref ".-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -124,11 +130,13 @@
     (is (addition-ref? (addition-ref "foo42" "bar42")))
     (is (addition-ref? (addition-ref "42foo" "42bar")))
     (is (addition-ref? (addition-ref "foo-v2.1" "bar-v3.7")))
-    (is (addition-ref? (addition-ref "-" "foo")))                  ; Cursed but valid
-    (is (addition-ref? (addition-ref "." "foo")))                  ; Cursed but valid
-    (is (addition-ref? (addition-ref ".-.-.-.-.-.-.-.-." "foo")))  ; Cursed but valid
-    (is (addition-ref? (addition-ref "---" "---")))                ; Cursed but valid
-    (is (addition-ref? (addition-ref "..." "...")))))              ; Cursed but valid
+    (is (addition-ref? (addition-ref "DocumentRef" "AdditionRef")))  ; Cursed but valid
+    (is (addition-ref? (addition-ref "AdditionRef" "DocumentRef")))  ; Cursed but valid
+    (is (addition-ref? (addition-ref "-" "foo")))                    ; Cursed but valid
+    (is (addition-ref? (addition-ref "." "foo")))                    ; Cursed but valid
+    (is (addition-ref? (addition-ref ".-.-.-.-.-.-.-.-." "foo")))    ; Cursed but valid
+    (is (addition-ref? (addition-ref "---" "---")))                  ; Cursed but valid
+    (is (addition-ref? (addition-ref "..." "...")))))                ; Cursed but valid
 
 (deftest addition-ref-map->string-tests
   (testing "Invalid maps return nil"
@@ -145,6 +153,8 @@
     (is (addition-ref? (addition-ref-map->string {:addition-ref "foo42"})))
     (is (addition-ref? (addition-ref-map->string {:addition-ref "42foo"})))
     (is (addition-ref? (addition-ref-map->string {:addition-ref "foo-v2.1"})))
+    (is (addition-ref? (addition-ref-map->string {:addition-ref "AdditionRef"})))        ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:addition-ref "DocumentRef"})))        ; Cursed but valid
     (is (addition-ref? (addition-ref-map->string {:addition-ref "-"})))                  ; Cursed but valid
     (is (addition-ref? (addition-ref-map->string {:addition-ref "."})))                  ; Cursed but valid
     (is (addition-ref? (addition-ref-map->string {:addition-ref ".-.-.-.-.-.-.-.-."})))  ; Cursed but valid
@@ -153,11 +163,13 @@
     (is (addition-ref? (addition-ref-map->string {:addition-document-ref "foo42"             :addition-ref "bar42"})))
     (is (addition-ref? (addition-ref-map->string {:addition-document-ref "42foo"             :addition-ref "42bar"})))
     (is (addition-ref? (addition-ref-map->string {:addition-document-ref "foo-v2.1"          :addition-ref "bar-v3.7"})))
-    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "-"                 :addition-ref "foo"})))    ; Cursed but valid
-    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "."                 :addition-ref "foo"})))    ; Cursed but valid
-    (is (addition-ref? (addition-ref-map->string {:addition-document-ref ".-.-.-.-.-.-.-.-." :addition-ref "foo"})))    ; Cursed but valid
-    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "---"               :addition-ref "---"})))    ; Cursed but valid
-    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "..."               :addition-ref "..."})))))  ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:document-ref "DocumentRef"                :addition-ref "AdditionRef"})))  ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:document-ref "AdditionRef"                :addition-ref "DocumentRef"})))  ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "-"                 :addition-ref "foo"})))          ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "."                 :addition-ref "foo"})))          ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:addition-document-ref ".-.-.-.-.-.-.-.-." :addition-ref "foo"})))          ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "---"               :addition-ref "---"})))          ; Cursed but valid
+    (is (addition-ref? (addition-ref-map->string {:addition-document-ref "..."               :addition-ref "..."})))))        ; Cursed but valid
 
 (deftest string->addition-ref-map-tests
   (testing "Invalid strings return nil"
@@ -182,6 +194,8 @@
     (is (map? (string->addition-ref-map "AdditionRef-foo42")))
     (is (map? (string->addition-ref-map "AdditionRef-42foo")))
     (is (map? (string->addition-ref-map "AdditionRef-foo-v2.1")))
+    (is (map? (string->addition-ref-map "AdditionRef-AdditionRef")))      ; Cursed but valid
+    (is (map? (string->addition-ref-map "AdditionRef-DocumentRef")))      ; Cursed but valid
     (is (map? (string->addition-ref-map "AdditionRef--")))                ; Cursed but valid
     (is (map? (string->addition-ref-map "AdditionRef-.")))                ; Cursed but valid
     (is (map? (string->addition-ref-map "AdditionRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -193,11 +207,13 @@
     (is (map? (string->addition-ref-map "DocumentRef-foo42:AdditionRef-bar42")))
     (is (map? (string->addition-ref-map "DocumentRef-42foo:AdditionRef-42bar")))
     (is (map? (string->addition-ref-map "DocumentRef-foo-v2.1:AdditionRef-bar-v3.7")))
-    (is (map? (string->addition-ref-map "DocumentRef--:AdditionRef-bar")))                  ; Cursed but valid
-    (is (map? (string->addition-ref-map "DocumentRef-.:AdditionRef-bar")))                  ; Cursed but valid
-    (is (map? (string->addition-ref-map "DocumentRef----:AdditionRef----")))                ; Cursed but valid
-    (is (map? (string->addition-ref-map "DocumentRef-.-.:AdditionRef-.-.")))                ; Cursed but valid
-    (is (map? (string->addition-ref-map "DocumentRef-.-.-.-.-.-.-.-.-.:AdditionRef-bar")))  ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef-DocumentRef:AdditionRef-AdditionRef"))) ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef-AdditionRef:AdditionRef-DocumentRef"))) ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef--:AdditionRef-bar")))                   ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef-.:AdditionRef-bar")))                   ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef----:AdditionRef----")))                 ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef-.-.:AdditionRef-.-.")))                 ; Cursed but valid
+    (is (map? (string->addition-ref-map "DocumentRef-.-.-.-.-.-.-.-.-.:AdditionRef-bar")))   ; Cursed but valid
     (is (map? (string->addition-ref-map "DocumentRef-0123456789-.abcdefgABCDEFG:AdditionRef-0123456789-.abcdefgABCDEFG")))))
 
 (deftest addition-ref-roundtrip-tests
@@ -211,6 +227,8 @@
                          "AdditionRef-foo42"
                          "AdditionRef-42foo"
                          "AdditionRef-foo-v2.1"
+                         "AdditionRef-AdditionRef"
+                         "AdditionRef-DocumentRef"
                          "AdditionRef--"
                          "AdditionRef-."
                          "AdditionRef-.-.-.-.-.-.-.-."
@@ -220,6 +238,8 @@
                          "DocumentRef-foo42:AdditionRef-bar42"
                          "DocumentRef-42foo:AdditionRef-42bar"
                          "DocumentRef-foo-v2.1:AdditionRef-bar-v3.7"
+                         "DocumentRef-DocumentRef:AdditionRef-AdditionRef"
+                         "DocumentRef-AdditionRef:AdditionRef-DocumentRef"
                          "DocumentRef--:AdditionRef-bar"
                          "DocumentRef-.:AdditionRef-bar"
                          "DocumentRef----:AdditionRef----"
@@ -236,6 +256,8 @@
                              {:addition-ref "foo42"}
                              {:addition-ref "42foo"}
                              {:addition-ref "foo-v2.1"}
+                             {:addition-ref "AdditionRef"}
+                             {:addition-ref "DocumentRef"}
                              {:addition-ref "-"}
                              {:addition-ref "."}
                              {:addition-ref ".-.-.-.-.-.-.-.-."}
@@ -244,6 +266,8 @@
                              {:addition-document-ref "foo42"             :addition-ref "bar42"}
                              {:addition-document-ref "42foo"             :addition-ref "42bar"}
                              {:addition-document-ref "foo-v2.1"          :addition-ref "bar-v3.7"}
+                             {:addition-document-ref "DocumentRef"       :addition-ref "AdditionRef"}
+                             {:addition-document-ref "AdditionRef"       :addition-ref "DocumentRef"}
                              {:addition-document-ref "-"                 :addition-ref "foo"}
                              {:addition-document-ref "."                 :addition-ref "foo"}
                              {:addition-document-ref ".-.-.-.-.-.-.-.-." :addition-ref "foo"}
@@ -280,17 +304,21 @@
     (is (false? (equivalent? "DocumentRef-foo:AdditionRef-foo" "DocumentRef-foo:AdditionRef-bar")))
     (is (false? (equivalent? "DocumentRef-foo:AdditionRef-bar" "DocumentRef-bar:AdditionRef-bar"))))
   (testing "valid values that are equivalent"
-    (is (true?  (equivalent? "Classpath-exception-2.0"                   "Classpath-exception-2.0")))
-    (is (true?  (equivalent? "CLASSPATH-EXCEPTION-2.0"                   "classpath-exception-2.0")))
-    (is (true?  (equivalent? "Bison-exception-1.24"                      "bison-exception-1.24")))
-    (is (true?  (equivalent? "DocumentRef-FOO:AdditionRef-BAR"           "DocumentRef-foo:AdditionRef-bar")))
-    (is (true?  (equivalent? "AdditionRef-foo"                           "AdditionRef-foo")))
-    (is (true?  (equivalent? "AdditionRef-foo"                           "AdditionRef-FOO")))
-    (is (true?  (equivalent? "ADDITIONREF-foo"                           "additionref-FOO")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true?  (equivalent? "DocumentRef-foo:AdditionRef-bar"           "DocumentRef-foo:AdditionRef-bar")))
-    (is (true?  (equivalent? "DOCUMENTREF-FOO:ADDITIONREF-BAR"           "documentref-foo:additionref-bar")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true?  (equivalent? "DocumentRef-FOO:AdditionRef-bar"           "DocumentRef-foo:AdditionRef-BAR")))
-    (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:ADDITIONREF-BAR-V3.7" "documentref-foo-v2.1:additionref-bar-v3.7")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "Classpath-exception-2.0"                         "Classpath-exception-2.0")))
+    (is (true?  (equivalent? "CLASSPATH-EXCEPTION-2.0"                         "classpath-exception-2.0")))
+    (is (true?  (equivalent? "Bison-exception-1.24"                            "bison-exception-1.24")))
+    (is (true?  (equivalent? "DocumentRef-FOO:AdditionRef-BAR"                 "DocumentRef-foo:AdditionRef-bar")))
+    (is (true?  (equivalent? "AdditionRef-foo"                                 "AdditionRef-foo")))
+    (is (true?  (equivalent? "AdditionRef-foo"                                 "AdditionRef-FOO")))
+    (is (true?  (equivalent? "AdditionRef-AdditionRef"                         "AdditionRef-additionref")))
+    (is (true?  (equivalent? "AdditionRef-DocumentRef"                         "AdditionRef-documentref")))
+    (is (true?  (equivalent? "ADDITIONREF-foo"                                 "additionref-FOO")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-foo:AdditionRef-bar"                 "DocumentRef-foo:AdditionRef-bar")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO:ADDITIONREF-BAR"                 "documentref-foo:additionref-bar")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-FOO:AdditionRef-bar"                 "DocumentRef-foo:AdditionRef-BAR")))
+    (is (true?  (equivalent? "DocumentRef-DocumentRef:AdditionRef-AdditionRef" "DocumentRef-documentref:AdditionRef-additionref")))
+    (is (true?  (equivalent? "DocumentRef-AdditionRef:AdditionRef-DocumentRef" "DocumentRef-additionref:AdditionRef-documentref")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:ADDITIONREF-BAR-V3.7"       "documentref-foo-v2.1:additionref-bar-v3.7")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
 
 (deftest id->info-tests
   (testing "Invalid ids return nil"

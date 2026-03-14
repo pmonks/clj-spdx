@@ -81,6 +81,8 @@
     (is (true? (license-ref? "LicenseRef-foo42")))
     (is (true? (license-ref? "LicenseRef-42foo")))
     (is (true? (license-ref? "LicenseRef-foo-v2.1")))
+    (is (true? (license-ref? "LicenseRef-LicenseRef")))       ; Cursed but valid
+    (is (true? (license-ref? "LicenseRef-DocumentRef")))      ; Cursed but valid
     (is (true? (license-ref? "LicenseRef--")))                ; Cursed but valid
     (is (true? (license-ref? "LicenseRef-.")))                ; Cursed but valid
     (is (true? (license-ref? "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -92,11 +94,13 @@
     (is (true? (license-ref? "DocumentRef-foo42:LicenseRef-bar42")))
     (is (true? (license-ref? "DocumentRef-42foo:LicenseRef-42bar")))
     (is (true? (license-ref? "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7")))
-    (is (true? (license-ref? "DocumentRef--:LicenseRef-bar")))                  ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef-.:LicenseRef-bar")))                  ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef----:LicenseRef----")))                ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef-.-.:LicenseRef-.-.")))                ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))  ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-DocumentRef:LicenseRef-LicenseRef")))  ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-LicenseRef:LicenseRef-DocumentRef")))  ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef--:LicenseRef-bar")))                   ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-.:LicenseRef-bar")))                   ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef----:LicenseRef----")))                 ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-.-.:LicenseRef-.-.")))                 ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))   ; Cursed but valid
     (is (true? (license-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG")))))
 
 (deftest license-ref-tests
@@ -120,6 +124,8 @@
     (is (license-ref? (license-ref "foo42")))
     (is (license-ref? (license-ref "42foo")))
     (is (license-ref? (license-ref "foo-v2.1")))
+    (is (license-ref? (license-ref "LicenseRef")))         ; Cursed but valid
+    (is (license-ref? (license-ref "DocumentRef")))        ; Cursed but valid
     (is (license-ref? (license-ref "-")))                  ; Cursed but valid
     (is (license-ref? (license-ref ".")))                  ; Cursed but valid
     (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -128,11 +134,13 @@
     (is (license-ref? (license-ref "foo42" "bar42")))
     (is (license-ref? (license-ref "42foo" "42bar")))
     (is (license-ref? (license-ref "foo-v2.1" "bar-v3.7")))
-    (is (license-ref? (license-ref "-" "foo")))                  ; Cursed but valid
-    (is (license-ref? (license-ref "." "foo")))                  ; Cursed but valid
-    (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-." "foo")))  ; Cursed but valid
-    (is (license-ref? (license-ref "---" "---")))                ; Cursed but valid
-    (is (license-ref? (license-ref "..." "...")))))              ; Cursed but valid
+    (is (license-ref? (license-ref "DocumentRef" "LicenseRef")))  ; Cursed but valid
+    (is (license-ref? (license-ref "LicenseRef" "DocumentRef")))  ; Cursed but valid
+    (is (license-ref? (license-ref "-" "foo")))                   ; Cursed but valid
+    (is (license-ref? (license-ref "." "foo")))                   ; Cursed but valid
+    (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-." "foo")))   ; Cursed but valid
+    (is (license-ref? (license-ref "---" "---")))                 ; Cursed but valid
+    (is (license-ref? (license-ref "..." "...")))))               ; Cursed but valid
 
 (deftest license-ref-map->string-tests
   (testing "Invalid maps return nil"
@@ -149,6 +157,8 @@
     (is (license-ref? (license-ref-map->string {:license-ref "foo42"})))
     (is (license-ref? (license-ref-map->string {:license-ref "42foo"})))
     (is (license-ref? (license-ref-map->string {:license-ref "foo-v2.1"})))
+    (is (license-ref? (license-ref-map->string {:license-ref "LicenseRef"})))         ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:license-ref "DocumentRef"})))        ; Cursed but valid
     (is (license-ref? (license-ref-map->string {:license-ref "-"})))                  ; Cursed but valid
     (is (license-ref? (license-ref-map->string {:license-ref "."})))                  ; Cursed but valid
     (is (license-ref? (license-ref-map->string {:license-ref ".-.-.-.-.-.-.-.-."})))  ; Cursed but valid
@@ -157,11 +167,13 @@
     (is (license-ref? (license-ref-map->string {:document-ref "foo42"             :license-ref "bar42"})))
     (is (license-ref? (license-ref-map->string {:document-ref "42foo"             :license-ref "42bar"})))
     (is (license-ref? (license-ref-map->string {:document-ref "foo-v2.1"          :license-ref "bar-v3.7"})))
-    (is (license-ref? (license-ref-map->string {:document-ref "-"                 :license-ref "foo"})))                  ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref "."                 :license-ref "foo"})))                  ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"})))  ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref "---"               :license-ref "---"})))                ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref "..."               :license-ref "..."})))))              ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "DocumentRef"       :license-ref "LicenseRef"})))   ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "LicenseRef"        :license-ref "DocumentRef"})))  ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "-"                 :license-ref "foo"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "."                 :license-ref "foo"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "---"               :license-ref "---"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "..."               :license-ref "..."})))))        ; Cursed but valid
 
 (deftest string->license-ref-map-tests
   (testing "Invalid strings return nil"
@@ -186,6 +198,8 @@
     (is (map? (string->license-ref-map "LicenseRef-foo42")))
     (is (map? (string->license-ref-map "LicenseRef-42foo")))
     (is (map? (string->license-ref-map "LicenseRef-foo-v2.1")))
+    (is (map? (string->license-ref-map "LicenseRef-LicenseRef")))       ; Cursed but valid
+    (is (map? (string->license-ref-map "LicenseRef-DocumentRef")))      ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef--")))                ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef-.")))                ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -197,6 +211,8 @@
     (is (map? (string->license-ref-map "DocumentRef-foo42:LicenseRef-bar42")))
     (is (map? (string->license-ref-map "DocumentRef-42foo:LicenseRef-42bar")))
     (is (map? (string->license-ref-map "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7")))
+    (is (map? (string->license-ref-map "DocumentRef-DocumentRef:LicenseRef-LicenseRef"))) ; Cursed but valid
+    (is (map? (string->license-ref-map "DocumentRef-LicenseRef:LicenseRef-DocumentRef"))) ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef--:LicenseRef-bar")))                  ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-.:LicenseRef-bar")))                  ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef----:LicenseRef----")))                ; Cursed but valid
@@ -214,6 +230,8 @@
   "LicenseRef-foo42"
   "LicenseRef-42foo"
   "LicenseRef-foo-v2.1"
+  "LicenseRef-LicenseRef"
+  "LicenseRef-DocumentRef"
   "LicenseRef--"
   "LicenseRef-."
   "LicenseRef-.-.-.-.-.-.-.-."
@@ -223,6 +241,8 @@
   "DocumentRef-foo42:LicenseRef-bar42"
   "DocumentRef-42foo:LicenseRef-42bar"
   "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7"
+  "DocumentRef-DocumentRef:LicenseRef-LicenseRef"
+  "DocumentRef-LicenseRef:LicenseRef-DocumentRef"
   "DocumentRef--:LicenseRef-bar"
   "DocumentRef-.:LicenseRef-bar"
   "DocumentRef----:LicenseRef----"
@@ -246,6 +266,8 @@
                             {:license-ref "foo42"}
                             {:license-ref "42foo"}
                             {:license-ref "foo-v2.1"}
+                            {:license-ref "LicenseRef"}
+                            {:license-ref "DocumentRef"}
                             {:license-ref "-"}
                             {:license-ref "."}
                             {:license-ref ".-.-.-.-.-.-.-.-."}
@@ -254,6 +276,8 @@
                             {:document-ref "foo42"             :license-ref "bar42"}
                             {:document-ref "42foo"             :license-ref "42bar"}
                             {:document-ref "foo-v2.1"          :license-ref "bar-v3.7"}
+                            {:document-ref "DocumentRef"       :license-ref "LicenseRef"}
+                            {:document-ref "LicenseRef"        :license-ref "DocumentRef"}
                             {:document-ref "-"                 :license-ref "foo"}
                             {:document-ref "."                 :license-ref "foo"}
                             {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"}
@@ -290,16 +314,20 @@
     (is (false? (equivalent? "DocumentRef-foo:LicenseRef-foo" "DocumentRef-foo:LicenseRef-bar")))
     (is (false? (equivalent? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-bar:LicenseRef-bar"))))
   (testing "valid values that are equivalent"
-    (is (true?  (equivalent? "Apache-2.0"                               "Apache-2.0")))
-    (is (true?  (equivalent? "APACHE-2.0"                               "apache-2.0")))
-    (is (true?  (equivalent? "CC-BY-SA-4.0"                             "cc-by-sa-4.0")))
-    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-BAR"           "DocumentRef-foo:LicenseRef-bar")))
-    (is (true?  (equivalent? "LicenseRef-foo"                           "LicenseRef-foo")))
-    (is (true?  (equivalent? "LicenseRef-foo"                           "LicenseRef-FOO")))
-    (is (true?  (equivalent? "LICENSEREF-foo"                           "licenseref-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true?  (equivalent? "DocumentRef-foo:LicenseRef-bar"           "DocumentRef-foo:LicenseRef-bar")))
-    (is (true?  (equivalent? "DOCUMENTREF-FOO:LICENSEREF-BAR"           "documentref-foo:licenseref-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-bar"           "DocumentRef-foo:LicenseRef-BAR")))
+    (is (true?  (equivalent? "Apache-2.0"                                    "Apache-2.0")))
+    (is (true?  (equivalent? "APACHE-2.0"                                    "apache-2.0")))
+    (is (true?  (equivalent? "CC-BY-SA-4.0"                                  "cc-by-sa-4.0")))
+    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-BAR"                "DocumentRef-foo:LicenseRef-bar")))
+    (is (true?  (equivalent? "LicenseRef-foo"                                "LicenseRef-foo")))
+    (is (true?  (equivalent? "LicenseRef-foo"                                "LicenseRef-FOO")))
+    (is (true?  (equivalent? "LicenseRef-LicenseRef"                         "LicenseRef-licenseref")))
+    (is (true?  (equivalent? "LicenseRef-DocumentRef"                        "LicenseRef-documentref")))
+    (is (true?  (equivalent? "LICENSEREF-foo"                                "licenseref-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-foo:LicenseRef-bar"                "DocumentRef-foo:LicenseRef-bar")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO:LICENSEREF-BAR"                "documentref-foo:licenseref-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-bar"                "DocumentRef-foo:LicenseRef-BAR")))
+    (is (true?  (equivalent? "DocumentRef-DocumentRef:LicenseRef-LicenseRef" "DocumentRef-documentref:LicenseRef-licenseref")))
+    (is (true?  (equivalent? "DocumentRef-LicenseRef:LicenseRef-DocumentRef" "DocumentRef-licenseref:LicenseRef-documentref")))
     (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:LICENSEREF-BAR-V3.7" "documentref-foo-v2.1:licenseref-bar-v3.7")))))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
 
 (deftest id->info-tests
