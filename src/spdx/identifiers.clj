@@ -44,18 +44,18 @@
   [^String s]
   (when s
     (cond
-      (sl/listed-id?    s) :license-id
-      (se/listed-id?    s) :exception-id
+      (sl/listed?       s) :license-id
+      (se/listed?       s) :exception-id
       (sl/license-ref?  s) :license-ref
       (se/addition-ref? s) :addition-ref
-      :else                 nil)))
+      :else                nil)))
 
-(defn listed-id?
+(defn listed?
   "Is `s` (a `String`) one of the listed SPDX identifiers?"
   [^String s]
   (boolean
-    (or (sl/listed-id? s)
-        (se/listed-id? s))))
+    (or (sl/listed? s)
+        (se/listed? s))))
 
 (defn canonicalise
   "Canonicalises `s` (an SPDX identifier or Ref), by returning it in its
@@ -74,11 +74,6 @@
     (:exception-id :addition-ref) (se/canonicalise s)
     nil))
 
-(defn ^:deprecated ^:no-doc canonicalise-id
-  "Superceded by [[canonicalise]]."
-  [^String s]
-  (canonicalise s))
-
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX identifiers, LicenseRefs or
   AdditionRefs (i.e. taking the SPDX case sensitivity rules in
@@ -87,8 +82,9 @@
 
   Notes:
 
+  * Returns `true` if `s1` and `s2` are both `nil`.
   * Returns `false` if `s1` or `s2` are not listed SPDX identifiers or
-    LicenseRefs or AdditionRefs, even if they are otherwise equal"
+    LicenseRefs or AdditionRefs, even if they are otherwise equal."
   [^String s1 ^String s2]
   (boolean
     (or (and (nil? s1) (nil? s2))
@@ -100,7 +96,7 @@
           false))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
-(defn id->info
+(defn info
   "Returns SPDX list information for `id` as a map, or `nil` if `id` is not a
   valid SPDX identifier. Includes a `:type` element that identifies whether the
   id is an SPDX license identifier or an SPDX exception identifier, as per
@@ -110,15 +106,15 @@
 
   * `:include-large-text-values?` (default `false`) - controls whether large text
     values are included in the result or not"
-  ([^String id] (id->info id nil))
+  ([^String id] (info id nil))
   ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
    (when-let [id-t (id-type id)]
      (case id-t
-       :license-id   (assoc (sl/id->info id opts) :type id-t)
-       :exception-id (assoc (se/id->info id opts) :type id-t)
+       :license-id   (assoc (sl/info id opts) :type id-t)
+       :exception-id (assoc (se/info id opts) :type id-t)
        nil))))
 
-(defn deprecated-id?
+(defn deprecated?
   "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not an SPDX
   listed identifier (including for LicenseRefs and AdditionRefs).
 
@@ -126,7 +122,7 @@
   for details on what this means."
   [^String id]
   (boolean
-    (when-let [info (id->info id)]
+    (when-let [info (info id)]
       (:deprecated? info))))
 
 (defn non-deprecated-ids
@@ -134,7 +130,7 @@
   licenses within the provided set of SPDX identifiers (or all of them, if `ids`
   is not provided)."
   ([]    (non-deprecated-ids (ids)))
-  ([ids] (some-> (filter (complement deprecated-id?) ids)
+  ([ids] (some-> (filter (complement deprecated?) ids)
                  seq
                  set)))
 
@@ -149,3 +145,25 @@
   (sl/init!)
   (se/init!)
   nil)
+
+
+; Deprecated vars, to be removed in the next major version
+(defn ^:deprecated ^:no-doc listed-id?
+  "Superceded by [[listed?]]."
+  [^String s]
+  (listed? s))
+
+(defn ^:deprecated ^:no-doc canonicalise-id
+  "Superceded by [[canonicalise]]."
+  [^String s]
+  (canonicalise s))
+
+(defn ^:deprecated ^:no-doc id->info
+  "Superceded by [[info]]"
+  ([^String id]      (info id))
+  ([^String id opts] (info id opts)))
+
+(defn ^:deprecated ^:no-doc deprecated-id?
+  "Superceded by [[deprecated?]]."
+  [^String s]
+  (deprecated? s))

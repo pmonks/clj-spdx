@@ -87,38 +87,41 @@ deps-try com.github.pmonks/clj-spdx
 (si/ids)
 ;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many many more]
 
-(si/listed-id? "Apache-2.0")
-;=> true
-
-(si/listed-id? "Classpath-exception-2.0")
-;=> true
-
-(si/canonicalise-id "aPaChE-2.0")
+(si/canonicalise "aPaChE-2.0")
 ;=> "Apache-2.0"
 
-(si/canonicalise-id "CLASSPATH-EXCEPTION-2.0")
+(si/canonicalise "CLASSPATH-EXCEPTION-2.0")
 ;=> "Classpath-exception-2.0"
+
+(si/canonicalise "LICENSEREF-FOO")
+;=> "LicenseRef-FOO"
+
+(si/listed? "Apache-2.0")
+;=> true
+
+(si/listed? "classpath-exception-2.0")  ; Note: canonicalisation not required
+;=> true
 
 (si/id-type "Apache-2.0")
 ;=> :license-id
 
-(si/id-type "Classpath-exception-2.0")
+(si/id-type "classpath-exception-2.0")  ; Note: canonicalisation not required
 ;=> :exception-id
 
 (si/id-type "LicenseRef-foo")
 ;=> :license-ref
 
-(si/id-type "AdditionRef-foo")
+(si/id-type "additionref-foo")  ; Note: canonicalisation not required
 ;=> :addition-ref
 
-(si/id->info "Apache-2.0")
+(si/info "Apache-2.0")
 ;=> {:id "Apache-2.0" :name "Apache License 2.0" :see-also
 ;=>  ("https://www.apache.org/licenses/LICENSE-2.0"
 ;=>   "https://opensource.org/licenses/Apache-2.0"
 ;=>   "https://opensource.org/license/apache-2-0")
 ;=>  :fsf-libre? true :osi-approved? true :type :license-id}
 
-(si/id->info "Classpath-exception-2.0")
+(si/info "CLASSPATH-EXCEPTION-2.0")  ; Note: canonicalisation not required
 ;=> {:id "Classpath-exception-2.0" :name "Classpath exception 2.0" :see-also
 ;=>  ("http://www.gnu.org/software/classpath/license.html"
 ;=>   "https://fedoraproject.org/wiki/Licensing/GPL_Classpath_Exception")
@@ -134,7 +137,7 @@ deps-try com.github.pmonks/clj-spdx
 
 (def apache-20-text (slurp "https://www.apache.org/licenses/LICENSE-2.0.txt"))
 
-(sm/text-is-license? apache-20-text "Apache-2.0")
+(sm/text-is-license? apache-20-text "apache-2.0")  ; Note: canonicalisation not required
 ;=> true
 
 (def mit-text (slurp "https://mit-license.org/license.txt"))
@@ -155,29 +158,29 @@ deps-try com.github.pmonks/clj-spdx
 
 ;; A taste of the spdx.expressions namespace
 
-(require '[spdx.expressions :as sx])
+(require '[spdx.expressions :as sexp])
 
-(sx/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
+(sexp/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
 ;=> [:or
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
 
-(sx/parse "DocumentRef-foo:LicenseRef-bar with DocumentRef-foo:AdditionRef-bar")
+(sexp/parse "documentref-foo:licenseref-bar with documentref-foo:additionref-bar")
 ;=> {:document-ref "foo"          :license-ref "bar"
 ;=>  :addition-document-ref "foo" :addition-ref "bar"}
 
-(sx/parse "none and mit")
+(sexp/parse "none and mit")
 ;=> [:and {:license-id "MIT"} {:special-form :none}]
 
-(sx/canonicalise "mit and apache-2.0 or ecos-2.0+")
+(sexp/canonicalise "mit and apache-2.0 or ecos-2.0+")
 ;=> "GPL-2.0-or-later WITH eCos-exception-2.0 OR (Apache-2.0 AND MIT)"
 
 
 ;; A taste of the spdx.regexes namespace
 
-(require '[spdx.regexes :as sr])
+(require '[spdx.regexes :as sre])
 
-(sr/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
+(sre/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
 ;=> ("Apache-2.0" "MIT")
 ; Note that the ids returned by this fn are canonicalised
 
@@ -185,22 +188,22 @@ deps-try com.github.pmonks/clj-spdx
 
 (require '[rencg.api :as ncg])
 
-(ncg/re-matches (sr/ids-re) "Apache-2.0")
-;=> {:start 0, :end 10, :match "Apache-2.0", "Identifier" "Apache-2.0"}
+(ncg/re-matches (sre/ids-re) "Apache-2.0")
+;=> {:start 0 :end 10 :match "Apache-2.0" "Identifier" "Apache-2.0"}
 
-(ncg/re-find (sr/ids-re) "some initial text GPL-3.0 some final text")
-;=> {:start 18, :end 25, :match "GPL-3.0", "Identifier" "GPL-3.0"}
+(ncg/re-find (sre/ids-re) "some initial text GPL-3.0 some final text")
+;=> {:start 18 :end 25 :match "GPL-3.0" "Identifier" "GPL-3.0"}
 
-; NOTE: ids are not canonicalised by the regexes...
-(ncg/re-seq (sr/ids-re) "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
-;=> ({:start 13 :end 20 :match "mpl-2.0" "Identifier" "mpl-2.0"}
-;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier" "LicenseRef-foo"}
+; NOTE: ids are _not_ canonicalised by the raw regexes...
+(ncg/re-seq (sre/ids-re) "initial text mpl-2.0 more text licenseref-foo even more text classpath-exception-2.0 final text")
+;=> ({:start 13 :end 20 :match "mpl-2.0"                 "Identifier" "mpl-2.0"}
+;=>  {:start 31 :end 45 :match "licenseref-foo"          "Identifier" "licenseref-foo" "LicenseRef" "foo" }
 ;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier" "classpath-exception-2.0"})
 
-; ...but they are by the id-seq-* fns, which also provide identifier type information
-(sr/id-seq-matches "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
-;=> ({:start 13 :end 20 :match "mpl-2.0" :identifier "MPL-2.0" :type :license-id}
-;=>  {:start 31 :end 45 :match "LicenseRef-foo" :identifier "LicenseRef-foo" :type :license-ref :license-ref "foo"}
+; ...but they _are_ canonicalised by the id-seq-* fns, which also provide identifier type information
+(sre/id-seq-matches "initial text mpl-2.0 more text licenseref-foo even more text classpath-exception-2.0 final text")
+;=> ({:start 13 :end 20 :match "mpl-2.0"                 :identifier "MPL-2.0"                 :type :license-id}
+;=>  {:start 31 :end 45 :match "licenseref-foo"          :identifier "LicenseRef-foo"          :type :license-ref :license-ref "foo"}
 ;=>  {:start 61 :end 84 :match "classpath-exception-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
 ```
 

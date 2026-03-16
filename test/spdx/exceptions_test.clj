@@ -11,9 +11,9 @@
 (ns spdx.exceptions-test
   (:require [clojure.test    :refer [deftest testing is]]
             [spdx.test-utils :refer [equivalent-colls?]]
-            [spdx.exceptions :refer [version ids listed-id? canonicalise addition-ref?
+            [spdx.exceptions :refer [version ids listed? canonicalise addition-ref?
                                      addition-ref addition-ref-map->string string->addition-ref-map
-                                     equivalent? id->info deprecated-id? non-deprecated-ids]]))
+                                     equivalent? info deprecated? non-deprecated-ids]]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
 
@@ -28,15 +28,19 @@
   (testing "ids are a set"
     (is (instance? java.util.Set (ids)))))
 
-(deftest listed-id?-tests
-  (testing "Common ids are present"
-    (is (true? (listed-id? "Classpath-exception-2.0")))
-    (is (true? (listed-id? "GPL-3.0-linking-exception")))
-    (is (true? (listed-id? "Linux-syscall-note"))))
-  (testing "Made up ids are not present"
-    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "ids not in canonical form"
-    (is (true? (listed-id? "CLASSPATH-EXCEPTION-2.0")))))
+(deftest listed?-tests
+  (testing "Invalid ids are not listed"
+    (is (false? (listed? nil)))
+    (is (false? (listed? "")))
+    (is (false? (listed? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "AdditionRefs are not listed"
+    (is (false? (listed? "AdditionRef-foo"))))
+  (testing "Common ids are listed"
+    (is (true? (listed? "Classpath-exception-2.0")))
+    (is (true? (listed? "GPL-3.0-linking-exception")))
+    (is (true? (listed? "Linux-syscall-note"))))
+  (testing "ids not in canonical form are listed"
+    (is (true? (listed? "CLASSPATH-EXCEPTION-2.0")))))
 
 (deftest canonicalise-tests
   (testing "Invalid ids/AdditionRefs return nil"
@@ -320,49 +324,49 @@
     (is (true?  (equivalent? "DocumentRef-AdditionRef:AdditionRef-DocumentRef" "DocumentRef-additionref:AdditionRef-documentref")))
     (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:ADDITIONREF-BAR-V3.7"       "documentref-foo-v2.1:additionref-bar-v3.7")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
 
-(deftest id->info-tests
+(deftest info-tests
   (testing "Invalid ids return nil"
-    (is (nil? (id->info nil)))
-    (is (nil? (id->info "")))
-    (is (nil? (id->info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (nil? (info nil)))
+    (is (nil? (info "")))
+    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Valid ids are not nil"
-    (is (not (nil? (id->info "Classpath-exception-2.0")))))
+    (is (not (nil? (info "Classpath-exception-2.0")))))
   (testing "Returned info is a Map"
-    (is (instance? java.util.Map (id->info "Classpath-exception-2.0"))))
+    (is (instance? java.util.Map (info "Classpath-exception-2.0"))))
   (testing "Expected keys are present"
-    (is (equivalent-colls? (keys (id->info "Classpath-exception-2.0"))
+    (is (equivalent-colls? (keys (info "Classpath-exception-2.0"))
                            [:id :name :see-also]))
-    (is (equivalent-colls? (keys (id->info "Classpath-exception-2.0" {:include-large-text-values? false}))
+    (is (equivalent-colls? (keys (info "Classpath-exception-2.0" {:include-large-text-values? false}))
                            [:id :name :see-also]))
-    (is (equivalent-colls? (keys (id->info "Classpath-exception-2.0" {:include-large-text-values? true}))
+    (is (equivalent-colls? (keys (info "Classpath-exception-2.0" {:include-large-text-values? true}))
                            [:id :name :see-also :comment :text :text-template])))
   (testing "Select keys have expected values"
-    (let [info (id->info "Classpath-exception-2.0")]
+    (let [info (info "Classpath-exception-2.0")]
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (nil?        (:deprecated? info)))
       (is (pos? (count (:see-also    info))))))
   (testing "ids not in canonical form"
-    (let [info (id->info "CLASSPATH-EXCEPTION-2.0")]
+    (let [info (info "CLASSPATH-EXCEPTION-2.0")]
       (is (=           (:id          info) "Classpath-exception-2.0"))
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (nil?        (:deprecated? info)))
       (is (pos? (count (:see-also    info)))))))
 
-(deftest deprecated-id?-tests
+(deftest deprecated?-tests
   (testing "Invalid ids return nil"
-    (is (false? (deprecated-id? nil)))
-    (is (false? (deprecated-id? "")))
-    (is (false? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (deprecated? nil)))
+    (is (false? (deprecated? "")))
+    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Deprecated ids"
-    (is (true? (deprecated-id? "Nokia-Qt-exception-1.1"))))
+    (is (true? (deprecated? "Nokia-Qt-exception-1.1"))))
   (testing "Non-deprecated ids"
-    (is (false? (deprecated-id? "Classpath-exception-2.0")))
-    (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
-    (is (false? (deprecated-id? "LLVM-exception")))
-    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0"))))
+    (is (false? (deprecated? "Classpath-exception-2.0")))
+    (is (false? (deprecated? "GPL-3.0-linking-exception")))
+    (is (false? (deprecated? "LLVM-exception")))
+    (is (false? (deprecated? "OpenJDK-assembly-exception-1.0"))))
   (testing "ids not in canonical form"
-    (is (true?  (deprecated-id? "nokia-qt-exception-1.1")))
-    (is (false? (deprecated-id? "llvm-exception")))))
+    (is (true?  (deprecated? "nokia-qt-exception-1.1")))
+    (is (false? (deprecated? "llvm-exception")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
