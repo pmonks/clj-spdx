@@ -24,7 +24,7 @@
             [spdx.impl.utils   :as siu]))
 
 (defn version
-  "The version of the exception list (a `String` in major.minor(.patchlevel)
+  "The version of the exception list (a `String` in \"major.minor(.patchlevel)\"
   format).
 
   Note: identical to [[spdx.identifiers/version]]."

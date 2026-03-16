@@ -23,7 +23,7 @@
             [spdx.exceptions :as se]))
 
 (def ^{:arglists '([])} version
-  "The version of the license list (a `String` in major.minor(.patchlevel)
+  "The version of the license list (a `String` in \"major.minor(.patchlevel)\"
   format)."
   sl/version)
 
