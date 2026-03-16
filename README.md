@@ -90,7 +90,7 @@ deps-try com.github.pmonks/clj-spdx
 (si/listed? "Apache-2.0")
 ;=> true
 
-(si/listed? "classpath-exception-2.0")  ; Note: canonicalisation not required
+(si/listed? "CLASSPATH-EXCEPTION-2.0")  ; Note: canonicalisation not required
 ;=> true
 
 (si/canonicalise "aPaChE-2.0")
@@ -105,7 +105,7 @@ deps-try com.github.pmonks/clj-spdx
 (si/id-type "Apache-2.0")
 ;=> :license-id
 
-(si/id-type "classpath-exception-2.0")  ; Note: canonicalisation not required
+(si/id-type "CLASSPATH-EXCEPTION-2.0")  ; Note: canonicalisation not required
 ;=> :exception-id
 
 (si/id-type "LicenseRef-foo")
@@ -146,14 +146,14 @@ deps-try com.github.pmonks/clj-spdx
 
 ; This is optional, but forces Spdx-Java-Library to fully populate its local
 ; cache, which some clj-spdx functions (including licenses-within-text) require.
-; Note that Spdx-Java-Library is slow at populating its local cache, and this
-; call can take a minute or more the first time it's run.
+; Note that Spdx-Java-Library is quite slow at populating its local cache, and
+; this call can take a minute or more the first time it's run.
 (sm/init!)
 
 ; Matching can also be time consuming, since it has to evaluate every SPDX
 ; matching template (all 811 of them, as of SPDX license list v3.28.0) against
 ; the provided text.  See https://github.com/spdx/Spdx-Java-Library/issues/341
-; for one suggestion for speeding this up.
+; for one suggestion for speeding up this computation.
 (sm/licenses-within-text (str apache-20-text "\n\n" mit-text))
 ;=> #{"Apache-2.0" "MIT"}
 
@@ -197,16 +197,16 @@ deps-try com.github.pmonks/clj-spdx
 ;=> {:start 18 :end 25 :match "GPL-3.0" "Identifier" "GPL-3.0"}
 
 ; NOTE: ids are _not_ canonicalised by the raw regexes...
-(ncg/re-seq (sre/ids-re) "initial text mpl-2.0 more text licenseref-foo even more text classpath-exception-2.0 final text")
+(ncg/re-seq (sre/ids-re) "initial text mpl-2.0 more text licenseref-foo even more text CLASSPATH-EXCEPTION-2.0 final text")
 ;=> ({:start 13 :end 20 :match "mpl-2.0"                 "Identifier" "mpl-2.0"}
 ;=>  {:start 31 :end 45 :match "licenseref-foo"          "Identifier" "licenseref-foo" "LicenseRef" "foo" }
-;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier" "classpath-exception-2.0"})
+;=>  {:start 61 :end 84 :match "CLASSPATH-EXCEPTION-2.0" "Identifier" "CLASSPATH-EXCEPTION-2.0"})
 
 ; ...but they _are_ canonicalised by the id-seq-* fns, which also provide identifier type information
-(sre/id-seq-matches "initial text mpl-2.0 more text licenseref-foo even more text classpath-exception-2.0 final text")
+(sre/id-seq-matches "initial text mpl-2.0 more text licenseref-foo even more text CLASSPATH-EXCEPTION-2.0 final text")
 ;=> ({:start 13 :end 20 :match "mpl-2.0"                 :identifier "MPL-2.0"                 :type :license-id}
 ;=>  {:start 31 :end 45 :match "licenseref-foo"          :identifier "LicenseRef-foo"          :type :license-ref :license-ref "foo"}
-;=>  {:start 61 :end 84 :match "classpath-exception-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
+;=>  {:start 61 :end 84 :match "CLASSPATH-EXCEPTION-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
 ```
 
 ## Contributor Information
