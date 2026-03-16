@@ -127,8 +127,10 @@ deps-try com.github.pmonks/clj-spdx
 ;=>   "https://fedoraproject.org/wiki/Licensing/GPL_Classpath_Exception")
 ;=>  :type :exception-id}
 
-; spdx.licenses and spdx.exceptions provide finer-grained type-specific fns for
-; SPDX licenses and exceptions
+(si/deprecated? "GPL-3.0")
+;=> true
+
+; spdx.licenses and spdx.exceptions provide a similar set of fns
 
 
 ;; A taste of the spdx.matching namespace
