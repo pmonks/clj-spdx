@@ -87,6 +87,12 @@ deps-try com.github.pmonks/clj-spdx
 (si/ids)
 ;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many many more]
 
+(si/listed? "Apache-2.0")
+;=> true
+
+(si/listed? "classpath-exception-2.0")  ; Note: canonicalisation not required
+;=> true
+
 (si/canonicalise "aPaChE-2.0")
 ;=> "Apache-2.0"
 
@@ -95,12 +101,6 @@ deps-try com.github.pmonks/clj-spdx
 
 (si/canonicalise "LICENSEREF-FOO")
 ;=> "LicenseRef-FOO"
-
-(si/listed? "Apache-2.0")
-;=> true
-
-(si/listed? "classpath-exception-2.0")  ; Note: canonicalisation not required
-;=> true
 
 (si/id-type "Apache-2.0")
 ;=> :license-id
