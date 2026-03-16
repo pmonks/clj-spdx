@@ -130,19 +130,33 @@
 
 (def ref-values-that-should-find-and-match
   ["LicenseRef-foo"
-   "licenseref-foo"                               ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-   "LicenseRef-foo-"                              ; valid, but 🤢
-   "LicenseRef-foo."                              ; valid, but 🤢
-   "LicenseRef-foo.-.-.-.-.-.-.-.-.-.-.-.-bar"    ; valid, but 🤢
+   "licenseref-foo"                                     ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+   "LicenseRef-foo-"                                    ; Cursed but valid
+   "LicenseRef-foo."                                    ; Cursed but valid
+   "LicenseRef-foo.-.-.-.-.-.-.-.-.-.-.-.-bar"          ; Cursed but valid
+   "LicenseRef--"                                       ; Cursed but valid
+   "LicenseRef-."                                       ; Cursed but valid
+   "LicenseRef-.-.-.-.-.-.-.-."                         ; Cursed but valid
+   "LicenseRef-LicenseRef"                              ; Cursed but valid
+   "LicenseRef-DocumentRef"                             ; Cursed but valid
    "DocumentRef-foo:LicenseRef-bar"
-   "documentref-foo:licenseref-bar"               ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-   "DocumentRef-foo-:LicenseRef-bar."             ; valid, but 🤢
+   "documentref-foo:licenseref-bar"                     ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+   "DocumentRef-foo-:LicenseRef-bar."                   ; Cursed but valid
+   "DocumentRef-DocumentRef:LicenseRef-LicenseRef"      ; Cursed but valid
+   "DocumentRef-LicenseRef:LicenseRef-DocumentRef"      ; Cursed but valid
    "AdditionRef-foo"
-   "additionref-foo"                              ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
-   "AdditionRef-foo-."                            ; valid, but 🤢
+   "additionref-foo"                                    ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+   "AdditionRef-foo-."                                  ; Cursed but valid
+   "AdditionRef--"                                      ; Cursed but valid
+   "AdditionRef-."                                      ; Cursed but valid
+   "AdditionRef-.-.-.-.-.-.-.-."                        ; Cursed but valid
+   "AdditionRef-AdditionRef"                            ; Cursed but valid
+   "AdditionRef-DocumentRef"                            ; Cursed but valid
    "DocumentRef-foo:AdditionRef-bar"
-   "documentref-foo:additionref-bar"              ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
-   "DocumentRef-foo.:AdditionRef-bar-"])          ; valid, but 🤢
+   "documentref-foo:additionref-bar"                    ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+   "DocumentRef-foo.:AdditionRef-bar-"                  ; Cursed but valid
+   "DocumentRef-DocumentRef:AdditionRef-AdditionRef"    ; Cursed but valid
+   "DocumentRef-AdditionRef:AdditionRef-DocumentRef"])  ; Cursed but valid
 
 (def values-that-should-find-and-match
   (concat non-ref-values-that-should-find-and-match
@@ -169,10 +183,10 @@
 (def values-that-should-not-find-or-match
   ["foobar"
    "Apache-2.00"
-   "licenseref:foo"
-   "additionaref:foo"
-   "documentRef:foo-Licenseref:bar"
-   "documentRef:foo-Additionref:bar"])
+   "licenseref:foo"                     ; Wrong separator
+   "additionaref:foo"                   ; Wrong separator
+   "documentRef:foo-Licenseref:bar"     ; Wrong separators
+   "documentRef:foo-Additionref:bar"])  ; Wrong separators
 
 (def values-that-should-not-match
   (concat values-that-should-not-find-or-match

@@ -55,13 +55,23 @@
     (is (nil? (parse "Apache-2.0 WITH NONE")))                        ; NONE cannot be used in exception position
     (is (nil? (parse "MIT with NOASSERTION"))))                       ; NOASSERTION cannot be used in exception position
   (testing "Simple expressions"
-    (is (= (parse "Apache-2.0")                               {:license-id "Apache-2.0"}))
-    (is (= (parse "LicenseRef-foo")                           {:license-ref "foo"}))
-    (is (= (parse "LicenseRef-foo-bar-blah")                  {:license-ref "foo-bar-blah"}))
-    (is (= (parse "DocumentRef-foo:LicenseRef-bar")           {:license-ref "bar" :document-ref "foo"}))
-    (is (= (parse "DocumentRef-foo-bar:LicenseRef-blah")      {:license-ref "blah" :document-ref "foo-bar"}))
-    (is (= (parse "NONE")                                     {:special-form :none}))
-    (is (= (parse "NOASSERTION")                              {:special-form :no-assertion})))
+    (is (= (parse "Apache-2.0")                                             {:license-id "Apache-2.0"}))
+    (is (= (parse "LicenseRef-foo")                                         {:license-ref "foo"}))
+    (is (= (parse "LicenseRef-foo-bar-blah")                                {:license-ref "foo-bar-blah"}))
+    (is (= (parse "DocumentRef-foo:LicenseRef-bar")                         {:license-ref "bar" :document-ref "foo"}))
+    (is (= (parse "DocumentRef-foo-bar:LicenseRef-blah")                    {:license-ref "blah" :document-ref "foo-bar"}))
+    (is (= (parse "LicenseRef-LicenseRef")                                  {:license-ref "LicenseRef"}))                                       ; Cursed but valid
+    (is (= (parse "LicenseRef-DocumentRef")                                 {:license-ref "DocumentRef"}))                                      ; Cursed but valid
+    (is (= (parse "LicenseRef--")                                           {:license-ref "-"}))                                                ; Cursed but valid
+    (is (= (parse "LicenseRef-.")                                           {:license-ref "."}))                                                ; Cursed but valid
+    (is (= (parse "LicenseRef-.-.-.-.-.-.-.-.")                             {:license-ref ".-.-.-.-.-.-.-."}))                                  ; Cursed but valid
+    (is (= (parse "DocumentRef-DocumentRef:LicenseRef-LicenseRef")          {:license-ref "LicenseRef" :document-ref "DocumentRef"}))           ; Cursed but valid
+    (is (= (parse "DocumentRef-LicenseRef:LicenseRef-DocumentRef")          {:license-ref "DocumentRef" :document-ref "LicenseRef"}))           ; Cursed but valid
+    (is (= (parse "DocumentRef--:LicenseRef--")                             {:license-ref "-" :document-ref "-"}))                              ; Cursed but valid
+    (is (= (parse "DocumentRef-.:LicenseRef-.")                             {:license-ref "." :document-ref "."}))                              ; Cursed but valid
+    (is (= (parse "DocumentRef-.-.-.-.-.-.-.-.:LicenseRef-.-.-.-.-.-.-.-.") {:license-ref ".-.-.-.-.-.-.-." :document-ref ".-.-.-.-.-.-.-."}))  ; Cursed but valid
+    (is (= (parse "NONE")                                                   {:special-form :none}))
+    (is (= (parse "NOASSERTION")                                            {:special-form :no-assertion})))
   (testing "Simple expressions - mixed case"  ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
     (is (= (parse "apache-2.0")                               {:license-id "Apache-2.0"}))
     (is (= (parse "APACHE-2.0")                               {:license-id "Apache-2.0"}))
@@ -101,6 +111,19 @@
     (is (= (parse "LicenseRef-foo WITH AdditionRef-bar")      {:license-ref "foo" :addition-ref "bar"}))
     (is (= (parse "DocumentRef-foo:LicenseRef-bar WITH DocumentRef-blah:AdditionRef-banana")
                                                               {:document-ref "foo" :license-ref "bar" :addition-document-ref "blah" :addition-ref "banana"}))
+    (is (= (parse "MIT WITH AdditionRef-AdditionRef")         {:license-id "MIT" :addition-ref "AdditionRef"}))                                               ; Cursed but valid
+    (is (= (parse "MIT WITH AdditionRef-DocumentRef")         {:license-id "MIT" :addition-ref "DocumentRef"}))                                               ; Cursed but valid
+    (is (= (parse "MIT WITH AdditionRef--")                   {:license-id "MIT" :addition-ref "-"}))                                                         ; Cursed but valid
+    (is (= (parse "MIT WITH AdditionRef-.")                   {:license-id "MIT" :addition-ref "."}))                                                         ; Cursed but valid
+    (is (= (parse "MIT WITH AdditionRef-.-.-.-.-.-.-.-.")     {:license-id "MIT" :addition-ref ".-.-.-.-.-.-.-."}))                                           ; Cursed but valid
+    (is (= (parse "MIT WITH DocumentRef-DocumentRef:AdditionRef-AdditionRef")
+                                                              {:license-id "MIT" :addition-ref "AdditionRef" :addition-document-ref "DocumentRef"}))          ; Cursed but valid
+    (is (= (parse "MIT WITH DocumentRef-AdditionRef:AdditionRef-DocumentRef")
+                                                              {:license-id "MIT" :addition-ref "DocumentRef" :addition-document-ref "AdditionRef"}))          ; Cursed but valid
+    (is (= (parse "MIT WITH DocumentRef--:AdditionRef--")     {:license-id "MIT" :addition-ref "-" :addition-document-ref "-"}))                              ; Cursed but valid
+    (is (= (parse "MIT WITH DocumentRef-.:AdditionRef-.")     {:license-id "MIT" :addition-ref "." :addition-document-ref "."}))                              ; Cursed but valid
+    (is (= (parse "MIT WITH DocumentRef-.-.-.-.-.-.-.-.:AdditionRef-.-.-.-.-.-.-.-.")
+                                                              {:license-id "MIT" :addition-ref ".-.-.-.-.-.-.-." :addition-document-ref ".-.-.-.-.-.-.-."}))  ; Cursed but valid
     (is (= (parse "NONE WITH Classpath-exception-2.0")        {:special-form :none :license-exception-id "Classpath-exception-2.0"}))  ; Legally nonsensical, though the SPDX ABNF allows it
     ; Expressions are globally case INsensitive, as of SPDX specification v3.0.2
     (is (= (parse "MIT and Apache-2.0")                       [:and {:license-id "Apache-2.0"} {:license-id "MIT"}]))

@@ -11,10 +11,10 @@
 (ns spdx.identifiers-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils  :refer [equivalent-colls?]]
-            [spdx.identifiers :refer [version ids id-type listed-id? canonicalise equivalent?
-                                      id->info deprecated-id? non-deprecated-ids]]))
+            [spdx.identifiers :refer [version ids id-type listed? canonicalise equivalent?
+                                      info deprecated? non-deprecated-ids]]))
 
-; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
+; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the spdx.licenses and spdx.exceptions tests and/or the underlying Java library
 
 (deftest version-tests
   (testing "Version number"
@@ -44,19 +44,22 @@
     (is (= :addition-ref (id-type "AdditionRef-foo")))
     (is (= :addition-ref (id-type "DocumentRef-foo:AdditionRef-foo")))))
 
-(deftest listed-id?-tests
-  (testing "Invalid ids return false"
-    (is (false? (listed-id? nil)))
-    (is (false? (listed-id? "")))
-    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "Common ids are present"
-    (is (true? (listed-id? "Apache-2.0")))
-    (is (true? (listed-id? "GPL-3.0")))
-    (is (true? (listed-id? "Classpath-exception-2.0")))
-    (is (true? (listed-id? "CC-BY-4.0")))
-  (testing "ids not in canonical form"
-    (is (true? (listed-id? "gpl-3.0")))
-    (is (true? (listed-id? "CLASSPATH-EXCEPTION-2.0"))))))
+(deftest listed?-tests
+  (testing "Invalid ids are not listed"
+    (is (false? (listed? nil)))
+    (is (false? (listed? "")))
+    (is (false? (listed? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "Refs are not listed"
+    (is (false? (listed? "LicenseRef-foo")))
+    (is (false? (listed? "AdditionRef-foo"))))
+  (testing "Common ids are listed"
+    (is (true? (listed? "Apache-2.0")))
+    (is (true? (listed? "GPL-3.0")))
+    (is (true? (listed? "Classpath-exception-2.0")))
+    (is (true? (listed? "CC-BY-4.0")))
+  (testing "ids not in canonical form are listed"
+    (is (true? (listed? "gpl-3.0")))
+    (is (true? (listed? "CLASSPATH-EXCEPTION-2.0"))))))
 
 (deftest canonicalise-tests
   (testing "Invalid values return nil"
@@ -113,35 +116,35 @@
     (is (true? (equivalent? "additionref-FOO"                 "ADDITIONREF-foo")))                    ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
     (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "documentRef-foo:additionRef-bar")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
 
-(deftest id->info-tests
+(deftest info-tests
   (testing "Invalid ids return nil"
-    (is (nil? (id->info nil)))
-    (is (nil? (id->info "")))
-    (is (nil? (id->info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (nil? (info nil)))
+    (is (nil? (info "")))
+    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Valid ids are not nil"
-    (is (not (nil? (id->info "Apache-2.0"))))
-    (is (not (nil? (id->info "eCos-exception-2.0")))))
+    (is (not (nil? (info "Apache-2.0"))))
+    (is (not (nil? (info "eCos-exception-2.0")))))
   (testing "Valid ids are canonicalised before retrieval"
-    (is (not (nil? (id->info "apache-2.0"))))
-    (is (not (nil? (id->info "ECOS-EXCEPTION-2.0")))))
+    (is (not (nil? (info "apache-2.0"))))
+    (is (not (nil? (info "ECOS-EXCEPTION-2.0")))))
   (testing "Returned info is a Map"
-    (is (instance? java.util.Map (id->info "Apache-2.0")))
-    (is (instance? java.util.Map (id->info "eCos-exception-2.0"))))
+    (is (instance? java.util.Map (info "Apache-2.0")))
+    (is (instance? java.util.Map (info "eCos-exception-2.0"))))
   (testing "Expected keys are present"
-    (is (equivalent-colls? (keys (id->info "Apache-2.0"))
+    (is (equivalent-colls? (keys (info "Apache-2.0"))
                            [:id :type :name :see-also :fsf-libre? :osi-approved?]))
-    (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? false}))
+    (is (equivalent-colls? (keys (info "Apache-2.0" {:include-large-text-values? false}))
                            [:id :type :name :see-also :fsf-libre? :osi-approved?]))
-    (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? true}))
+    (is (equivalent-colls? (keys (info "Apache-2.0" {:include-large-text-values? true}))
                            [:id :type :name :see-also :fsf-libre? :osi-approved? :text :text-template :header :comment]))
-    (is (equivalent-colls? (keys (id->info "eCos-exception-2.0"))
+    (is (equivalent-colls? (keys (info "eCos-exception-2.0"))
                            [:id :type :name :see-also]))
-    (is (equivalent-colls? (keys (id->info "eCos-exception-2.0" {:include-large-text-values? false}))
+    (is (equivalent-colls? (keys (info "eCos-exception-2.0" {:include-large-text-values? false}))
                            [:id :type :name :see-also]))
-    (is (equivalent-colls? (keys (id->info "eCos-exception-2.0" {:include-large-text-values? true}))
+    (is (equivalent-colls? (keys (info "eCos-exception-2.0" {:include-large-text-values? true}))
                            [:id :type :name :see-also :comment :text :text-template])))
   (testing "Select keys have expected values"
-    (let [info (id->info "Apache-2.0")]
+    (let [info (info "Apache-2.0")]
       (is (=           (:id            info) "Apache-2.0"))
       (is (=           (:type          info) :license-id))
       (is (=           (:name          info) "Apache License 2.0"))
@@ -149,14 +152,14 @@
       (is (true?       (:osi-approved? info)))
       (is (true?       (:fsf-libre?    info)))
       (is (nil?        (:deprecated?   info))))
-    (let [info (id->info "Classpath-exception-2.0")]
+    (let [info (info "Classpath-exception-2.0")]
       (is (=           (:id          info) "Classpath-exception-2.0"))
       (is (=           (:type        info) :exception-id))
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (pos? (count (:see-also    info)))
       (is (nil?        (:deprecated? info))))))
   (testing "ids not in canonical form"
-    (let [info (id->info "apache-2.0")]
+    (let [info (info "apache-2.0")]
       (is (=           (:id            info) "Apache-2.0"))
       (is (=           (:type          info) :license-id))
       (is (=           (:name          info) "Apache License 2.0"))
@@ -164,40 +167,40 @@
       (is (true?       (:osi-approved? info)))
       (is (true?       (:fsf-libre?    info)))
       (is (nil?        (:deprecated?   info))))
-    (let [info (id->info "CLASSPATH-EXCEPTION-2.0")]
+    (let [info (info "CLASSPATH-EXCEPTION-2.0")]
       (is (=           (:id          info) "Classpath-exception-2.0"))
       (is (=           (:type        info) :exception-id))
       (is (=           (:name        info) "Classpath exception 2.0"))
       (is (pos? (count (:see-also    info)))
       (is (nil?        (:deprecated? info)))))))
 
-(deftest deprecated-id?-tests
+(deftest deprecated?-tests
   (testing "Invalid ids return false"
-    (is (false? (deprecated-id? nil)))
-    (is (false? (deprecated-id? "")))
-    (is (false? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (deprecated? nil)))
+    (is (false? (deprecated? "")))
+    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Deprecated ids"
-    (is (true? (deprecated-id? "GPL-2.0")))
-    (is (true? (deprecated-id? "Nunit")))
-    (is (true? (deprecated-id? "wxWindows")))
-    (is (true? (deprecated-id? "Nokia-Qt-exception-1.1"))))
+    (is (true? (deprecated? "GPL-2.0")))
+    (is (true? (deprecated? "Nunit")))
+    (is (true? (deprecated? "wxWindows")))
+    (is (true? (deprecated? "Nokia-Qt-exception-1.1"))))
   (testing "Non-deprecated ids"
-    (is (false? (deprecated-id? "GPL-2.0-only")))
-    (is (false? (deprecated-id? "GPL-2.0-or-later")))
-    (is (false? (deprecated-id? "Sendmail")))
-    (is (false? (deprecated-id? "SSH-OpenSSH")))
-    (is (false? (deprecated-id? "Latex2e")))
-    (is (false? (deprecated-id? "MIT")))
-    (is (false? (deprecated-id? "gnuplot")))
-    (is (false? (deprecated-id? "OLDAP-2.2.2")))
-    (is (false? (deprecated-id? "GPL-3.0-linking-exception")))
-    (is (false? (deprecated-id? "LLVM-exception")))
-    (is (false? (deprecated-id? "OpenJDK-assembly-exception-1.0"))))
+    (is (false? (deprecated? "GPL-2.0-only")))
+    (is (false? (deprecated? "GPL-2.0-or-later")))
+    (is (false? (deprecated? "Sendmail")))
+    (is (false? (deprecated? "SSH-OpenSSH")))
+    (is (false? (deprecated? "Latex2e")))
+    (is (false? (deprecated? "MIT")))
+    (is (false? (deprecated? "gnuplot")))
+    (is (false? (deprecated? "OLDAP-2.2.2")))
+    (is (false? (deprecated? "GPL-3.0-linking-exception")))
+    (is (false? (deprecated? "LLVM-exception")))
+    (is (false? (deprecated? "OpenJDK-assembly-exception-1.0"))))
   (testing "ids not in canonical form"
-    (is (true?  (deprecated-id? "gpl-2.0")))
-    (is (false? (deprecated-id? "mit")))
-    (is (true?  (deprecated-id? "nokia-qt-exception-1.1")))
-    (is (false? (deprecated-id? "llvm-exception")))))
+    (is (true?  (deprecated? "gpl-2.0")))
+    (is (false? (deprecated? "mit")))
+    (is (true?  (deprecated? "nokia-qt-exception-1.1")))
+    (is (false? (deprecated? "llvm-exception")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"

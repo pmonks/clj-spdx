@@ -32,11 +32,11 @@ Note also that this project has no official relationship with the [SPDX project]
 1. Using a pre-packaged copy of the files stored inside the JAR (which may not be the latest version)
 2. Downloading the latest version of the files from the internet, and caching them locally (as of SPDX license list v3.28.0 this comprises approximately 800 files totaling around 25MB)
 
-This is controlled via the [`org.spdx.useJARLicenseInfoOnly` JVM property](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options), which defaults to `false` (i.e. method 2 is the default).  The challenge is that  `Spdx-Java-Library` seems to be [suspiciously slow](https://github.com/spdx/Spdx-Java-Library/issues/394) at downloading these assets, and while `clj-spdx` does its best to workaround those costs (by parallelising the downloads), they remain substantial.
+This is controlled via the [`org.spdx.useJARLicenseInfoOnly` JVM property](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options), which defaults to `false` (i.e. method 2 is the default).  The challenge is that  `Spdx-Java-Library` can take a minute or more to download these assets the first time, and while `clj-spdx` does its best to workaround those costs (by parallelising the downloads), they remain substantial.
 
-By default `Spdx-Java-Library` will only retrieve these assets on demand, as required by calling code, which has the benefit of amortising the download cost.  However certain functions (especially those in the `spdx.matching` namespace) require all assets, so if you're using those functions you may notice a substantial pause (up to several minutes) the first time they're called.  Subsequent calls will be faster since `Spdx-Java-Library` makes use of a persistent local cache of the downloaded files, and that cache is checked for staleness infrequently (once per day, by default, but also configurable).
+By default `Spdx-Java-Library` will only retrieve these assets on demand, as required by calling code, which has the benefit of amortising the download cost.  However certain functions (especially those in the `spdx.matching` namespace) require all assets, so if you're using those functions you may notice a substantial pause the first time they're called.  Subsequent calls will be faster since `Spdx-Java-Library` makes use of a persistent local cache of the downloaded files, and that cache is checked for staleness infrequently (once per day, by default, but [also configurable](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options)).
 
-Because of this substantial cost, `clj-spdx` provides callers with the option to "force initialise" `Spdx-Java-Library` up front, which doesn't solve the performance problem but does at least make it deterministic; these are the various `init!` functions.  **Calling these `init!` functions is completely optional**, and if you're not performing matching it's better to _not_ call them and instead rely on `Spdx-Java-Library`'s default behaviour.
+Because of these unpredictable download costs, `clj-spdx` provides callers with the option to "force initialise" `Spdx-Java-Library` up front, which doesn't solve the performance problem but does at least make it deterministic; these are the various `init!` functions.  **Calling these `init!` functions is completely optional**, and if you're not performing matching it's better to _not_ call them and instead rely on `Spdx-Java-Library`'s default "lazy cache population" behaviour.
 
 If you are performing matching and find the download cost (whether on demand or forced up front using `init!`) is unacceptable, currently the only alternative is to use method 1 (load the files stored in the `Spdx-Java-Library` JAR), and just accept that your code will be limited to whatever version of the SPDX license list is packaged in the current release of `Spdx-Java-Library`.
 
@@ -46,12 +46,12 @@ From v1.0.247 onward, `clj-spdx` uses `Spdx-Java-Library` v2.x, which adds suppo
 
 While `clj-spdx` managed to hide most of the breaking changes, the following data structure changes were unavoidable:
 
-* [license information maps](https://pmonks.github.io/clj-spdx/spdx.licenses.html#var-id-.3Einfo) no longer contain these keys:
+* [license information maps](https://pmonks.github.io/clj-spdx/spdx.licenses.html#var-info) no longer contain these keys:
   * `:cross-refs` - merged into `:see-also` (note that the Java library renamed "see also" to "see alsos", however `clj-spdx` preserves the old name)
   * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
   * `:header-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
   * `:header-template` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
-* [license exception information maps](https://pmonks.github.io/clj-spdx/spdx.exceptions.html#var-id-.3Einfo) no longer contain this key:
+* [license exception information maps](https://pmonks.github.io/clj-spdx/spdx.exceptions.html#var-info) no longer contain this key:
   * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
 
 ## Trying it out
@@ -87,45 +87,50 @@ deps-try com.github.pmonks/clj-spdx
 (si/ids)
 ;=> #{"MulanPSL-1.0" "OPUBL-1.0" "CC-BY-SA-1.0" [and many many more]
 
-(si/listed-id? "Apache-2.0")
+(si/listed? "Apache-2.0")
 ;=> true
 
-(si/listed-id? "Classpath-exception-2.0")
+(si/listed? "CLASSPATH-EXCEPTION-2.0")  ; Note: canonicalisation not required
 ;=> true
 
-(si/canonicalise-id "aPaChE-2.0")
+(si/canonicalise "aPaChE-2.0")
 ;=> "Apache-2.0"
 
-(si/canonicalise-id "CLASSPATH-EXCEPTION-2.0")
+(si/canonicalise "CLASSPATH-EXCEPTION-2.0")
 ;=> "Classpath-exception-2.0"
+
+(si/canonicalise "LICENSEREF-FOO")
+;=> "LicenseRef-FOO"
 
 (si/id-type "Apache-2.0")
 ;=> :license-id
 
-(si/id-type "Classpath-exception-2.0")
+(si/id-type "CLASSPATH-EXCEPTION-2.0")  ; Note: canonicalisation not required
 ;=> :exception-id
 
 (si/id-type "LicenseRef-foo")
 ;=> :license-ref
 
-(si/id-type "AdditionRef-foo")
+(si/id-type "additionref-foo")  ; Note: canonicalisation not required
 ;=> :addition-ref
 
-(si/id->info "Apache-2.0")
+(si/info "Apache-2.0")
 ;=> {:id "Apache-2.0" :name "Apache License 2.0" :see-also
 ;=>  ("https://www.apache.org/licenses/LICENSE-2.0"
 ;=>   "https://opensource.org/licenses/Apache-2.0"
 ;=>   "https://opensource.org/license/apache-2-0")
 ;=>  :fsf-libre? true :osi-approved? true :type :license-id}
 
-(si/id->info "Classpath-exception-2.0")
+(si/info "CLASSPATH-EXCEPTION-2.0")  ; Note: canonicalisation not required
 ;=> {:id "Classpath-exception-2.0" :name "Classpath exception 2.0" :see-also
 ;=>  ("http://www.gnu.org/software/classpath/license.html"
 ;=>   "https://fedoraproject.org/wiki/Licensing/GPL_Classpath_Exception")
 ;=>  :type :exception-id}
 
-; spdx.licenses and spdx.exceptions provide finer-grained type-specific fns for
-; SPDX licenses and exceptions
+(si/deprecated? "GPL-3.0")
+;=> true
+
+; spdx.licenses and spdx.exceptions provide a similar set of fns
 
 
 ;; A taste of the spdx.matching namespace
@@ -134,50 +139,50 @@ deps-try com.github.pmonks/clj-spdx
 
 (def apache-20-text (slurp "https://www.apache.org/licenses/LICENSE-2.0.txt"))
 
-(sm/text-is-license? apache-20-text "Apache-2.0")
+(sm/text-is-license? apache-20-text "apache-2.0")  ; Note: canonicalisation not required
 ;=> true
 
 (def mit-text (slurp "https://mit-license.org/license.txt"))
 
 ; This is optional, but forces Spdx-Java-Library to fully populate its local
 ; cache, which some clj-spdx functions (including licenses-within-text) require.
-; Note that Spdx-Java-Library is slow at populating its local cache, and this
-; call can take a minute or more the first time it's run.
+; Note that Spdx-Java-Library is quite slow at populating its local cache, and
+; this call can take a minute or more the first time it's run.
 (sm/init!)
 
 ; Matching can also be time consuming, since it has to evaluate every SPDX
 ; matching template (all 811 of them, as of SPDX license list v3.28.0) against
 ; the provided text.  See https://github.com/spdx/Spdx-Java-Library/issues/341
-; for one suggestion for speeding this up.
+; for one suggestion for speeding up this computation.
 (sm/licenses-within-text (str apache-20-text "\n\n" mit-text))
 ;=> #{"Apache-2.0" "MIT"}
 
 
 ;; A taste of the spdx.expressions namespace
 
-(require '[spdx.expressions :as sx])
+(require '[spdx.expressions :as sexp])
 
-(sx/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
+(sexp/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
 ;=> [:or
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
 
-(sx/parse "DocumentRef-foo:LicenseRef-bar with DocumentRef-foo:AdditionRef-bar")
+(sexp/parse "documentref-foo:licenseref-bar with documentref-foo:additionref-bar")
 ;=> {:document-ref "foo"          :license-ref "bar"
 ;=>  :addition-document-ref "foo" :addition-ref "bar"}
 
-(sx/parse "none and mit")
+(sexp/parse "none and mit")
 ;=> [:and {:license-id "MIT"} {:special-form :none}]
 
-(sx/canonicalise "mit and apache-2.0 or ecos-2.0+")
+(sexp/canonicalise "mit and apache-2.0 or ecos-2.0+")
 ;=> "GPL-2.0-or-later WITH eCos-exception-2.0 OR (Apache-2.0 AND MIT)"
 
 
 ;; A taste of the spdx.regexes namespace
 
-(require '[spdx.regexes :as sr])
+(require '[spdx.regexes :as sre])
 
-(sr/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
+(sre/id-seq "the quick brown apache-2.0 jumps over the lazy mit.")
 ;=> ("Apache-2.0" "MIT")
 ; Note that the ids returned by this fn are canonicalised
 
@@ -185,23 +190,23 @@ deps-try com.github.pmonks/clj-spdx
 
 (require '[rencg.api :as ncg])
 
-(ncg/re-matches (sr/ids-re) "Apache-2.0")
-;=> {:start 0, :end 10, :match "Apache-2.0", "Identifier" "Apache-2.0"}
+(ncg/re-matches (sre/ids-re) "Apache-2.0")
+;=> {:start 0 :end 10 :match "Apache-2.0" "Identifier" "Apache-2.0"}
 
-(ncg/re-find (sr/ids-re) "some initial text GPL-3.0 some final text")
-;=> {:start 18, :end 25, :match "GPL-3.0", "Identifier" "GPL-3.0"}
+(ncg/re-find (sre/ids-re) "some initial text GPL-3.0 some final text")
+;=> {:start 18 :end 25 :match "GPL-3.0" "Identifier" "GPL-3.0"}
 
-; NOTE: ids are not canonicalised by the regexes...
-(ncg/re-seq (sr/ids-re) "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
-;=> ({:start 13 :end 20 :match "mpl-2.0" "Identifier" "mpl-2.0"}
-;=>  {:start 31 :end 45 :match "LicenseRef-foo" "LicenseRef" "foo" "Identifier" "LicenseRef-foo"}
-;=>  {:start 61 :end 84 :match "classpath-exception-2.0" "Identifier" "classpath-exception-2.0"})
+; NOTE: ids are _not_ canonicalised by the raw regexes...
+(ncg/re-seq (sre/ids-re) "initial text mpl-2.0 more text licenseref-foo even more text CLASSPATH-EXCEPTION-2.0 final text")
+;=> ({:start 13 :end 20 :match "mpl-2.0"                 "Identifier" "mpl-2.0"}
+;=>  {:start 31 :end 45 :match "licenseref-foo"          "Identifier" "licenseref-foo" "LicenseRef" "foo" }
+;=>  {:start 61 :end 84 :match "CLASSPATH-EXCEPTION-2.0" "Identifier" "CLASSPATH-EXCEPTION-2.0"})
 
-; ...but they are by the id-seq-* fns, which also provide identifier type information
-(sr/id-seq-matches "initial text mpl-2.0 more text LicenseRef-foo even more text classpath-exception-2.0 final text")
-;=> ({:start 13 :end 20 :match "mpl-2.0" :identifier "MPL-2.0" :type :license-id}
-;=>  {:start 31 :end 45 :match "LicenseRef-foo" :identifier "LicenseRef-foo" :type :license-ref :license-ref "foo"}
-;=>  {:start 61 :end 84 :match "classpath-exception-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
+; ...but they _are_ canonicalised by the id-seq-* fns, which also provide identifier type information
+(sre/id-seq-matches "initial text mpl-2.0 more text licenseref-foo even more text CLASSPATH-EXCEPTION-2.0 final text")
+;=> ({:start 13 :end 20 :match "mpl-2.0"                 :identifier "MPL-2.0"                 :type :license-id}
+;=>  {:start 31 :end 45 :match "licenseref-foo"          :identifier "LicenseRef-foo"          :type :license-ref :license-ref "foo"}
+;=>  {:start 61 :end 84 :match "CLASSPATH-EXCEPTION-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
 ```
 
 ## Contributor Information

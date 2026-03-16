@@ -11,10 +11,10 @@
 (ns spdx.licenses-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils  :refer [equivalent-colls?]]
-            [spdx.licenses    :refer [version ids listed-id? canonicalise license-ref? license-ref
+            [spdx.licenses    :refer [version ids listed? canonicalise license-ref? license-ref
                                       license-ref-map->string string->license-ref-map
-                                      equivalent? id->info deprecated-id? non-deprecated-ids osi-approved-id?
-                                      osi-approved-ids fsf-libre-id? fsf-libre-ids]]
+                                      equivalent? info deprecated? non-deprecated-ids osi-approved?
+                                      osi-approved-ids fsf-libre? fsf-libre-ids]]
             [spdx.expressions :as exp]))
 
 ; Note: a lot of these tests are very lightweight, since they would otherwise duplicate unit tests that already exist in the underlying Java library
@@ -30,17 +30,19 @@
   (testing "ids are a set"
     (is (instance? java.util.Set (ids)))))
 
-(deftest listed-id?-tests
-  (testing "Invalid ids return false"
-    (is (false? (listed-id? nil)))
-    (is (false? (listed-id? "")))
-    (is (false? (listed-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "Common ids are present"
-    (is (true? (listed-id? "Apache-2.0")))
-    (is (true? (listed-id? "GPL-3.0")))
-    (is (true? (listed-id? "CC-BY-4.0"))))
-  (testing "ids not in canonical form"
-    (is (true? (listed-id? "APACHE-2.0")))))
+(deftest listed?-tests
+  (testing "Invalid ids are not listed"
+    (is (false? (listed? nil)))
+    (is (false? (listed? "")))
+    (is (false? (listed? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+  (testing "LicenseRefs are not listed"
+    (is (false? (listed? "LicenseRef-foo"))))
+  (testing "Common ids are listed"
+    (is (true? (listed? "Apache-2.0")))
+    (is (true? (listed? "GPL-3.0")))
+    (is (true? (listed? "CC-BY-4.0"))))
+  (testing "ids not in canonical form are listed"
+    (is (true? (listed? "APACHE-2.0")))))
 
 (deftest canonicalise-tests
   (testing "Invalid ids/LicenseRefs return nil"
@@ -81,6 +83,8 @@
     (is (true? (license-ref? "LicenseRef-foo42")))
     (is (true? (license-ref? "LicenseRef-42foo")))
     (is (true? (license-ref? "LicenseRef-foo-v2.1")))
+    (is (true? (license-ref? "LicenseRef-LicenseRef")))       ; Cursed but valid
+    (is (true? (license-ref? "LicenseRef-DocumentRef")))      ; Cursed but valid
     (is (true? (license-ref? "LicenseRef--")))                ; Cursed but valid
     (is (true? (license-ref? "LicenseRef-.")))                ; Cursed but valid
     (is (true? (license-ref? "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -92,11 +96,13 @@
     (is (true? (license-ref? "DocumentRef-foo42:LicenseRef-bar42")))
     (is (true? (license-ref? "DocumentRef-42foo:LicenseRef-42bar")))
     (is (true? (license-ref? "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7")))
-    (is (true? (license-ref? "DocumentRef--:LicenseRef-bar")))                  ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef-.:LicenseRef-bar")))                  ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef----:LicenseRef----")))                ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef-.-.:LicenseRef-.-.")))                ; Cursed but valid
-    (is (true? (license-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))  ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-DocumentRef:LicenseRef-LicenseRef")))  ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-LicenseRef:LicenseRef-DocumentRef")))  ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef--:LicenseRef-bar")))                   ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-.:LicenseRef-bar")))                   ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef----:LicenseRef----")))                 ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-.-.:LicenseRef-.-.")))                 ; Cursed but valid
+    (is (true? (license-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))   ; Cursed but valid
     (is (true? (license-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG")))))
 
 (deftest license-ref-tests
@@ -120,6 +126,8 @@
     (is (license-ref? (license-ref "foo42")))
     (is (license-ref? (license-ref "42foo")))
     (is (license-ref? (license-ref "foo-v2.1")))
+    (is (license-ref? (license-ref "LicenseRef")))         ; Cursed but valid
+    (is (license-ref? (license-ref "DocumentRef")))        ; Cursed but valid
     (is (license-ref? (license-ref "-")))                  ; Cursed but valid
     (is (license-ref? (license-ref ".")))                  ; Cursed but valid
     (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -128,11 +136,13 @@
     (is (license-ref? (license-ref "foo42" "bar42")))
     (is (license-ref? (license-ref "42foo" "42bar")))
     (is (license-ref? (license-ref "foo-v2.1" "bar-v3.7")))
-    (is (license-ref? (license-ref "-" "foo")))                  ; Cursed but valid
-    (is (license-ref? (license-ref "." "foo")))                  ; Cursed but valid
-    (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-." "foo")))  ; Cursed but valid
-    (is (license-ref? (license-ref "---" "---")))                ; Cursed but valid
-    (is (license-ref? (license-ref "..." "...")))))              ; Cursed but valid
+    (is (license-ref? (license-ref "DocumentRef" "LicenseRef")))  ; Cursed but valid
+    (is (license-ref? (license-ref "LicenseRef" "DocumentRef")))  ; Cursed but valid
+    (is (license-ref? (license-ref "-" "foo")))                   ; Cursed but valid
+    (is (license-ref? (license-ref "." "foo")))                   ; Cursed but valid
+    (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-." "foo")))   ; Cursed but valid
+    (is (license-ref? (license-ref "---" "---")))                 ; Cursed but valid
+    (is (license-ref? (license-ref "..." "...")))))               ; Cursed but valid
 
 (deftest license-ref-map->string-tests
   (testing "Invalid maps return nil"
@@ -149,6 +159,8 @@
     (is (license-ref? (license-ref-map->string {:license-ref "foo42"})))
     (is (license-ref? (license-ref-map->string {:license-ref "42foo"})))
     (is (license-ref? (license-ref-map->string {:license-ref "foo-v2.1"})))
+    (is (license-ref? (license-ref-map->string {:license-ref "LicenseRef"})))         ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:license-ref "DocumentRef"})))        ; Cursed but valid
     (is (license-ref? (license-ref-map->string {:license-ref "-"})))                  ; Cursed but valid
     (is (license-ref? (license-ref-map->string {:license-ref "."})))                  ; Cursed but valid
     (is (license-ref? (license-ref-map->string {:license-ref ".-.-.-.-.-.-.-.-."})))  ; Cursed but valid
@@ -157,11 +169,13 @@
     (is (license-ref? (license-ref-map->string {:document-ref "foo42"             :license-ref "bar42"})))
     (is (license-ref? (license-ref-map->string {:document-ref "42foo"             :license-ref "42bar"})))
     (is (license-ref? (license-ref-map->string {:document-ref "foo-v2.1"          :license-ref "bar-v3.7"})))
-    (is (license-ref? (license-ref-map->string {:document-ref "-"                 :license-ref "foo"})))                  ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref "."                 :license-ref "foo"})))                  ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"})))  ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref "---"               :license-ref "---"})))                ; Cursed but valid
-    (is (license-ref? (license-ref-map->string {:document-ref "..."               :license-ref "..."})))))              ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "DocumentRef"       :license-ref "LicenseRef"})))   ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "LicenseRef"        :license-ref "DocumentRef"})))  ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "-"                 :license-ref "foo"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "."                 :license-ref "foo"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "---"               :license-ref "---"})))          ; Cursed but valid
+    (is (license-ref? (license-ref-map->string {:document-ref "..."               :license-ref "..."})))))        ; Cursed but valid
 
 (deftest string->license-ref-map-tests
   (testing "Invalid strings return nil"
@@ -186,6 +200,8 @@
     (is (map? (string->license-ref-map "LicenseRef-foo42")))
     (is (map? (string->license-ref-map "LicenseRef-42foo")))
     (is (map? (string->license-ref-map "LicenseRef-foo-v2.1")))
+    (is (map? (string->license-ref-map "LicenseRef-LicenseRef")))       ; Cursed but valid
+    (is (map? (string->license-ref-map "LicenseRef-DocumentRef")))      ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef--")))                ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef-.")))                ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
@@ -197,6 +213,8 @@
     (is (map? (string->license-ref-map "DocumentRef-foo42:LicenseRef-bar42")))
     (is (map? (string->license-ref-map "DocumentRef-42foo:LicenseRef-42bar")))
     (is (map? (string->license-ref-map "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7")))
+    (is (map? (string->license-ref-map "DocumentRef-DocumentRef:LicenseRef-LicenseRef"))) ; Cursed but valid
+    (is (map? (string->license-ref-map "DocumentRef-LicenseRef:LicenseRef-DocumentRef"))) ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef--:LicenseRef-bar")))                  ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-.:LicenseRef-bar")))                  ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef----:LicenseRef----")))                ; Cursed but valid
@@ -214,6 +232,8 @@
   "LicenseRef-foo42"
   "LicenseRef-42foo"
   "LicenseRef-foo-v2.1"
+  "LicenseRef-LicenseRef"
+  "LicenseRef-DocumentRef"
   "LicenseRef--"
   "LicenseRef-."
   "LicenseRef-.-.-.-.-.-.-.-."
@@ -223,6 +243,8 @@
   "DocumentRef-foo42:LicenseRef-bar42"
   "DocumentRef-42foo:LicenseRef-42bar"
   "DocumentRef-foo-v2.1:LicenseRef-bar-v3.7"
+  "DocumentRef-DocumentRef:LicenseRef-LicenseRef"
+  "DocumentRef-LicenseRef:LicenseRef-DocumentRef"
   "DocumentRef--:LicenseRef-bar"
   "DocumentRef-.:LicenseRef-bar"
   "DocumentRef----:LicenseRef----"
@@ -246,6 +268,8 @@
                             {:license-ref "foo42"}
                             {:license-ref "42foo"}
                             {:license-ref "foo-v2.1"}
+                            {:license-ref "LicenseRef"}
+                            {:license-ref "DocumentRef"}
                             {:license-ref "-"}
                             {:license-ref "."}
                             {:license-ref ".-.-.-.-.-.-.-.-."}
@@ -254,6 +278,8 @@
                             {:document-ref "foo42"             :license-ref "bar42"}
                             {:document-ref "42foo"             :license-ref "42bar"}
                             {:document-ref "foo-v2.1"          :license-ref "bar-v3.7"}
+                            {:document-ref "DocumentRef"       :license-ref "LicenseRef"}
+                            {:document-ref "LicenseRef"        :license-ref "DocumentRef"}
                             {:document-ref "-"                 :license-ref "foo"}
                             {:document-ref "."                 :license-ref "foo"}
                             {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"}
@@ -290,69 +316,73 @@
     (is (false? (equivalent? "DocumentRef-foo:LicenseRef-foo" "DocumentRef-foo:LicenseRef-bar")))
     (is (false? (equivalent? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-bar:LicenseRef-bar"))))
   (testing "valid values that are equivalent"
-    (is (true?  (equivalent? "Apache-2.0"                               "Apache-2.0")))
-    (is (true?  (equivalent? "APACHE-2.0"                               "apache-2.0")))
-    (is (true?  (equivalent? "CC-BY-SA-4.0"                             "cc-by-sa-4.0")))
-    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-BAR"           "DocumentRef-foo:LicenseRef-bar")))
-    (is (true?  (equivalent? "LicenseRef-foo"                           "LicenseRef-foo")))
-    (is (true?  (equivalent? "LicenseRef-foo"                           "LicenseRef-FOO")))
-    (is (true?  (equivalent? "LICENSEREF-foo"                           "licenseref-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true?  (equivalent? "DocumentRef-foo:LicenseRef-bar"           "DocumentRef-foo:LicenseRef-bar")))
-    (is (true?  (equivalent? "DOCUMENTREF-FOO:LICENSEREF-BAR"           "documentref-foo:licenseref-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-bar"           "DocumentRef-foo:LicenseRef-BAR")))
+    (is (true?  (equivalent? "Apache-2.0"                                    "Apache-2.0")))
+    (is (true?  (equivalent? "APACHE-2.0"                                    "apache-2.0")))
+    (is (true?  (equivalent? "CC-BY-SA-4.0"                                  "cc-by-sa-4.0")))
+    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-BAR"                "DocumentRef-foo:LicenseRef-bar")))
+    (is (true?  (equivalent? "LicenseRef-foo"                                "LicenseRef-foo")))
+    (is (true?  (equivalent? "LicenseRef-foo"                                "LicenseRef-FOO")))
+    (is (true?  (equivalent? "LicenseRef-LicenseRef"                         "LicenseRef-licenseref")))
+    (is (true?  (equivalent? "LicenseRef-DocumentRef"                        "LicenseRef-documentref")))
+    (is (true?  (equivalent? "LICENSEREF-foo"                                "licenseref-FOO")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-foo:LicenseRef-bar"                "DocumentRef-foo:LicenseRef-bar")))
+    (is (true?  (equivalent? "DOCUMENTREF-FOO:LICENSEREF-BAR"                "documentref-foo:licenseref-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-bar"                "DocumentRef-foo:LicenseRef-BAR")))
+    (is (true?  (equivalent? "DocumentRef-DocumentRef:LicenseRef-LicenseRef" "DocumentRef-documentref:LicenseRef-licenseref")))
+    (is (true?  (equivalent? "DocumentRef-LicenseRef:LicenseRef-DocumentRef" "DocumentRef-licenseref:LicenseRef-documentref")))
     (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:LICENSEREF-BAR-V3.7" "documentref-foo-v2.1:licenseref-bar-v3.7")))))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
 
-(deftest id->info-tests
+(deftest info-tests
   (testing "Invalid ids return nil"
-    (is (nil? (id->info nil)))
-    (is (nil? (id->info "")))
-    (is (nil? (id->info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (nil? (info nil)))
+    (is (nil? (info "")))
+    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Valid ids are not nil"
-    (is (not (nil? (id->info "Apache-2.0")))))
+    (is (not (nil? (info "Apache-2.0")))))
   (testing "Returned info is a Map"
-    (is (instance? java.util.Map (id->info "Apache-2.0"))))
+    (is (instance? java.util.Map (info "Apache-2.0"))))
   (testing "Expected keys are present"
-    (is (equivalent-colls? (keys (id->info "Apache-2.0"))
+    (is (equivalent-colls? (keys (info "Apache-2.0"))
                            [:name :id :fsf-libre? :see-also :osi-approved?]))
-    (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? false}))
+    (is (equivalent-colls? (keys (info "Apache-2.0" {:include-large-text-values? false}))
                            [:name :id :fsf-libre? :see-also :osi-approved?]))
-    (is (equivalent-colls? (keys (id->info "Apache-2.0" {:include-large-text-values? true}))
+    (is (equivalent-colls? (keys (info "Apache-2.0" {:include-large-text-values? true}))
                            [:name :id :fsf-libre? :see-also :osi-approved? :text :text-template :header :comment])))
   (testing "Select keys have expected values"
-    (let [info (id->info "Apache-2.0")]
+    (let [info (info "Apache-2.0")]
       (is (=           (:name          info) "Apache License 2.0"))
       (is (true?       (:osi-approved? info)))
       (is (true?       (:fsf-libre?    info)))
       (is (pos? (count (:see-also      info))))))
   (testing "ids not in canonical form"
-    (let [info (id->info "apache-2.0")]
+    (let [info (info "apache-2.0")]
       (is (=           (:id            info) "Apache-2.0"))
       (is (=           (:name          info) "Apache License 2.0"))
       (is (true?       (:osi-approved? info)))
       (is (true?       (:fsf-libre?    info)))
       (is (pos? (count (:see-also      info)))))))
 
-(deftest deprecated-id?-tests
+(deftest deprecated?-tests
   (testing "Invalid ids return false"
-    (is (false? (deprecated-id? nil)))
-    (is (false? (deprecated-id? "")))
-    (is (false? (deprecated-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (deprecated? nil)))
+    (is (false? (deprecated? "")))
+    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "Deprecated ids"
-    (is (true? (deprecated-id? "GPL-2.0")))
-    (is (true? (deprecated-id? "Nunit")))
-    (is (true? (deprecated-id? "wxWindows"))))
+    (is (true? (deprecated? "GPL-2.0")))
+    (is (true? (deprecated? "Nunit")))
+    (is (true? (deprecated? "wxWindows"))))
   (testing "Non-deprecated ids"
-    (is (false? (deprecated-id? "GPL-2.0-only")))
-    (is (false? (deprecated-id? "GPL-2.0-or-later")))
-    (is (false? (deprecated-id? "Sendmail")))
-    (is (false? (deprecated-id? "SSH-OpenSSH")))
-    (is (false? (deprecated-id? "Latex2e")))
-    (is (false? (deprecated-id? "MIT")))
-    (is (false? (deprecated-id? "gnuplot")))
-    (is (false? (deprecated-id? "OLDAP-2.2.2"))))
+    (is (false? (deprecated? "GPL-2.0-only")))
+    (is (false? (deprecated? "GPL-2.0-or-later")))
+    (is (false? (deprecated? "Sendmail")))
+    (is (false? (deprecated? "SSH-OpenSSH")))
+    (is (false? (deprecated? "Latex2e")))
+    (is (false? (deprecated? "MIT")))
+    (is (false? (deprecated? "gnuplot")))
+    (is (false? (deprecated? "OLDAP-2.2.2"))))
   (testing "ids not in canonical form"
-    (is (true?  (deprecated-id? "gpl-2.0")))
-    (is (false? (deprecated-id? "mit")))))
+    (is (true?  (deprecated? "gpl-2.0")))
+    (is (false? (deprecated? "mit")))))
 
 (deftest non-deprecated-ids-tests
   (testing "We have some non-deprecated-ids"
@@ -360,28 +390,28 @@
   (testing "non-deprecated-ids are a set"
     (is (instance? java.util.Set (non-deprecated-ids)))))
 
-(deftest osi-approved-id?-tests
+(deftest osi-approved?-tests
   (testing "Invalid ids return false"
-    (is (false? (osi-approved-id? nil)))
-    (is (false? (osi-approved-id? "")))
-    (is (false? (osi-approved-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (osi-approved? nil)))
+    (is (false? (osi-approved? "")))
+    (is (false? (osi-approved? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "OSI approved ids"
-    (is (true? (osi-approved-id? "Apache-2.0")))
-    (is (true? (osi-approved-id? "GPL-3.0")))
-    (is (true? (osi-approved-id? "GPL-3.0-only")))
-    (is (true? (osi-approved-id? "GPL-3.0-or-later"))))
+    (is (true? (osi-approved? "Apache-2.0")))
+    (is (true? (osi-approved? "GPL-3.0")))
+    (is (true? (osi-approved? "GPL-3.0-only")))
+    (is (true? (osi-approved? "GPL-3.0-or-later"))))
   (testing "Non-OSI approved ids"
-    (is (false? (osi-approved-id? "BSD-3-Clause-No-Military-License")))
-    (is (false? (osi-approved-id? "WTFPL")))
-    (is (false? (osi-approved-id? "CC-BY-SA-4.0")))
-    (is (false? (osi-approved-id? "BSD-4-Clause")))
-    (is (false? (osi-approved-id? "JSON")))
-    (is (false? (osi-approved-id? "X11")))
-    (is (false? (osi-approved-id? "Beerware")))
-    (is (false? (osi-approved-id? "Hippocratic-2.1"))))
+    (is (false? (osi-approved? "BSD-3-Clause-No-Military-License")))
+    (is (false? (osi-approved? "WTFPL")))
+    (is (false? (osi-approved? "CC-BY-SA-4.0")))
+    (is (false? (osi-approved? "BSD-4-Clause")))
+    (is (false? (osi-approved? "JSON")))
+    (is (false? (osi-approved? "X11")))
+    (is (false? (osi-approved? "Beerware")))
+    (is (false? (osi-approved? "Hippocratic-2.1"))))
   (testing "ids not in canonical form"
-    (is (true?  (osi-approved-id? "gpl-3.0")))
-    (is (false? (osi-approved-id? "json")))))
+    (is (true?  (osi-approved? "gpl-3.0")))
+    (is (false? (osi-approved? "json")))))
 
 (deftest osi-approved-ids-tests
   (testing "We have some osi-approved-ids"
@@ -389,29 +419,29 @@
   (testing "osi-approved-ids are a set"
     (is (instance? java.util.Set (osi-approved-ids)))))
 
-(deftest fsf-libre-id?-tests
+(deftest fsf-libre?-tests
   (testing "Invalid ids return false"
-    (is (false? (fsf-libre-id? nil)))
-    (is (false? (fsf-libre-id? "")))
-    (is (false? (fsf-libre-id? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (fsf-libre? nil)))
+    (is (false? (fsf-libre? "")))
+    (is (false? (fsf-libre? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "FSF Libre ids"
-    (is (true? (fsf-libre-id? "Intel")))
-    (is (true? (fsf-libre-id? "Unlicense")))
-    (is (true? (fsf-libre-id? "Apache-1.0")))
-    (is (true? (fsf-libre-id? "CDDL-1.0"))))
+    (is (true? (fsf-libre? "Intel")))
+    (is (true? (fsf-libre? "Unlicense")))
+    (is (true? (fsf-libre? "Apache-1.0")))
+    (is (true? (fsf-libre? "CDDL-1.0"))))
   (testing "Non-FSF-Libre ids"
     ; Note: the SPDX license list tends to leave this field out rather than populate it with false, hence we don't test with false?
-    (is (false? (fsf-libre-id? "GPL-1.0")))
-    (is (false? (fsf-libre-id? "MIT-0")))
-    (is (false? (fsf-libre-id? "PostgreSQL")))
-    (is (false? (fsf-libre-id? "Glide")))
-    (is (false? (fsf-libre-id? "OML")))
-    (is (false? (fsf-libre-id? "Libpng")))
-    (is (false? (fsf-libre-id? "MPL-1.0")))
-    (is (false? (fsf-libre-id? "Xerox"))))
+    (is (false? (fsf-libre? "GPL-1.0")))
+    (is (false? (fsf-libre? "MIT-0")))
+    (is (false? (fsf-libre? "PostgreSQL")))
+    (is (false? (fsf-libre? "Glide")))
+    (is (false? (fsf-libre? "OML")))
+    (is (false? (fsf-libre? "Libpng")))
+    (is (false? (fsf-libre? "MPL-1.0")))
+    (is (false? (fsf-libre? "Xerox"))))
   (testing "ids not in canonical form"
-    (is (true?  (fsf-libre-id? "cddl-1.0")))
-    (is (false? (fsf-libre-id? "oml")))))
+    (is (true?  (fsf-libre? "cddl-1.0")))
+    (is (false? (fsf-libre? "oml")))))
 
 (deftest fsf-libre-ids-ids-tests
   (testing "We have some fsf-libre-ids"

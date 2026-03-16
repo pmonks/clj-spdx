@@ -24,7 +24,7 @@
             [spdx.impl.utils   :as siu]))
 
 (defn version
-  "The version of the license list (a `String` in major.minor(.patchlevel)
+  "The version of the license list (a `String` in \"major.minor(.patchlevel)\"
   format).
 
   Note: identical to [[spdx.identifiers/version]]."
@@ -38,7 +38,7 @@
           seq
           set))
 
-(defn listed-id?
+(defn listed?
   "Is `s` (a `String`) one of the listed SPDX license identifiers?"
   [^String s]
   (sim/listed-license-id? s))
@@ -107,22 +107,126 @@
       (when-let [license-ref-map (string->license-ref-map s)]
         (license-ref-map->string license-ref-map)))))
 
-(defn ^:deprecated ^:no-doc canonicalise-id
-  "Superceded by [[canonicalise]]."
-  [^String s]
-  (canonicalise s))
-
 (defn equivalent?
   "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers or
   LicenseRefs (i.e. taking the SPDX case sensitivity rules in [SPDX
   Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)
-  into account)?"
+  into account)?
+
+  Notes:
+
+  * Returns `true` if `s1` and `s2` are both `nil`.
+  * Returns `false` if `s1` or `s2` are not listed SPDX license identifiers or
+    LicenseRefs, even if they are otherwise equal."
   [^String s1 ^String s2]
   (boolean
     (or (and (nil? s1) (nil? s2))
         (let [cs1 (canonicalise s1)
               cs2 (canonicalise s2)]
           (and cs1 cs2 (= (s/lower-case cs1) (s/lower-case cs2)))))))
+
+#_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
+(defn info
+  "Returns SPDX license list information for `id` as a map, or `nil` if `id` is
+  not a listed SPDX license identifier.
+
+  `opts` are:
+
+  * `:include-large-text-values?` (default `false`) - controls whether large
+    text values are included in the result or not"
+  ([^String id] (info id nil))
+  ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
+   (some-> id
+           canonicalise
+           sim/id->license
+           (sim/license->map opts))))
+
+(defn deprecated?
+  "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not a
+  listed SPDX license identifier.
+
+  See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
+  for details on what this means."
+  [^String id]
+  (boolean (when (listed? id) (:deprecated? (info id)))))
+
+(defn non-deprecated-ids
+  "Returns the set of SPDX license identifiers that identify current
+  (non-deprecated) licenses, within the provided set of listed SPDX license
+  identifiers or all listed identifiers when `ids` not provided."
+  ([]    (non-deprecated-ids (ids)))
+  ([ids] (some-> (filter (complement deprecated?) ids)
+                 seq
+                 set)))
+
+(defn osi-approved?
+  "Is `id` (a `String`) OSI Approved?  Also returns `false` if `id` is not a
+  listed SPDX license identifier.
+
+  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
+  for details about what 'OSI Approved' means."
+  [^String id]
+  (boolean (when (listed? id) (:osi-approved? (info id)))))
+
+(defn osi-approved-ids
+  "Returns the set of SPDX license identifiers that identify OSI Approved
+  licenses within the provided set of SPDX license identifiers (or all of them,
+  if `ids` is not provided).
+
+  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
+  for details about what 'OSI Approved' means."
+  ([]    (osi-approved-ids (ids)))
+  ([ids] (some-> (filter osi-approved? ids)
+                 seq
+                 set)))
+
+(defn fsf-libre?
+  "Is `id` (a `String`) FSF Libre?  Also returns `false` if `id` is not a listed
+  SPDX license identifier.
+
+  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
+  for details about what 'FSF Libre' means."
+  [^String id]
+  (boolean (when (listed? id) (:fsf-libre? (info id)))))
+
+(defn fsf-libre-ids
+  "Returns the set of SPDX license identifiers that identify FSF Libre licenses
+  within the provided set of SPDX license identifiers (or all of them, if `ids`
+  is not provided).
+
+  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
+  for details about what 'FSF Libre' means."
+  ([]    (fsf-libre-ids (ids)))
+  ([ids] (some-> (filter fsf-libre? ids)
+                 seq
+                 set)))
+
+(defn init!
+  "Initialises this namespace upon first call (and does nothing on subsequent
+  calls), returning `nil`. Consumers of this namespace are not required to call
+  this fn, as initialisation will occur implicitly anyway; it is provided to
+  allow explicit control of the cost of initialisation to callers who need it.
+
+  Note: [this function may have a substantial performance cost](https://github.com/pmonks/clj-spdx?tab=readme-ov-file#a-note-about-spdx-license-list-assets)."
+  []
+  (sis/init!)
+  (sir/init!)
+  ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
+  (doall (e/bounded-pmap* siu/maximum-concurrency info (ids)))
+  @id-canonicalisation-d
+  nil)
+
+
+; Deprecated vars, to be removed in the next major version
+(defn ^:deprecated ^:no-doc listed-id?
+  "Superceded by [[listed?]]."
+  [^String s]
+  (listed? s))
+
+(defn ^:deprecated ^:no-doc canonicalise-id
+  "Superceded by [[canonicalise]]."
+  [^String s]
+  (canonicalise s))
 
 (defn ^:deprecated ^:no-doc equivalent-ids?
   "Superceded by [[equivalent?]]"
@@ -134,93 +238,22 @@
   [^String s1 ^String s2]
   (equivalent? s1 s2))
 
-#_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
-(defn id->info
-  "Returns SPDX license list information for `id` as a map, or `nil` if `id` is
-  not a listed SPDX license identifier.
+(defn ^:deprecated ^:no-doc id->info
+  "Superceded by [[info]]"
+  ([^String id]      (info id))
+  ([^String id opts] (info id opts)))
 
-  `opts` are:
-
-  * `:include-large-text-values?` (default `false`) - controls whether large
-    text values are included in the result or not"
-  ([^String id] (id->info id nil))
-  ([^String id {:keys [include-large-text-values?] :or {include-large-text-values? false} :as opts}]
-   (some-> id
-           canonicalise
-           sim/id->license
-           (sim/license->map opts))))
-
-(defn deprecated-id?
-  "Is `id` (a `String`) deprecated?  Also returns `false` if `id` is not a
-  listed SPDX license identifier.
-
-  See [this SPDX FAQ item](https://github.com/spdx/license-list-XML/blob/main/DOCS/faq.md#what-does-it-mean-when-a-license-id-is-deprecated)
-  for details on what this means."
+(defn ^:deprecated ^:no-doc deprecated-id?
+  "Superceded by [[deprecated?]]"
   [^String id]
-  (boolean (when (listed-id? id) (:deprecated? (id->info id)))))
+  (deprecated? id))
 
-(defn non-deprecated-ids
-  "Returns the set of SPDX license identifiers that identify current
-  (non-deprecated) licenses, within the provided set of listed SPDX license
-  identifiers or all listed identifiers when `ids` not provided."
-  ([]    (non-deprecated-ids (ids)))
-  ([ids] (some-> (filter (complement deprecated-id?) ids)
-                 seq
-                 set)))
-
-(defn osi-approved-id?
-  "Is `id` (a `String`) OSI Approved?  Also returns `false` if `id` is not a
-  listed SPDX license identifier.
-
-  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
-  for details about what 'OSI Approved' means."
+(defn ^:deprecated ^:no-doc osi-approved-id?
+  "Superceded by [[osi-approved?]]"
   [^String id]
-  (boolean (when (listed-id? id) (:osi-approved? (id->info id)))))
+  (osi-approved? id))
 
-(defn osi-approved-ids
-  "Returns the set of SPDX license identifiers that identify OSI Approved
-  licenses within the provided set of SPDX license identifiers (or all of them,
-  if `ids` is not provided).
-
-  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
-  for details about what 'OSI Approved' means."
-  ([]    (osi-approved-ids (ids)))
-  ([ids] (some-> (filter osi-approved-id? ids)
-                 seq
-                 set)))
-
-(defn fsf-libre-id?
-  "Is `id` (a `String`) FSF Libre?  Also returns `false` if `id` is not in the
-  SPDX license list.
-
-  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
-  for details about what 'FSF Libre' means."
+(defn ^:deprecated ^:no-doc fsf-libre-id?
+  "Superceded by [[fsf-libre?]]"
   [^String id]
-  (boolean (when (listed-id? id) (:fsf-libre? (id->info id)))))
-
-(defn fsf-libre-ids
-  "Returns the set of SPDX license identifiers that identify FSF Libre licenses
-  within the provided set of SPDX license identifiers (or all of them, if `ids`
-  is not provided).
-
-  See [this reference](https://github.com/spdx/license-list-XML/blob/main/DOCS/license-fields.md)
-  for details about what 'FSF Libre' means."
-  ([]    (fsf-libre-ids (ids)))
-  ([ids] (some-> (filter fsf-libre-id? ids)
-                 seq
-                 set)))
-
-(defn init!
-  "Initialises this namespace upon first call (and does nothing on subsequent
-  calls), returning `nil`. Consumers of this namespace are not required to call
-  this fn, as initialisation will occur implicitly anyway; it is provided to
-  allow explicit control of the cost of initialisation to callers who need it.
-
-  Note: this function may have a substantial performance cost."
-  []
-  (sis/init!)
-  (sir/init!)
-  ; This is slow mostly due to network I/O (file downloads), so we parallelise to reduce the elapsed time.
-  (doall (e/bounded-pmap* siu/maximum-concurrency id->info (ids)))
-  @id-canonicalisation-d
-  nil)
+  (fsf-libre? id))
