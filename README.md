@@ -32,11 +32,11 @@ Note also that this project has no official relationship with the [SPDX project]
 1. Using a pre-packaged copy of the files stored inside the JAR (which may not be the latest version)
 2. Downloading the latest version of the files from the internet, and caching them locally (as of SPDX license list v3.28.0 this comprises approximately 800 files totaling around 25MB)
 
-This is controlled via the [`org.spdx.useJARLicenseInfoOnly` JVM property](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options), which defaults to `false` (i.e. method 2 is the default).  The challenge is that  `Spdx-Java-Library` seems to be [suspiciously slow](https://github.com/spdx/Spdx-Java-Library/issues/394) at downloading these assets, and while `clj-spdx` does its best to workaround those costs (by parallelising the downloads), they remain substantial.
+This is controlled via the [`org.spdx.useJARLicenseInfoOnly` JVM property](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options), which defaults to `false` (i.e. method 2 is the default).  The challenge is that  `Spdx-Java-Library` can take up to a minute or more to download these assets the first time, and while `clj-spdx` does its best to workaround those costs (by parallelising the downloads), they remain substantial.
 
-By default `Spdx-Java-Library` will only retrieve these assets on demand, as required by calling code, which has the benefit of amortising the download cost.  However certain functions (especially those in the `spdx.matching` namespace) require all assets, so if you're using those functions you may notice a substantial pause (up to several minutes) the first time they're called.  Subsequent calls will be faster since `Spdx-Java-Library` makes use of a persistent local cache of the downloaded files, and that cache is checked for staleness infrequently (once per day, by default, but also configurable).
+By default `Spdx-Java-Library` will only retrieve these assets on demand, as required by calling code, which has the benefit of amortising the download cost.  However certain functions (especially those in the `spdx.matching` namespace) require all assets, so if you're using those functions you may notice a substantial pause the first time they're called.  Subsequent calls will be faster since `Spdx-Java-Library` makes use of a persistent local cache of the downloaded files, and that cache is checked for staleness infrequently (once per day, by default, but [also configurable](https://github.com/spdx/Spdx-Java-Library?tab=readme-ov-file#configuration-options)).
 
-Because of this substantial cost, `clj-spdx` provides callers with the option to "force initialise" `Spdx-Java-Library` up front, which doesn't solve the performance problem but does at least make it deterministic; these are the various `init!` functions.  **Calling these `init!` functions is completely optional**, and if you're not performing matching it's better to _not_ call them and instead rely on `Spdx-Java-Library`'s default behaviour.
+Because of these unpredictable download costs, `clj-spdx` provides callers with the option to "force initialise" `Spdx-Java-Library` up front, which doesn't solve the performance problem but does at least make it deterministic; these are the various `init!` functions.  **Calling these `init!` functions is completely optional**, and if you're not performing matching it's better to _not_ call them and instead rely on `Spdx-Java-Library`'s default "lazy cache population" behaviour.
 
 If you are performing matching and find the download cost (whether on demand or forced up front using `init!`) is unacceptable, currently the only alternative is to use method 1 (load the files stored in the `Spdx-Java-Library` JAR), and just accept that your code will be limited to whatever version of the SPDX license list is packaged in the current release of `Spdx-Java-Library`.
 
@@ -46,12 +46,12 @@ From v1.0.247 onward, `clj-spdx` uses `Spdx-Java-Library` v2.x, which adds suppo
 
 While `clj-spdx` managed to hide most of the breaking changes, the following data structure changes were unavoidable:
 
-* [license information maps](https://pmonks.github.io/clj-spdx/spdx.licenses.html#var-id-.3Einfo) no longer contain these keys:
+* [license information maps](https://pmonks.github.io/clj-spdx/spdx.licenses.html#var-info) no longer contain these keys:
   * `:cross-refs` - merged into `:see-also` (note that the Java library renamed "see also" to "see alsos", however `clj-spdx` preserves the old name)
   * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
   * `:header-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
   * `:header-template` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
-* [license exception information maps](https://pmonks.github.io/clj-spdx/spdx.exceptions.html#var-id-.3Einfo) no longer contain this key:
+* [license exception information maps](https://pmonks.github.io/clj-spdx/spdx.exceptions.html#var-info) no longer contain this key:
   * `:text-html` - no longer provided by `Spdx-Java-Library` (and was not included by default by `clj-spdx` anyway)
 
 ## Trying it out
