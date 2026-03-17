@@ -5,19 +5,19 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-03-10T04:27:35Z"
+                "timestamp": "2026-03-17T06:05:56Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-03-09T21:23:43Z"
+                "timestamp": "2026-03-17T04:16:24Z"
             }
         ]
 
 
     },
     "projectInfo": {
-        "name": "com.github.pmonks\/clj-spdx 1.0.316-SNAPSHOT",
-        "reportDate": "2026-03-10T04:27:45.508949861Z",
+        "name": "com.github.pmonks\/clj-spdx 1.0.334-SNAPSHOT",
+        "reportDate": "2026-03-17T06:06:06.203398755Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
@@ -2124,11 +2124,11 @@
             ]
         },{
             "isVirtual": false,
-            "fileName": "java-spdx-library-2.0.2.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/java-spdx-library\/2.0.2\/java-spdx-library-2.0.2.jar"
-,"md5": "988b7ca4de3848a608e9f4d91c3a22a9",
-            "sha1": "6fdd5975842cb6fe9a70822c35441e47552eb485",
-            "sha256": "9ab2059e2791be297568ceea5b51fa89a2e11fedc8686f9bf2062ad0f37de767","description": "Java library which implements the Java object model for SPDX and provides useful helper functions.","license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
+            "fileName": "java-spdx-library-2.0.3.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/java-spdx-library\/2.0.3\/java-spdx-library-2.0.3.jar"
+,"md5": "f8f4547a4c1cda2e2e29008784772197",
+            "sha1": "584b420a9cc6db37dc7ce82addb71ab646825e16",
+            "sha256": "0f90da5cf2b47731079abcdf64cac00490ee367e0ce448003963034bf772c513","description": "Java library which implements the Java object model for SPDX and provides useful helper functions.","license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -2363,29 +2363,29 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "2.0.2"
+                        "value": "2.0.3"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "2.0.2"
+                        "value": "2.0.3"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.spdx\/java-spdx-library@2.0.2"
+                        "id": "pkg:maven\/org.spdx\/java-spdx-library@2.0.3"
 ,"confidence": "HIGH"                    }
             ]
         },{
             "isVirtual": false,
-            "fileName": "jsoup-1.21.2.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/jsoup\/jsoup\/1.21.2\/jsoup-1.21.2.jar"
-,"md5": "fc16b1485a47b934cd7f4572dec1e7aa",
-            "sha1": "55ba93337201b6f1208a6691f291ca2828860150",
-            "sha256": "f05496e255734759f0d4b5632da7b24f81313147c78c69e90ad045d096191344","description": "jsoup is a Java library that simplifies working with real-world HTML and XML. It offers an easy-to-use API for URL fetching, data parsing, extraction, and manipulation using DOM API methods, CSS, and xpath selectors. jsoup implements the WHATWG HTML5 specification, and parses HTML to the same DOM as modern browsers.","license": "The MIT License: https:\/\/jsoup.org\/license"            ,"evidenceCollected": {
+            "fileName": "jsoup-1.22.1.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/jsoup\/jsoup\/1.22.1\/jsoup-1.22.1.jar"
+,"md5": "650c793f2362dd13d13355e558ea56f0",
+            "sha1": "9085290f1032d8bdd4ab0a279d176a4bd9e282ca",
+            "sha256": "cfd3298d8720cddfb0545109ccc6ea0ef39eff7e9c40a10ad95c93a65f01c916","description": "jsoup is a Java library that simplifies working with real-world HTML and XML. It offers an easy-to-use API for URL fetching, data parsing, extraction, and manipulation using DOM API methods, CSS, and xpath selectors. jsoup implements the WHATWG HTML5 specification, and parses HTML to the same DOM as modern browsers.","license": "The MIT License: https:\/\/jsoup.org\/license"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -2669,39 +2669,39 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "1.21.2"
+                        "value": "1.22.1"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGH",
                         "source": "Manifest",
                         "name": "Bundle-Version",
-                        "value": "1.21.2"
+                        "value": "1.22.1"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGH",
                         "source": "Manifest",
                         "name": "Implementation-Version",
-                        "value": "1.21.2"
+                        "value": "1.22.1"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "1.21.2"
+                        "value": "1.22.1"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.jsoup\/jsoup@1.21.2"
+                        "id": "pkg:maven\/org.jsoup\/jsoup@1.22.1"
 ,"confidence": "HIGH"                    }
             ]                ,"vulnerabilityIds": [
                 {
-                    "id": "cpe:2.3:a:jsoup:jsoup:1.21.2:*:*:*:*:*:*:*"
-,"confidence": "HIGHEST","url": "https:\/\/nvd.nist.gov\/vuln\/search#\/nvd\/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Ajsoup%3Ajsoup%3A1.21.2%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A"                }
+                    "id": "cpe:2.3:a:jsoup:jsoup:1.22.1:*:*:*:*:*:*:*"
+,"confidence": "HIGHEST","url": "https:\/\/nvd.nist.gov\/vuln\/search#\/nvd\/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Ajsoup%3Ajsoup%3A1.22.1%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A"                }
             ]
         },{
             "isVirtual": false,
@@ -3210,11 +3210,11 @@
             ]
         },{
             "isVirtual": false,
-            "fileName": "spdx-java-core-1.0.2.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-core\/1.0.2\/spdx-java-core-1.0.2.jar"
-,"md5": "ab5eddb667f3781d023f21213416346e",
-            "sha1": "1a169e6b343a9ce812cfec6bbcd95b37bada5a9c",
-            "sha256": "73852cd83efb2e96a49f60e9ecacd6ef723079bc5a58dfffbca371fd0b1bd0a1","description": "Core libraries for SPDX","license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
+            "fileName": "spdx-java-core-1.0.3.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-core\/1.0.3\/spdx-java-core-1.0.3.jar"
+,"md5": "eda865ec8f20f3452c6f97d03f17f466",
+            "sha1": "ddf4751cec50b29d0806a995d67b0ba6b071ae05",
+            "sha256": "3624a8edc894e4d9dba53a0acecc1d5d31bb68135a5c4759873535821e35fc02","description": "Core libraries for SPDX","license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -3449,29 +3449,29 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "1.0.2"
+                        "value": "1.0.3"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "1.0.2"
+                        "value": "1.0.3"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.spdx\/spdx-java-core@1.0.2"
+                        "id": "pkg:maven\/org.spdx\/spdx-java-core@1.0.3"
 ,"confidence": "HIGH"                    }
             ]
         },{
             "isVirtual": false,
-            "fileName": "spdx-java-model-2_X-1.0.2.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-2_X\/1.0.2\/spdx-java-model-2_X-1.0.2.jar"
-,"md5": "ba82774c5ac61451b7da4bf1d0e8f0a3",
-            "sha1": "cd304d102bdb04bce97ef392dada2a61fde69814",
-            "sha256": "f86ed6caea3e11716edf72e45660b810e94034f2830bd65ee894a5e3597f726a","description": "SPDX model versions 2.0, 2.1, and 2.3","license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
+            "fileName": "spdx-java-model-2_X-1.0.3.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-2_X\/1.0.3\/spdx-java-model-2_X-1.0.3.jar"
+,"md5": "f3e46827a2d7df81286712a0fb403bff",
+            "sha1": "b481453468f814b26cbfc8186dc98a1552949e59",
+            "sha256": "97ff4e4b7a4b04d59a3caacd8f67979493549ac5536ab1d0093c53e7aed1bf57","description": "SPDX model versions 2.0, 2.1, and 2.3","license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -3720,29 +3720,29 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "1.0.2"
+                        "value": "1.0.3"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "1.0.2"
+                        "value": "1.0.3"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.spdx\/spdx-java-model-2_X@1.0.2"
+                        "id": "pkg:maven\/org.spdx\/spdx-java-model-2_X@1.0.3"
 ,"confidence": "HIGH"                    }
             ]
         },{
             "isVirtual": false,
-            "fileName": "spdx-java-model-3_0-1.0.2.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-3_0\/1.0.2\/spdx-java-model-3_0-1.0.2.jar"
-,"md5": "4b7c3fee5a79d19dc51f6002640d6e49",
-            "sha1": "8278d3613c755c3767539ac870ea1a270ba577e5",
-            "sha256": "ea47e1dbb6dc305d91570c30e9a4a3cd45945c5aa7f5553256c65e0a52dd6b3c","description": "Generated java model source code","license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
+            "fileName": "spdx-java-model-3_0-1.0.3.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-3_0\/1.0.3\/spdx-java-model-3_0-1.0.3.jar"
+,"md5": "2dc2062035e4dbeeb0b4768b9d4f7a65",
+            "sha1": "f9012d906673a486eec9a553f060746689ece219",
+            "sha256": "7f2b1286cfbb7427aaaf89fac2037fdc0a0b3ab9f25812fe8872cf3e768a1644","description": "Generated java model source code","license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -3977,20 +3977,20 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "1.0.2"
+                        "value": "1.0.3"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "1.0.2"
+                        "value": "1.0.3"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.spdx\/spdx-java-model-3_0@1.0.2"
+                        "id": "pkg:maven\/org.spdx\/spdx-java-model-3_0@1.0.3"
 ,"confidence": "HIGH"                    }
             ]
         },{

@@ -22,8 +22,8 @@
                         "url": "https://github.com/dependency-check/DependencyCheck/"
         },
 
-        "end_time": "2026-03-10T04:27:45",
-                "start_time": "2026-03-10T04:27:45",
+        "end_time": "2026-03-17T06:06:06",
+                "start_time": "2026-03-17T06:06:06",
                 "status":  "success"  ,
                 "type": "dependency_scanning"
 
@@ -88,14 +88,14 @@
                         "package": {
                             "name": "org.spdx:java-spdx-library"
                         },
-                        "version": "2.0.2"
+                        "version": "2.0.3"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.jsoup:jsoup"
                         },
-                        "version": "1.21.2"
+                        "version": "1.22.1"
 
                                                                                                                     }
 ,                    {
@@ -123,21 +123,21 @@
                         "package": {
                             "name": "org.spdx:spdx-java-core"
                         },
-                        "version": "1.0.2"
+                        "version": "1.0.3"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.spdx:spdx-java-model-2_X"
                         },
-                        "version": "1.0.2"
+                        "version": "1.0.3"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.spdx:spdx-java-model-3_0"
                         },
-                        "version": "1.0.2"
+                        "version": "1.0.3"
 
                                                                                                                     }
 ,                    {
