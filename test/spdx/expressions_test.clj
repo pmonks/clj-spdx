@@ -199,11 +199,21 @@
                                                                {:license-id "MIT-CMU"      :or-later? true}]))
     ; Cursed expressions with +
     (is (= (parse "GPL-2.0-only+")                            {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "LGPL-2.1-only+")                           {:license-id "LGPL-2.1-or-later"}))
+    (is (= (parse "AGPL-3.0-only+")                           {:license-id "AGPL-3.0-or-later"}))
+    (is (= (parse "GFDL-1.2-only+")                           {:license-id "GFDL-1.2-or-later"}))
     (is (= (parse "GPL-2.0-or-later+")                        {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "LGPL-2.1-or-later+")                       {:license-id "LGPL-2.1-or-later"}))
+    (is (= (parse "AGPL-3.0-or-later+")                       {:license-id "AGPL-3.0-or-later"}))
+    (is (= (parse "GFDL-1.2-or-later+")                       {:license-id "GFDL-1.2-or-later"}))
     (is (= (parse "GPL-2.0-only+" {:canonicalise-deprecated-ids? false})      ; This should always be canonicalised, regardless of :canonicalise-deprecated-ids?
                                                               {:license-id "GPL-2.0-or-later"}))
     (is (= (parse "GPL-2.0-or-later+" {:canonicalise-deprecated-ids? false})  ; This should always be canonicalised, regardless of :canonicalise-deprecated-ids?
                                                               {:license-id "GPL-2.0-or-later"}))
+    (is (= (parse "GFDL-1.3-invariants-only+")                {:license-id "GFDL-1.3-invariants-or-later"}))
+    (is (= (parse "GFDL-1.3-invariants-or-later+")            {:license-id "GFDL-1.3-invariants-or-later"}))
+    (is (= (parse "GFDL-1.3-no-invariants-only+")             {:license-id "GFDL-1.3-no-invariants-or-later"}))
+    (is (= (parse "GFDL-1.3-no-invariants-or-later+")         {:license-id "GFDL-1.3-no-invariants-or-later"}))
     ; Cursed eCos-2.0 and wxWindows cases (these two changed type - license ids replaced by exception ids 😬)
     (is (= (parse "eCos-2.0")                                 {:license-id "GPL-2.0-only"     :license-exception-id "eCos-exception-2.0"}))
     (is (= (parse "eCos-2.0+")                                {:license-id "GPL-2.0-or-later" :license-exception-id "eCos-exception-2.0"}))
