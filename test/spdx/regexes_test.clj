@@ -31,6 +31,7 @@
       (is (nil? (re-matches apache-20-re "")))
       (is (nil? (re-matches apache-20-re "foobar")))
       (is (nil? (re-matches apache-20-re " Apache-2.0 ")))
+      (is (nil? (re-matches apache-20-re "Apache-2.0+")))   ; Regexes only match identifiers, not expressions ("Apache-2.0+" is an expression)
       (is (nil? (re-matches apache-20-re "Apache-200")))
       (is (nil? (re-matches apache-20-re "GPL-2.0")))
       (is (nil? (re-matches apache-20-re "Apache-1.1")))
@@ -62,7 +63,7 @@
       (is (= 1 (count (re-seq apache-20-re "Apache-2.0"))))
       (is (= 2 (count (re-seq apache-20-re "Apache-2.0 Apache-2.0"))))
       (is (= 2 (count (re-seq apache-20-re "foo;Apache-2.0 bar Apache-2.0 blah"))))))
-  ; Because the ids that end in a + are a headache
+  ; Because the (deprecated) ids that end in a + are a headache
   (let [gpl-20-plus-re (build-re ["GPL-2.0+"])]
     (testing "GPL-2.0+ matches"
       (is (not (nil? (re-matches gpl-20-plus-re "GPL-2.0+")))))
