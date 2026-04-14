@@ -50,6 +50,11 @@
   [s]
   (boolean (when s (re-matches @sir/license-ref-re-d s))))
 
+(defn special-form?
+  "Is `s` (a `String`) an SPDX special form (`NONE`, `NOASSERTION`)?"
+  [s]
+  (boolean (when s (re-matches @sir/special-form-re-d s))))
+
 (defn license-ref
   "Constructs a LicenseRef (as a `String`) from individual 'variable
   section' `String`s. Returns `nil` if `license-ref-var-section` is blank, or
@@ -90,9 +95,9 @@
 (def ^:private id-canonicalisation-d (delay (into {} (map #(vec [(s/lower-case %) %]) (ids)))))
 
 (defn canonicalise
-  "Canonicalises `s` (an SPDX license identifier or LicenseRef), by returning it
-  in its canonical case.  Returns `nil` if `s` is `nil` or not a listed SPDX
-  license identifier or LicenseRef.
+  "Canonicalises `s` (an SPDX license identifier, LicenseRef, or special form),
+  by returning it in its canonical case.  Returns `nil` if `s` is `nil` or not a
+  listed SPDX license identifier, LicenseRef, or special form.
 
   Notes:
 
@@ -104,20 +109,22 @@
   (when s
     (if-let [id (get @id-canonicalisation-d (s/lower-case s))]
       id
-      (when-let [license-ref-map (string->license-ref-map s)]
-        (license-ref-map->string license-ref-map)))))
+      (if-let [license-ref-map (string->license-ref-map s)]
+        (license-ref-map->string license-ref-map)
+        (when (special-form? s)
+          (s/upper-case s))))))
 
 (defn equivalent?
-  "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers or
-  LicenseRefs (i.e. taking the SPDX case sensitivity rules in [SPDX
-  Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)
+  "Are `s1` and `s2` (`String`s) equivalent SPDX license identifiers,
+  LicenseRefs or special forms (i.e. taking the SPDX case sensitivity rules in
+  [SPDX Annex B](https://spdx.github.io/spdx-spec/v3.0.2/annexes/spdx-license-expressions/#case-sensitivity)
   into account)?
 
   Notes:
 
   * Returns `true` if `s1` and `s2` are both `nil`.
-  * Returns `false` if `s1` or `s2` are not listed SPDX license identifiers or
-    LicenseRefs, even if they are otherwise equal."
+  * Returns `false` if `s1` or `s2` are not listed SPDX license identifiers,
+    LicenseRefs, or special forms even if they are otherwise equal."
   [^String s1 ^String s2]
   (boolean
     (or (and (nil? s1) (nil? s2))

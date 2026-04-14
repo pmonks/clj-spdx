@@ -32,7 +32,7 @@
     (is (nil? (id-type nil)))
     (is (nil? (id-type "")))
     (is (nil? (id-type "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "Valid identifiers"
+  (testing "Valid identifiers, refs, or special forms"
     (is (= :license-id   (id-type "Apache-2.0")))
     (is (= :license-id   (id-type "apache-2.0")))
     (is (= :license-id   (id-type "APACHE-2.0")))
@@ -41,8 +41,16 @@
     (is (= :exception-id (id-type "CLASSPATH-EXCEPTION-2.0")))
     (is (= :license-ref  (id-type "LicenseRef-foo")))
     (is (= :license-ref  (id-type "DocumentRef-foo:LicenseRef-foo")))
+    (is (= :license-ref  (id-type "licenseref-foo")))
+    (is (= :license-ref  (id-type "documentref-foo:licenseref-foo")))
     (is (= :addition-ref (id-type "AdditionRef-foo")))
-    (is (= :addition-ref (id-type "DocumentRef-foo:AdditionRef-foo")))))
+    (is (= :addition-ref (id-type "DocumentRef-foo:AdditionRef-foo")))
+    (is (= :addition-ref (id-type "additionref-foo")))
+    (is (= :addition-ref (id-type "documentref-foo:additionref-foo")))
+    (is (= :special-form (id-type "NONE")))
+    (is (= :special-form (id-type "NOASSERTION")))
+    (is (= :special-form (id-type "none")))
+    (is (= :special-form (id-type "noassertion")))))
 
 (deftest listed?-tests
   (testing "Invalid ids are not listed"
@@ -52,6 +60,9 @@
   (testing "Refs are not listed"
     (is (false? (listed? "LicenseRef-foo")))
     (is (false? (listed? "AdditionRef-foo"))))
+  (testing "Special forms are not listed"
+    (is (false? (listed? "NONE")))
+    (is (false? (listed? "NOASSERTION"))))
   (testing "Common ids are listed"
     (is (true? (listed? "Apache-2.0")))
     (is (true? (listed? "GPL-3.0")))
@@ -66,7 +77,7 @@
     (is (nil? (canonicalise nil)))
     (is (nil? (canonicalise "")))
     (is (nil? (canonicalise "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "id/ref in canonical form"
+  (testing "id/ref/special form in canonical form"
     (is (= "Apache-2.0"                      (canonicalise "Apache-2.0")))
     (is (= "GPL-3.0"                         (canonicalise "GPL-3.0")))
     (is (= "Classpath-exception-2.0"         (canonicalise "Classpath-exception-2.0")))
@@ -74,8 +85,10 @@
     (is (= "LicenseRef-foo"                  (canonicalise "LicenseRef-foo")))
     (is (= "DocumentRef-foo:LicenseRef-foo"  (canonicalise "DocumentRef-foo:LicenseRef-foo")))
     (is (= "AdditionRef-foo"                 (canonicalise "AdditionRef-foo")))
-    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "DocumentRef-foo:AdditionRef-foo"))))
-  (testing "id/ref not in canonical form"
+    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "DocumentRef-foo:AdditionRef-foo")))
+    (is (= "NONE"                            (canonicalise "NONE")))
+    (is (= "NOASSERTION"                     (canonicalise "NOASSERTION"))))
+  (testing "id/ref/special form not in canonical form"
     (is (= "Apache-2.0"                      (canonicalise "APACHE-2.0")))
     (is (= "GPL-3.0"                         (canonicalise "gpl-3.0")))
     (is (= "Classpath-exception-2.0"         (canonicalise "classpath-EXCEPTION-2.0")))
@@ -83,14 +96,16 @@
     (is (= "LicenseRef-foo"                  (canonicalise "licenseref-foo")))
     (is (= "DocumentRef-FOO:LicenseRef-FOO"  (canonicalise "DOCUMENTREF-FOO:LICENSEREF-FOO")))
     (is (= "AdditionRef-FOO"                 (canonicalise "ADDITIONREF-FOO")))
-    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "documentref-foo:additionref-foo")))))
+    (is (= "DocumentRef-foo:AdditionRef-foo" (canonicalise "documentref-foo:additionref-foo")))
+    (is (= "NONE"                            (canonicalise "none")))
+    (is (= "NOASSERTION"                     (canonicalise "noassertion")))))
 
 (deftest equivalent?-tests
   (testing "nil, empty etc."
     (is (true?  (equivalent? nil nil)))
     (is (false? (equivalent? "" nil)))
     (is (false? (equivalent? nil ""))))
-  (testing "Not an id or Ref"
+  (testing "Not an id, Ref, or special form"
     (is (false? (equivalent? "foo"                                                    "foo")))
     (is (false? (equivalent? "Apache-0.9"                                             "Apache-0.9")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
@@ -98,7 +113,9 @@
     (is (false? (equivalent? "Classpath-exception-2.0"                                "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
     (is (false? (equivalent? "Classpath-exception-0.9"                                "Classpath-exception-0.9")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "LicenseRef-foo")))
-    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo"))))
+    (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "AdditionRef-foo")))
+    (is (false? (equivalent? "NONE"                                                   "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (equivalent? "NOASSERTION"                                            "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
   (testing "valid values that are not equivalent"
     (is (false? (equivalent? "Apache-2.0"                      "Classpath-exception-2.0")))
     (is (false? (equivalent? "Apache-2.0"                      "LicenseRef-foo")))
@@ -107,20 +124,32 @@
     (is (false? (equivalent? "AdditionRef-foo"                 "mit")))
     (is (false? (equivalent? "LicenseRef-FOO"                  "AdditionRef-foo")))
     (is (false? (equivalent? "DocumentRef-foo:LicenseRef-foo"  "LicenseRef-foo")))
-    (is (false? (equivalent? "DocumentRef-foo:AdditionRef-foo" "AdditionRef-foo"))))
+    (is (false? (equivalent? "DocumentRef-foo:AdditionRef-foo" "AdditionRef-foo")))
+    (is (false? (equivalent? "Apache-2.0"                      "NONE")))
+    (is (false? (equivalent? "Apache-2.0"                      "NOASSERTION")))
+    (is (false? (equivalent? "Classpath-exception-2.0"         "NONE")))
+    (is (false? (equivalent? "Classpath-exception-2.0"         "NOASSERTION")))
+    (is (false? (equivalent? "LicenseRef-foo"                  "none")))
+    (is (false? (equivalent? "DocumentRef-foo:LicenseRef-bar"  "noassertion"))))
   (testing "valid values that are equivalent"
     (is (true? (equivalent? "APACHE-2.0"                      "apache-2.0")))
     (is (true? (equivalent? "CLASSPATH-EXCEPTION-2.0"         "classpath-exception-2.0")))
-    (is (true? (equivalent? "licenseref-FOO"                  "LICENSEREF-foo")))                     ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true? (equivalent? "DocumentRef-FOO:LicenseRef-BAR"  "documentRef-foo:licenseRef-bar")))     ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true? (equivalent? "additionref-FOO"                 "ADDITIONREF-foo")))                    ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
-    (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "documentRef-foo:additionRef-bar")))))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "licenseref-FOO"                  "LICENSEREF-foo")))                   ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "DocumentRef-FOO:LicenseRef-BAR"  "documentRef-foo:licenseRef-bar")))   ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "additionref-FOO"                 "ADDITIONREF-foo")))                  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "DocumentRef-FOO:AdditionRef-BAR" "documentRef-foo:additionRef-bar")))  ; AdditionRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true? (equivalent? "NONE"                            "none")))
+    (is (true? (equivalent? "nOaSsErTiOn"                     "NoAsSeRtIoN")))))
 
 (deftest info-tests
-  (testing "Invalid ids return nil"
+  (testing "Invalid ids, LicenseRefs and special forms return nil"
     (is (nil? (info nil)))
     (is (nil? (info "")))
-    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (nil? (info "LicenseRef-foo")))
+    (is (nil? (info "AdditionRef-foo")))
+    (is (nil? (info "NONE")))
+    (is (nil? (info "NOASSERTION"))))
   (testing "Valid ids are not nil"
     (is (not (nil? (info "Apache-2.0"))))
     (is (not (nil? (info "eCos-exception-2.0")))))
@@ -175,10 +204,13 @@
       (is (nil?        (:deprecated? info)))))))
 
 (deftest deprecated?-tests
-  (testing "Invalid ids return false"
+  (testing "Invalid ids, LicenseRefs and special forms return false"
     (is (false? (deprecated? nil)))
     (is (false? (deprecated? "")))
-    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (deprecated? "LicenseRef-foo")))
+    (is (false? (deprecated? "NONE")))
+    (is (false? (deprecated? "NOASSERTION"))))
   (testing "Deprecated ids"
     (is (true? (deprecated? "GPL-2.0")))
     (is (true? (deprecated? "Nunit")))
