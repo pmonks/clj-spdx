@@ -42,7 +42,7 @@ If you are performing matching and find the download cost (whether on demand or 
 
 ### A note about Spdx-Java-Library v2
 
-From v1.0.247 onward, `clj-spdx` uses `Spdx-Java-Library` v2.x, which adds support for [SPDX specification v3.x](https://spdx.github.io/spdx-spec/v3.0.2/).  This new version of the Java library is _not_ backwards compatible with the earlier version v1.x versions, and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it via interop.
+From v1.0.247 onward, `clj-spdx` uses `Spdx-Java-Library` v2.x, which adds support for [SPDX specification v3.x](https://spdx.github.io/spdx-spec/v3.0.2/).  This new version of the Java library is _not_ backwards compatible with the earlier v1.x versions, and that project's [upgrade document](https://github.com/spdx/Spdx-Java-Library/blob/master/README-V3-UPGRADE.md) is well worth reviewing to understand some of the changes in the Java layer, if you happen to be using it directly via interop.
 
 While `clj-spdx` managed to hide most of the breaking changes, the following data structure changes were unavoidable:
 
@@ -113,6 +113,9 @@ deps-try com.github.pmonks/clj-spdx
 
 (si/id-type "additionref-foo")  ; Note: canonicalisation not required
 ;=> :addition-ref
+
+(si/id-type "noassertion")  ; Note: canonicalisation not required
+;=> :special-form
 
 (si/info "Apache-2.0")
 ;=> {:id "Apache-2.0" :name "Apache License 2.0" :see-also
