@@ -64,7 +64,8 @@
 
 (defn addition-ref-map->string
   "Turns map `m` representing an AdditionRef into a `String`, returning `nil` if
-  `m` is `nil` or the resulting value is not a valid AdditionRef.
+  `m` is `nil` or the resulting value is not a valid AdditionRef.  Keys in the
+  map are as for [[string->addition-ref-map]].
 
   Note:
 
@@ -77,6 +78,13 @@
   "Turns `s` (a `String` containing an AdditionRef) into a `map` representing
   that same AdditionRef.  Returns `nil` if `s` is `nil` or not a valid
   AdditionRef.
+
+  Keys in the map:
+
+  * `:addition-ref` (`String`, mandatory) - the value of the variable tag in the
+    AdditionRef component
+  * `:addition-document-ref` (`String`, optional) - the value of the variable
+    tag in the DocumentRef component
 
   Note:
 

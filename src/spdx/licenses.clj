@@ -69,7 +69,8 @@
 
 (defn license-ref-map->string
   "Turns map `m` representing a LicenseRef into a `String`, returning `nil` if
-  `m` is `nil` or the resulting value is not a valid LicenseRef.
+  `m` is `nil` or the resulting value is not a valid LicenseRef.  Keys in the
+  map are as for [[string->license-ref-map]].
 
   Notes:
 
@@ -82,10 +83,18 @@
   "Turns `s` (a `String` containing a LicenseRef) into a `map` representing that
   same LicenseRef.  Returns `nil` if `s` is `nil` or not a valid LicenseRef.
 
+  Keys in the map:
+
+  * `:license-ref` (`String`, mandatory) - the value of the variable tag in the
+    LicenseRef component
+  * `:document-ref` (`String`, optional) - the value of the variable tag in the
+    DocumentRef component
+
   Notes:
 
   * This fn is the inverse of [[license-ref-map->string]].
-  * This is equivalent to calling [[spdx.expressions/parse]] with `s`."
+  * This is equivalent to calling [[spdx.expressions/parse]] with `s` (albeit
+    faster)."
   [^String s]
   (when s
     (when-let [m (ncg/re-matches @sir/license-ref-re-d s)]
