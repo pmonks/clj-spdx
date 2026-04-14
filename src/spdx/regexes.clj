@@ -26,8 +26,8 @@
 
   The regex includes these named capturing groups:
 
-  * `Identifier` (always present) - captures the entire identifier, LicenseRef
-    or AdditionRef
+  * `Identifier` (always present) - captures the entire identifier, LicenseRef,
+    AdditionRef, or special form (`NONE`, `NOASSERTION`)
   * `DocumentRef` (optional) - captures the `DocumentRef` variable text of a
     LicenseRef, if that's what's matched and it contains one
   * LicenseRef (optional) - captures the LicenseRef variable text of a
@@ -54,22 +54,29 @@
   * `include-license-refs?` (`boolean`, default `false`) - controls whether
     LicenseRef support is also included in the regex
   * `include-addition-refs?` (`boolean`, default `false`) - controls whether
-    AdditionRef support is also included in the regex"
+    AdditionRef support is also included in the regex
+  * `include-special-forms?` (`boolean`, default `false`) - controls whether
+    special form (`NONE`, `NOASSERTION`) support is also included in the regex"
   ([ids] (build-re ids nil))
   ([ids {:keys [include-license-refs?
-                include-addition-refs?]
+                include-addition-refs?
+                include-special-forms?]
          :or   {include-license-refs?  false
-                include-addition-refs? false}}]
+                include-addition-refs? false
+                include-special-forms? false}}]
    (when (seq ids)
      (let [id-fragments (s/join "|" (map re/esc (sort-by #(* -1 (count %)) ids)))]  ; Sort ids longest to shortest
        (re/join (re/-lb #"\w")
                 (re/ncg "Identifier"
                         (when include-license-refs?  (str @sir/license-ref-fragment-re-d "|"))
                         (when include-addition-refs? (str @sir/addition-ref-fragment-re-d "|"))
+                        (when include-special-forms? (str @sir/special-form-fragment-re-d "|"))
                         (re/fgrp "i" id-fragments))
                 (re/-la #"\w"))))))
 
-(def ^:private ids-re-d (delay (build-re (concat (sl/ids) (se/ids)) {:case-sensitive? false :include-license-refs? true :include-addition-refs? true})))
+(def ^:private ids-re-d (delay (build-re (concat (sl/ids) (se/ids)) {:include-license-refs?  true
+                                                                     :include-addition-refs? true
+                                                                     :include-special-forms? true})))
 
 (defn ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
@@ -85,11 +92,13 @@
   []
   @ids-re-d)
 
-(def ^:private license-ids-re-d (delay (build-re (sl/ids) {:case-sensitive? false :include-license-refs? true :include-addition-refs? false})))
+(def ^:private license-ids-re-d (delay (build-re (sl/ids) {:include-license-refs?  true
+                                                           :include-addition-refs? false
+                                                           :include-special-forms? true})))
 
 (defn license-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license
-  identifier, or LicenseRef in a source text.
+  identifier, LicenseRef, or special form in a source text.
 
   Specifics of the regex are as for [[build-re]].
 
@@ -100,7 +109,9 @@
   []
   @license-ids-re-d)
 
-(def ^:private exception-ids-re-d (delay (build-re (se/ids) {:case-sensitive? false :include-license-refs? false :include-addition-refs? true})))
+(def ^:private exception-ids-re-d (delay (build-re (se/ids) {:include-license-refs? false
+                                                             :include-addition-refs? true
+                                                             :include-special-forms? false})))
 
 (defn exception-ids-re
   "Returns a regex (`Pattern`) that can find or match any SPDX license exception
@@ -139,16 +150,30 @@
   []
   @sir/addition-ref-re-d)
 
+(defn special-form-re
+ "Returns a regex (`Pattern`) that can find or match any SPDX special form
+ (`NONE`, `NOASSERTION`).
+
+  Specifics of the regex are as for [[build-re]].
+
+  Notes:
+
+  * Caches the generated `Pattern` object and returns it on subsequent calls, so
+    is efficient when called many times"
+  []
+  @sir/special-form-re-d)
+
 (defn id-seq-matches
-  "Returns a lazy sequence of maps representing each of the identifier matches
-  found in `text`, in the order in which they were found, or `nil` if no matches
-  were found. `re` must be a regex returned by one of the fns in this namespace,
-  and defaults to [[ids-re]] if not provided.
+  "Returns a lazy sequence of maps representing each of the identifier, ref, and
+  special form matches found in `text`, in the order in which they were found,
+  or `nil` if no matches were found. `re` must be a regex returned by one of the
+  fns in this namespace, and defaults to [[ids-re]] if not provided.
 
   Each map in the result may contain these keys:
 
   * `:identifier` (always present) - the canonical represention of the listed
-    identifier, LicenseRef or AdditionRef that matched
+    identifier, LicenseRef, AdditionRef, or special form (`NONE`, `NOASSERTION`)
+    that matched
   * `:type` (always present) - identifier type, as per [[spdx.identifiers/id-type]]
   * `:license-ref` (optional) - the LicenseRef's tag value, if it's a LicenseRef
   * `:document-ref` (optional) - the LicenseRef's DocumentRef tag value, if it's
@@ -172,10 +197,11 @@
                  matches))))))
 
 (defn id-seq
-  "Returns a lazy sequence of the canonicalised forms of all identifiers found
-  in `text`, in the order in which they were found, or `nil` if no matches were
-  found. `re` must be a regex returned by one of the fns in this namespace, and
-  defaults to [[ids-re]] if not provided.
+  "Returns a lazy sequence of the canonicalised forms (`String`s) of all
+  identifiers, refs, and special forms found in `text`, in the order in which
+  they were found, or `nil` if no matches were found. `re` must be a regex
+  returned by one of the fns in this namespace, and defaults to [[ids-re]] if
+  not provided.
 
   If you need more information about where in the text the identifiers were
   found, or the original text that matched an identifier, use [[id-seq-matches]]

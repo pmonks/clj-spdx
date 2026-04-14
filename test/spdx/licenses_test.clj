@@ -11,8 +11,8 @@
 (ns spdx.licenses-test
   (:require [clojure.test     :refer [deftest testing is]]
             [spdx.test-utils  :refer [equivalent-colls?]]
-            [spdx.licenses    :refer [version ids listed? canonicalise license-ref? license-ref
-                                      license-ref-map->string string->license-ref-map
+            [spdx.licenses    :refer [version ids listed? canonicalise license-ref? special-form?
+                                      license-ref license-ref-map->string string->license-ref-map
                                       equivalent? info deprecated? non-deprecated-ids osi-approved?
                                       osi-approved-ids fsf-libre? fsf-libre-ids]]
             [spdx.expressions :as exp]))
@@ -35,8 +35,10 @@
     (is (false? (listed? nil)))
     (is (false? (listed? "")))
     (is (false? (listed? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "LicenseRefs are not listed"
-    (is (false? (listed? "LicenseRef-foo"))))
+  (testing "LicenseRefs & special forms are not listed"
+    (is (false? (listed? "LicenseRef-foo")))
+    (is (false? (listed? "NONE")))
+    (is (false? (listed? "NOASSERTION"))))
   (testing "Common ids are listed"
     (is (true? (listed? "Apache-2.0")))
     (is (true? (listed? "GPL-3.0")))
@@ -44,29 +46,13 @@
   (testing "ids not in canonical form are listed"
     (is (true? (listed? "APACHE-2.0")))))
 
-(deftest canonicalise-tests
-  (testing "Invalid ids/LicenseRefs return nil"
-    (is (nil? (canonicalise nil)))
-    (is (nil? (canonicalise "")))
-    (is (nil? (canonicalise "LicenseRef:foo")))
-    (is (nil? (canonicalise "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
-  (testing "id/LicenseRef in canonical form"
-    (is (= "Apache-2.0"                     (canonicalise "Apache-2.0")))
-    (is (= "GPL-3.0"                        (canonicalise "GPL-3.0")))
-    (is (= "CC-BY-4.0"                      (canonicalise "CC-BY-4.0")))
-    (is (= "LicenseRef-foo"                 (canonicalise "LicenseRef-foo")))
-    (is (= "DocumentRef-foo:LicenseRef-foo" (canonicalise "DocumentRef-foo:LicenseRef-foo"))))
-  (testing "id/LicenseRef not in canonical form"
-    (is (= "Apache-2.0"                     (canonicalise "APACHE-2.0")))
-    (is (= "GPL-3.0"                        (canonicalise "gpl-3.0")))
-    (is (= "CC-BY-4.0"                      (canonicalise "cc-by-4.0")))
-    (is (= "LicenseRef-foo"                 (canonicalise "licenseref-foo")))
-    (is (= "DocumentRef-foo:LicenseRef-foo" (canonicalise "DOCUMENTREF-foo:LICENSEREF-foo")))))
-
 (deftest license-ref?-tests
   (testing "Invalid LicenseRefs return false"
     (is (false? (license-ref? nil)))
     (is (false? (license-ref? "")))
+    (is (false? (license-ref? "Apache-2.0")))
+    (is (false? (license-ref? "NONE")))
+    (is (false? (license-ref? "NOASSERTION")))
     (is (false? (license-ref? "INVALID-LICENSE-REF")))
     (is (false? (license-ref? " LicenseRef-foo")))                  ; Leading whitespace
     (is (false? (license-ref? "LicenseRef-foo ")))                  ; Trailing whitespace
@@ -105,6 +91,31 @@
     (is (true? (license-ref? "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))   ; Cursed but valid
     (is (true? (license-ref? "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG")))))
 
+(deftest special-form?-tests
+  (testing "Non special forms return false"
+    (is (false? (special-form? nil)))
+    (is (false? (special-form? "")))
+    (is (false? (special-form? "Apache-2.0")))
+    (is (false? (special-form? "LicenseRef-foo")))
+    (is (false? (special-form? "INVALID-SPECIAL_FORM")))
+    (is (false? (special-form? "xNONE")))
+    (is (false? (special-form? "NONEx")))
+    (is (false? (special-form? ".NONE")))
+    (is (false? (special-form? "NONE.")))
+    (is (false? (special-form? ".NOASSERTION")))
+    (is (false? (special-form? "NOASSERTION.")))
+    (is (false? (special-form? " NONE")))          ; Leading whitespace
+    (is (false? (special-form? "NONE ")))          ; Trailing whitespace
+    (is (false? (special-form? " NOASSERTION")))   ; Leading whitespace
+    (is (false? (special-form? "NOASSERTION "))))  ; Trailing whitespace
+  (testing "Valid special forms"
+    (is (true? (special-form? "NONE")))
+    (is (true? (special-form? "NOASSERTION")))
+    (is (true? (special-form? "none")))
+    (is (true? (special-form? "noassertion")))
+    (is (true? (special-form? "nOnE")))
+    (is (true? (special-form? "nOaSsErTiOn")))))
+
 (deftest license-ref-tests
   (testing "Invalid LicenseRefs return nil"
     (is (nil? (license-ref nil)))
@@ -131,6 +142,9 @@
     (is (license-ref? (license-ref "-")))                  ; Cursed but valid
     (is (license-ref? (license-ref ".")))                  ; Cursed but valid
     (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-.")))  ; Cursed but valid
+    (is (license-ref? (license-ref "Apache-2.0")))         ; Cursed but valid
+    (is (license-ref? (license-ref "NONE")))               ; Cursed but valid
+    (is (license-ref? (license-ref "NOASSERTION")))        ; Cursed but valid
     (is (license-ref? (license-ref "foo" "bar")))
     (is (license-ref? (license-ref "42" "42")))
     (is (license-ref? (license-ref "foo42" "bar42")))
@@ -142,7 +156,10 @@
     (is (license-ref? (license-ref "." "foo")))                   ; Cursed but valid
     (is (license-ref? (license-ref ".-.-.-.-.-.-.-.-." "foo")))   ; Cursed but valid
     (is (license-ref? (license-ref "---" "---")))                 ; Cursed but valid
-    (is (license-ref? (license-ref "..." "...")))))               ; Cursed but valid
+    (is (license-ref? (license-ref "..." "...")))                 ; Cursed but valid
+    (is (license-ref? (license-ref "Apache-2.0" "foo")))          ; Cursed but valid
+    (is (license-ref? (license-ref "NONE" "foo")))                ; Cursed but valid
+    (is (license-ref? (license-ref "NOASSERTION" "foo")))))       ; Cursed but valid
 
 (deftest license-ref-map->string-tests
   (testing "Invalid maps return nil"
@@ -181,6 +198,9 @@
   (testing "Invalid strings return nil"
     (is (nil? (string->license-ref-map nil)))
     (is (nil? (string->license-ref-map "")))
+    (is (nil? (string->license-ref-map "Apache-2.0")))
+    (is (nil? (string->license-ref-map "NONE")))
+    (is (nil? (string->license-ref-map "NOASSERTION")))
     (is (nil? (string->license-ref-map "INVALID-LICENSE-REF")))
     (is (nil? (string->license-ref-map " LicenseRef-foo")))
     (is (nil? (string->license-ref-map "LicenseRef-foo ")))
@@ -205,6 +225,9 @@
     (is (map? (string->license-ref-map "LicenseRef--")))                ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef-.")))                ; Cursed but valid
     (is (map? (string->license-ref-map "LicenseRef-.-.-.-.-.-.-.-.")))  ; Cursed but valid
+    (is (map? (string->license-ref-map "LicenseRef-Apache-2.0")))       ; Cursed but valid
+    (is (map? (string->license-ref-map "LicenseRef-NONE")))             ; Cursed but valid
+    (is (map? (string->license-ref-map "LicenseRef-NOASSERTION")))      ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-foo:LicenseRef-bar")))
     (is (map? (string->license-ref-map "DocumentRef-FOO:LicenseRef-BAR")))
     (is (map? (string->license-ref-map "documentref-foo:LicenseRef-bar")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
@@ -220,7 +243,35 @@
     (is (map? (string->license-ref-map "DocumentRef----:LicenseRef----")))                ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-.-.:LicenseRef-.-.")))                ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar")))  ; Cursed but valid
+    (is (map? (string->license-ref-map "DocumentRef-Apache-2.0:LicenseRef-bar")))         ; Cursed but valid
+    (is (map? (string->license-ref-map "DocumentRef-NONE:LicenseRef-bar")))               ; Cursed but valid
+    (is (map? (string->license-ref-map "DocumentRef-NOASSERTION:LicenseRef-bar")))        ; Cursed but valid
     (is (map? (string->license-ref-map "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG")))))
+
+(deftest canonicalise-tests
+  (testing "Invalid ids/LicenseRefs/special forms return nil"
+    (is (nil? (canonicalise nil)))
+    (is (nil? (canonicalise "")))
+    (is (nil? (canonicalise "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (nil? (canonicalise "LicenseRef:foo")))
+    (is (nil? (canonicalise "-None")))
+    (is (nil? (canonicalise "noassertion+"))))
+  (testing "id/LicenseRef/special form in canonical form"
+    (is (= "Apache-2.0"                     (canonicalise "Apache-2.0")))
+    (is (= "GPL-3.0"                        (canonicalise "GPL-3.0")))
+    (is (= "CC-BY-4.0"                      (canonicalise "CC-BY-4.0")))
+    (is (= "LicenseRef-foo"                 (canonicalise "LicenseRef-foo")))
+    (is (= "DocumentRef-foo:LicenseRef-foo" (canonicalise "DocumentRef-foo:LicenseRef-foo")))
+    (is (= "NONE"                           (canonicalise "NONE")))
+    (is (= "NOASSERTION"                    (canonicalise "NOASSERTION"))))
+  (testing "id/LicenseRef/special form not in canonical form"
+    (is (= "Apache-2.0"                     (canonicalise "APACHE-2.0")))
+    (is (= "GPL-3.0"                        (canonicalise "gpl-3.0")))
+    (is (= "CC-BY-4.0"                      (canonicalise "cc-by-4.0")))
+    (is (= "LicenseRef-foo"                 (canonicalise "licenseref-foo")))
+    (is (= "DocumentRef-foo:LicenseRef-foo" (canonicalise "DOCUMENTREF-foo:LICENSEREF-foo")))
+    (is (= "NONE"                           (canonicalise "nOnE")))
+    (is (= "NOASSERTION"                    (canonicalise "nOaSsErTiOn")))))
 
 (def roundtrip-license-refs [
   ; Invalid LicenseRef strings that round trip (no other invalid values round trip)
@@ -237,6 +288,9 @@
   "LicenseRef--"
   "LicenseRef-."
   "LicenseRef-.-.-.-.-.-.-.-."
+  "LicenseRef-Apache-2.0"
+  "LicenseRef-NONE"
+  "LicenseRef-NOASSERTION"
   "DocumentRef-foo:LicenseRef-bar"
   "DocumentRef-FOO:LicenseRef-BAR"
   "DocumentRef-42:LicenseRef-42"
@@ -250,6 +304,9 @@
   "DocumentRef----:LicenseRef----"
   "DocumentRef-.-.:LicenseRef-.-."
   "DocumentRef-.-.-.-.-.-.-.-.-.:LicenseRef-bar"
+  "DocumentRef-Apache-2.0:LicenseRef-bar"
+  "DocumentRef-NONE:LicenseRef-bar"
+  "DocumentRef-NOASSERTION:LicenseRef-bar"
   "DocumentRef-0123456789-.abcdefgABCDEFG:LicenseRef-0123456789-.abcdefgABCDEFG"])
 
 (deftest parsing-equivalence-tests
@@ -273,6 +330,9 @@
                             {:license-ref "-"}
                             {:license-ref "."}
                             {:license-ref ".-.-.-.-.-.-.-.-."}
+                            {:license-ref "Apache-2.0"}
+                            {:license-ref "NONE"}
+                            {:license-ref "NOASSERTION"}
                             {:document-ref "foo"               :license-ref "bar"}
                             {:document-ref "42"                :license-ref "42"}
                             {:document-ref "foo42"             :license-ref "bar42"}
@@ -284,7 +344,10 @@
                             {:document-ref "."                 :license-ref "foo"}
                             {:document-ref ".-.-.-.-.-.-.-.-." :license-ref "foo"}
                             {:document-ref "---"               :license-ref "---"}
-                            {:document-ref "..."               :license-ref "..."}]]
+                            {:document-ref "..."               :license-ref "..."}
+                            {:document-ref "Apache-2.0"        :license-ref "bar"}
+                            {:document-ref "NONE"              :license-ref "bar"}
+                            {:document-ref "NOASSERTION"       :license-ref "bar"}]]
       (run! #(is (= % (string->license-ref-map (license-ref-map->string %))) %) license-ref-maps))))
 
 (deftest equivalent?-tests
@@ -296,7 +359,7 @@
     (is (false? (equivalent? "Apache-2.0" nil)))
     (is (false? (equivalent? nil "LicenseRef-foo")))
     (is (false? (equivalent? "LicenseRef-foo" nil))))
-  (testing "Not an id or LicenseRef"
+  (testing "Not an id, LicenseRef, or special form"
     (is (false? (equivalent? ""                                                       "Apache-2.0")))
     (is (false? (equivalent? "Apache-2.0"                                             "")))
     (is (false? (equivalent? "foo"                                                    "foo")))
@@ -304,17 +367,23 @@
     (is (false? (equivalent? "Apache-2.0"                                             "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
     (is (false? (equivalent? "Apache-0.9"                                             "Apache-0.9")))
     (is (false? (equivalent? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL" "LicenseRef-foo")))
-    (is (false? (equivalent? "LicenseRef:foo"                                         "LicenseRef:foo"))))
+    (is (false? (equivalent? "LicenseRef:foo"                                         "LicenseRef:foo")))
+    (is (false? (equivalent? "foo"                                                    "NONE")))
+    (is (false? (equivalent? "NOASSERTION"                                            "foo"))))
   (testing "valid values that are not equivalent"
     (is (false? (equivalent? "Apache-2.0"                     "GPL-2.0")))
     (is (false? (equivalent? "cc-by-4.0"                      "cc-by-sa-4.0")))
     (is (false? (equivalent? "Apache-2.0"                     "LicenseRef-foo")))
+    (is (false? (equivalent? "Apache-2.0"                     "NONE")))
+    (is (false? (equivalent? "Apache-2.0"                     "noassertion")))
     (is (false? (equivalent? "LicenseRef-FOO"                 "gpl-2.0")))
     (is (false? (equivalent? "LicenseRef-foo"                 "LicenseRef-bar")))
     (is (false? (equivalent? "LicenseRef-foo"                 "DocumentRef-foo:LicenseRef-bar")))
     (is (false? (equivalent? "DocumentRef-bar:LicenseRef-foo" "LicenseRef-foo")))
     (is (false? (equivalent? "DocumentRef-foo:LicenseRef-foo" "DocumentRef-foo:LicenseRef-bar")))
-    (is (false? (equivalent? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-bar:LicenseRef-bar"))))
+    (is (false? (equivalent? "DocumentRef-foo:LicenseRef-bar" "DocumentRef-bar:LicenseRef-bar")))
+    (is (false? (equivalent? "none"                           "noassertion")))
+    (is (false? (equivalent? "none"                           "LicenseRef-foo"))))
   (testing "valid values that are equivalent"
     (is (true?  (equivalent? "Apache-2.0"                                    "Apache-2.0")))
     (is (true?  (equivalent? "APACHE-2.0"                                    "apache-2.0")))
@@ -330,13 +399,18 @@
     (is (true?  (equivalent? "DocumentRef-FOO:LicenseRef-bar"                "DocumentRef-foo:LicenseRef-BAR")))
     (is (true?  (equivalent? "DocumentRef-DocumentRef:LicenseRef-LicenseRef" "DocumentRef-documentref:LicenseRef-licenseref")))
     (is (true?  (equivalent? "DocumentRef-LicenseRef:LicenseRef-DocumentRef" "DocumentRef-licenseref:LicenseRef-documentref")))
-    (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:LICENSEREF-BAR-V3.7" "documentref-foo-v2.1:licenseref-bar-v3.7")))))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "DOCUMENTREF-FOO-V2.1:LICENSEREF-BAR-V3.7"      "documentref-foo-v2.1:licenseref-bar-v3.7")))  ; LicenseRefs are case INsensitive, as of SPDX specification v3.0.2
+    (is (true?  (equivalent? "NONE"                                          "none")))
+    (is (true?  (equivalent? "noassertion"                                   "NOASSERTION")))))
 
 (deftest info-tests
-  (testing "Invalid ids return nil"
+  (testing "Invalid ids, LicenseRefs and special forms return nil"
     (is (nil? (info nil)))
     (is (nil? (info "")))
-    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (nil? (info "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (nil? (info "LicenseRef-foo")))
+    (is (nil? (info "NONE")))
+    (is (nil? (info "noassertion"))))
   (testing "Valid ids are not nil"
     (is (not (nil? (info "Apache-2.0")))))
   (testing "Returned info is a Map"
@@ -363,10 +437,13 @@
       (is (pos? (count (:see-also      info)))))))
 
 (deftest deprecated?-tests
-  (testing "Invalid ids return false"
+  (testing "Invalid ids, LicenseRefs and special forms return false"
     (is (false? (deprecated? nil)))
     (is (false? (deprecated? "")))
-    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (deprecated? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (deprecated? "LicenseRef-foo")))
+    (is (false? (deprecated? "NONE")))
+    (is (false? (deprecated? "noassertion"))))
   (testing "Deprecated ids"
     (is (true? (deprecated? "GPL-2.0")))
     (is (true? (deprecated? "Nunit")))
@@ -391,10 +468,13 @@
     (is (instance? java.util.Set (non-deprecated-ids)))))
 
 (deftest osi-approved?-tests
-  (testing "Invalid ids return false"
+  (testing "Invalid ids, LicenseRefs and special forms return false"
     (is (false? (osi-approved? nil)))
     (is (false? (osi-approved? "")))
-    (is (false? (osi-approved? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (osi-approved? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (osi-approved? "LicenseRef-foo")))
+    (is (false? (osi-approved? "NONE")))
+    (is (false? (osi-approved? "noassertion"))))
   (testing "OSI approved ids"
     (is (true? (osi-approved? "Apache-2.0")))
     (is (true? (osi-approved? "GPL-3.0")))
@@ -420,10 +500,13 @@
     (is (instance? java.util.Set (osi-approved-ids)))))
 
 (deftest fsf-libre?-tests
-  (testing "Invalid ids return false"
+  (testing "Invalid ids, LicenseRefs and special forms return false"
     (is (false? (fsf-libre? nil)))
     (is (false? (fsf-libre? "")))
-    (is (false? (fsf-libre? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL"))))
+    (is (false? (fsf-libre? "INVALID-ID-WHICH-DOES-NOT-EXIST-IN-SPDX-AND-NEVER-WILL")))
+    (is (false? (fsf-libre? "LicenseRef-foo")))
+    (is (false? (fsf-libre? "NONE")))
+    (is (false? (fsf-libre? "noassertion"))))
   (testing "FSF Libre ids"
     (is (true? (fsf-libre? "Intel")))
     (is (true? (fsf-libre? "Unlicense")))

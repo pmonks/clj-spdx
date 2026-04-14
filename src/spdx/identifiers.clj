@@ -39,6 +39,7 @@
   * `:exception-id` - listed SPDX exception identifier
   * `:license-ref` - LicenseRef
   * `:addition-ref` - AdditionRef
+  * `:special-form` - one of the special forms (`NONE`, `NOASSERTION`)
   * `nil` - `s` is not a listed SPDX identifier, LicenseRef or
     AdditionRef"
   [^String s]
@@ -48,6 +49,7 @@
       (se/listed?       s) :exception-id
       (sl/license-ref?  s) :license-ref
       (se/addition-ref? s) :addition-ref
+      (sl/special-form? s) :special-form
       :else                nil)))
 
 (defn listed?
@@ -58,9 +60,9 @@
         (se/listed? s))))
 
 (defn canonicalise
-  "Canonicalises `s` (an SPDX identifier or Ref), by returning it in its
-  canonical case.  Returns `nil` if `s` is `nil` or not a listed SPDX
-  identifier, LicenseRef, or AdditionRef.
+  "Canonicalises `s` (an SPDX identifier, Ref, or special form), by returning it
+  in its canonical case.  Returns `nil` if `s` is `nil` or not a listed SPDX
+  identifier, LicenseRef, AdditionRef or special form (`NONE`, `NOASSERTION`).
 
   Notes:
 
@@ -70,8 +72,8 @@
     [[spdx.expressions/canonicalise]] can be used for that."
   [^String s]
   (case (id-type s)
-    (:license-id   :license-ref)  (sl/canonicalise s)
-    (:exception-id :addition-ref) (se/canonicalise s)
+    (:license-id  :license-ref :special-form) (sl/canonicalise s)
+    (:exception-id :addition-ref)              (se/canonicalise s)
     nil))
 
 (defn equivalent?
@@ -89,10 +91,15 @@
   (boolean
     (or (and (nil? s1) (nil? s2))
         (case [(id-type s1) (id-type s2)]
-          [:license-id   :license-id]   (sl/equivalent? s1 s2)
-          [:license-ref  :license-ref]  (sl/equivalent? s1 s2)
-          [:exception-id :exception-id] (se/equivalent? s1 s2)
-          [:addition-ref :addition-ref] (se/equivalent? s1 s2)
+          ([:license-id   :license-id]
+           [:license-ref  :license-ref]
+           [:special-form :special-form])
+            (sl/equivalent? s1 s2)
+
+          ([:exception-id :exception-id]
+           [:addition-ref :addition-ref])
+            (se/equivalent? s1 s2)
+
           false))))
 
 #_{:clj-kondo/ignore [:unused-binding {:exclude-destructured-keys-in-fn-args true}]}
