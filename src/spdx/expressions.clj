@@ -53,14 +53,12 @@
   or-expression          = and-expression (or and-expression)*
   expression             = ows or-expression ows")
 
-(def ^:private license-ids-fragment   (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (filter #(not (s/ends-with? % "+")) (sl/ids))))))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar
-(def ^:private exception-ids-fragment (delay (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (se/ids)))))
-
-(def ^:private grammar-d (delay (format grammar-format
-                                        @license-ids-fragment
-                                        @exception-ids-fragment)))
-
-(def ^:private parser-d (delay (insta/parser @grammar-d :start :expression)))
+(def ^:private parser-d (delay
+                          (let [license-ids            (filter #(not (s/ends-with? % "+")) (sl/ids))  ; Filter out the few deprecated GNU ids that end in "+", since that's better handled by the grammar (and would be ambiguous if left in)
+                                license-ids-fragment   (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") license-ids))
+                                exception-ids-fragment (s/join " | " (map #(str "#\"(?i:" (re/esc %) ")\"") (se/ids)))
+                                grammar                (format grammar-format license-ids-fragment exception-ids-fragment)]
+                            (insta/parser grammar :start :expression))))
 
 (defn- walk-internal
   "Internal implementation of [[walk]]."
@@ -322,8 +320,8 @@
                                  :addition-ref         #(case (count %&)
                                                           1 {:addition-ref  (first %&)}
                                                           2 {:addition-document-ref (first %&) :addition-ref (second %&)})
-                                 :none                 #(hash-map :special-form :none)
-                                 :no-assertion         #(hash-map :special-form :no-assertion)
+                                 :none                 (constantly {:special-form :none})
+                                 :no-assertion         (constantly {:special-form :no-assertion})
                                  :license-or-later     #(merge {:or-later? true} (first %&))
                                  :with-expression      #(merge (first %&)        (second %&))
                                  :and-expression       #(case (count %&)
@@ -527,10 +525,10 @@
   ([parse-tree] (extract-ids parse-tree nil))
   ([parse-tree  {:keys [include-or-later?] :or {include-or-later? false}}]
    (walk {:license-fn #(into #{} (filter identity [(when (:license-id           %) (str (:license-id %) (when (and include-or-later? (:or-later? %)) "+")))
-                                                   (when (:license-exception-id %) (:license-exception-id        %))
+                                                   (when (:license-exception-id %) (:license-exception-id       %))
                                                    (when (:license-ref          %) (sl/license-ref-map->string  %))
                                                    (when (:addition-ref         %) (se/addition-ref-map->string %))
-                                                   (when (:special-form         %) (special-form->string         %))]))
+                                                   (when (:special-form         %) (special-form->string        %))]))
           :group-fn   #(not-empty (into #{} cat (rest %2)))}  ; Strip leading operator keyword then flatten the rest (%2 is a 2-level nested sequence) and put in a set
          parse-tree)))
 
@@ -545,8 +543,5 @@
   (sl/init!)
   (se/init!)
   (sir/init!)
-  @license-ids-fragment
-  @exception-ids-fragment
-  @grammar-d
   @parser-d
   nil)
