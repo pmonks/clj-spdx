@@ -133,7 +133,7 @@ deps-try com.github.pmonks/clj-spdx
 (si/deprecated? "GPL-3.0")
 ;=> true
 
-; spdx.licenses and spdx.exceptions provide a similar set of fns
+; spdx.licenses and spdx.exceptions provide a similar set of identifier-type specific fns
 
 
 ;; A taste of the spdx.matching namespace
