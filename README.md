@@ -206,10 +206,11 @@ deps-try com.github.pmonks/clj-spdx
 ;=>  {:start 61 :end 84 :match "CLASSPATH-EXCEPTION-2.0" "Identifier" "CLASSPATH-EXCEPTION-2.0"})
 
 ; ...but they _are_ canonicalised by the id-seq-* fns, which also provide identifier type information
-(sre/id-seq-matches "initial text mpl-2.0 more text licenseref-foo even more text CLASSPATH-EXCEPTION-2.0 final text")
-;=> ({:start 13 :end 20 :match "mpl-2.0"                 :identifier "MPL-2.0"                 :type :license-id}
-;=>  {:start 31 :end 45 :match "licenseref-foo"          :identifier "LicenseRef-foo"          :type :license-ref :license-ref "foo"}
-;=>  {:start 61 :end 84 :match "CLASSPATH-EXCEPTION-2.0" :identifier "Classpath-exception-2.0" :type :exception-id})
+(sre/id-seq-matches "initial text mpl-2.0 more text licenseref-foo even more text CLASSPATH-EXCEPTION-2.0 some more text NoAssertion final text")
+;=> ({:start 13  :end 20  :match "mpl-2.0"                 :identifier "MPL-2.0"                 :type :license-id}
+;=>  {:start 31  :end 45  :match "licenseref-foo"          :identifier "LicenseRef-foo"          :type :license-ref :license-ref "foo"}
+;=>  {:start 61  :end 84  :match "CLASSPATH-EXCEPTION-2.0" :identifier "Classpath-exception-2.0" :type :exception-id}
+;=>  {:start 100 :end 111 :match "NoAssertion"             :identifier "NOASSERTION"             :type :special-form})
 ```
 
 ## Contributor Information
