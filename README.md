@@ -163,22 +163,22 @@ deps-try com.github.pmonks/clj-spdx
 
 ;; A taste of the spdx.expressions namespace
 
-(require '[spdx.expressions :as se])
+(require '[spdx.expressions :as sx])
 
-(se/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
+(sx/parse "GPL-2.0+ WITH Classpath-exception-2.0 OR Apache-2.0")
 ;=> [:or
 ;=>   {:license-id "Apache-2.0"}
 ;=>   {:license-id "GPL-2.0-or-later" :license-exception-id "Classpath-exception-2.0"}]
 
-(se/parse "documentref-foo:licenseref-bar with documentref-foo:additionref-bar")
+(sx/parse "documentref-foo:licenseref-bar with documentref-foo:additionref-bar")
 ;=> {:document-ref "foo"          :license-ref "bar"
 ;=>  :addition-document-ref "foo" :addition-ref "bar"}
 
-(se/parse "none and mit")
+(sx/parse "none and mit")
 ;=> [:and {:license-id "MIT"} {:special-form :none}]
 
 ; Expression canonicalisation
-(se/canonicalise "mit and apache-2.0 or ecos-2.0+")
+(sx/canonicalise "mit and apache-2.0 or ecos-2.0+")
 ;=> "GPL-2.0-or-later WITH eCos-exception-2.0 OR (Apache-2.0 AND MIT)"
 
 
