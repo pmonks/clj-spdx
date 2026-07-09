@@ -223,34 +223,36 @@
   [x y]
   (cond
     ; license-ids first
-    (and (:license-id x) (:license-id y))   (if (and (= (s/lower-case (:license-id x)) (s/lower-case (:license-id y)))
-                                                     (= (:or-later? x) (:or-later? y)))
-                                              (cond
-                                                ; exception-ids first
-                                                (and (:license-exception-id x) (:addition-ref         y)) -1
-                                                ; then AdditionRefs
-                                                (and (:addition-ref         x) (:license-exception-id y)) 1
-                                                :else                          (compare (map->sortable-string x) (map->sortable-string y)))
-                                              (compare (map->sortable-string x) (map->sortable-string y)))
-    (:license-id x)                         -1
-    (:license-id y)                         1
+    (and (:license-id x) (:license-id y))     (if (and (= (s/lower-case (:license-id x)) (s/lower-case (:license-id y)))
+                                                       (= (:or-later? x) (:or-later? y)))
+                                                (cond
+                                                  ; exception-ids first
+                                                  (and (:license-exception-id x) (:addition-ref         y)) -1
+                                                  ; then AdditionRefs
+                                                  (and (:addition-ref         x) (:license-exception-id y)) 1
+                                                  :else                          (compare (map->sortable-string x) (map->sortable-string y)))
+                                                (compare (map->sortable-string x) (map->sortable-string y)))
+    (:license-id x)                           -1
+    (:license-id y)                           1
+
     ; then LicenseRefs
-    (and (:license-ref x) (:license-ref y)) (if (and (= (:license-ref x)  (:license-ref y))
-                                                     (= (:document-ref x) (:document-ref y)))
-                                              (cond
-                                                ; exception-ids first
-                                                (and (:license-exception-id x) (:addition-ref         y)) -1
-                                                ; then AdditionRefs
-                                                (and (:addition-ref         x) (:license-exception-id y)) 1
-                                                :else                          (compare (map->sortable-string x) (map->sortable-string y)))
-                                              (compare (map->sortable-string x) (map->sortable-string y)))
-    (:license-ref x)                        -1
-    (:license-ref y)                        1
+    (and (:license-ref x) (:license-ref y))   (if (and (= (:license-ref x)  (:license-ref y))
+                                                       (= (:document-ref x) (:document-ref y)))
+                                                (cond
+                                                  ; exception-ids first
+                                                  (and (:license-exception-id x) (:addition-ref         y)) -1
+                                                  ; then AdditionRefs
+                                                  (and (:addition-ref         x) (:license-exception-id y)) 1
+                                                  :else                          (compare (map->sortable-string x) (map->sortable-string y)))
+                                                (compare (map->sortable-string x) (map->sortable-string y)))
+    (:license-ref x)                          -1
+    (:license-ref y)                          1
+
     ; then special forms
     (and (:special-form x) (:special-form y)) (compare (special-form->string x) (special-form->string y))
-    (:special-form x)                       -1
-    (:special-form y)                       1
-    :else                                   1))
+    (:special-form x)                         -1
+    (:special-form y)                         1
+    :else                                     1))
 
 (defn- compare-sequences
   "Compares two sequences, as found in a parse tree.  Comparisons are based on
@@ -339,7 +341,7 @@
                (if sort-licenses?               (sort-parse-tree             parse-tree) parse-tree)
                (if collapse-redundant-clauses?  (collapse-redundant-clauses  parse-tree) parse-tree)
                (if (and collapse-redundant-clauses?
-                        sort-licenses?)         (sort-parse-tree             parse-tree) parse-tree)))))))  ; Post-sort, to ensure results of collapsing redundant clauses get sorted
+                        sort-licenses?)         (sort-parse-tree             parse-tree) parse-tree)))))))  ; Re-sort, to ensure the results of collapsing redundant clauses also get sorted
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn parse
@@ -361,8 +363,8 @@
     and those that don't will be left unchanged in the parse tree.
   * `:collapse-redundant-clauses?` (`boolean`, default `true`) - controls
     whether redundant clauses (e.g. `\"Apache-2.0 AND Apache-2.0\"`) are
-    collapsed during parsing.  Note: disabling sorting (`:sort-licenses?`) may
-    cause redundant clauses to remain in the parse tree.
+    collapsed during parsing.  Note: disabling sorting (`:sort-licenses?`) will
+    cause some logically redundant clauses to remain in the parse tree.
   * `:sort-licenses?` (`boolean`, default `true`) - controls whether licenses
     that appear at the same level in the parse tree are sorted alphabetically.
     This means that some parse trees will be identical for different (though
