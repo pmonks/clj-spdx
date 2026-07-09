@@ -463,11 +463,6 @@
            (parse opts)
            unparse)))
 
-(defn ^:deprecated ^:no-doc normalise
-  "Deprecated - use [[canonicalise]] instead."
-  ([^String s]      (canonicalise s nil))
-  ([^String s opts] (canonicalise s opts)))
-
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn valid?
   "Is `s` (a `String`) a valid SPDX license expression?
@@ -545,3 +540,12 @@
   (sir/init!)
   @parser-d
   nil)
+
+
+; Deprecated vars, to be removed in the next major version
+
+(defn ^:deprecated ^:no-doc normalise
+  "Deprecated - use [[canonicalise]] instead."
+  ([^String s]      (canonicalise s nil))
+  ([^String s opts] (canonicalise s opts)))
+

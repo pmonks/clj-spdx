@@ -185,6 +185,7 @@
 
 
 ; Deprecated vars, to be removed in the next major version
+
 (defn ^:deprecated ^:no-doc listed-id?
   "Superceded by [[listed?]]."
   [^String s]
