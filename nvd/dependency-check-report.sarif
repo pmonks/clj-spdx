@@ -17,8 +17,8 @@
           "npm": "This report may contain data retrieved from the the Github Advisory Database (via NPM Audit API): https://github.com/advisories/",
           "retirejs": "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
           "ossindex": "This report may contain data retrieved from the Sonatype OSS Index: https://ossindex.sonatype.org"
-            ,"NVD API Last Checked": "2026-06-16T08:49:26Z"
-            ,"NVD API Last Modified": "2026-06-16T08:16:24Z"
+            ,"NVD API Last Checked": "2026-07-14T07:48:58Z"
+            ,"NVD API Last Modified": "2026-07-14T07:16:20Z"
           }
         }
       },
@@ -91,14 +91,14 @@
              "text": "Error Prone is a static analysis tool for Java that catches common programming mistakes at compile-time."
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/com\/google\/errorprone\/error_prone_annotations\/2.41.0\/error_prone_annotations-2.41.0.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/com\/google\/errorprone\/error_prone_annotations\/2.48.0\/error_prone_annotations-2.48.0.jar"
           },
           "hashes": {
-            "md5": "75e3b25da8b8a2136463c4674f5e49bf",
-            "sha1": "4381275efdef6ddfae38f002c31e84cd001c97f0",
-            "sha256": "a56e782b5b50811ac204073a355a21d915a2107fce13ec711331ad036f660fcc"
+            "md5": "5eba47749e8c9d5335cbbc5963300607",
+            "sha1": "bbe30942a31d1778c74cb272321267eca82dc708",
+            "sha256": "b49c5c958316ed67a09c699dda9aa749caf434d51d863dea599ef36a49b9c855"
           },          "properties": {
-"license": "Apache 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id5": "pkg:maven\/com.google.errorprone\/error_prone_annotations@2.41.0"
+"license": "Apache 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id5": "pkg:maven\/com.google.errorprone\/error_prone_annotations@2.48.0"
           }
         }
 ,{
@@ -106,15 +106,15 @@
              "text": "Gson JSON library"
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/com\/google\/code\/gson\/gson\/2.13.2\/gson-2.13.2.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/com\/google\/code\/gson\/gson\/2.14.0\/gson-2.14.0.jar"
           },
           "hashes": {
-            "md5": "a2c47e14ce5e956105458fe455f5d542",
-            "sha1": "48b8230771e573b54ce6e867a9001e75977fe78e",
-            "sha256": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0"
+            "md5": "43b20830936ec97d8df6b174e3509d9e",
+            "sha1": "efc0e34ede4e3204eaefb84a00e55e8c86634382",
+            "sha256": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f"
           },          "properties": {
-"license": "Apache-2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id6": "pkg:maven\/com.google.code.gson\/gson@2.13.2"
-,                    "vid4": "cpe:2.3:a:google:gson:2.13.2:*:*:*:*:*:*:*"
+"license": "Apache-2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id6": "pkg:maven\/com.google.code.gson\/gson@2.14.0"
+,                    "vid4": "cpe:2.3:a:google:gson:2.14.0:*:*:*:*:*:*:*"
           }
         }
 ,{
@@ -137,14 +137,14 @@
              "text": "Java library which implements the Java object model for SPDX and provides useful helper functions."
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/java-spdx-library\/2.0.3\/java-spdx-library-2.0.3.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/java-spdx-library\/2.0.4\/java-spdx-library-2.0.4.jar"
           },
           "hashes": {
-            "md5": "f8f4547a4c1cda2e2e29008784772197",
-            "sha1": "584b420a9cc6db37dc7ce82addb71ab646825e16",
-            "sha256": "0f90da5cf2b47731079abcdf64cac00490ee367e0ce448003963034bf772c513"
+            "md5": "d9781295da88f0ad2c8b9556626fb485",
+            "sha1": "f8d0ce376c4bfcd130bb2f2f995ff40301ec8f3d",
+            "sha256": "b30bd31e93e604cdc5bde792e82dddc824f40d67bd96a51b1d3b9b9764415e0c"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id8": "pkg:maven\/org.spdx\/java-spdx-library@2.0.3"
+"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id8": "pkg:maven\/org.spdx\/java-spdx-library@2.0.4"
           }
         }
 ,{
@@ -152,15 +152,15 @@
              "text": "jsoup is a Java library that simplifies working with real-world HTML and XML. It offers an easy-to-use API for URL fetching, data parsing, extraction, and manipulation using DOM API methods, CSS, and xpath selectors. jsoup implements the WHATWG HTML5 specification, and parses HTML to the same DOM as modern browsers."
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/jsoup\/jsoup\/1.22.1\/jsoup-1.22.1.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/jsoup\/jsoup\/1.22.2\/jsoup-1.22.2.jar"
           },
           "hashes": {
-            "md5": "650c793f2362dd13d13355e558ea56f0",
-            "sha1": "9085290f1032d8bdd4ab0a279d176a4bd9e282ca",
-            "sha256": "cfd3298d8720cddfb0545109ccc6ea0ef39eff7e9c40a10ad95c93a65f01c916"
+            "md5": "e3ceba301c43333ac7715fab5595d85b",
+            "sha1": "3e7aa5e79f51efa3d0ec15140e186140173119f7",
+            "sha256": "596785996d3c6df16f544c232d10a9a1d88783b2a4740cf5251cb616f2be704d"
           },          "properties": {
-"license": "The MIT License: https:\/\/jsoup.org\/license",                    "id9": "pkg:maven\/org.jsoup\/jsoup@1.22.1"
-,                    "vid5": "cpe:2.3:a:jsoup:jsoup:1.22.1:*:*:*:*:*:*:*"
+"license": "The MIT License: https:\/\/jsoup.org\/license",                    "id9": "pkg:maven\/org.jsoup\/jsoup@1.22.2"
+,                    "vid5": "cpe:2.3:a:jsoup:jsoup:1.22.2:*:*:*:*:*:*:*"
           }
         }
 ,{
@@ -198,14 +198,14 @@
              "text": "The slf4j API"
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/slf4j\/slf4j-api\/2.0.17\/slf4j-api-2.0.17.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/slf4j\/slf4j-api\/2.0.18\/slf4j-api-2.0.18.jar"
           },
           "hashes": {
-            "md5": "b6480d114a23683498ac3f746f959d2f",
-            "sha1": "d9e58ac9c7779ba3bf8142aff6c830617a7fe60f",
-            "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832"
+            "md5": "fe2837bd49bfb76657419002fed20ca9",
+            "sha1": "78a9e7a37cd6360e0b818e86341b24123d28d4df",
+            "sha256": "44508fd1576500688c790b190acdd16fec4f8c79a3e0b900afd70503cf055f55"
           },          "properties": {
-"license": "https:\/\/opensource.org\/license\/mit",                    "id12": "pkg:maven\/org.slf4j\/slf4j-api@2.0.17"
+"license": "https:\/\/opensource.org\/license\/mit",                    "id12": "pkg:maven\/org.slf4j\/slf4j-api@2.0.18"
           }
         }
 ,{
@@ -213,14 +213,14 @@
              "text": "Core libraries for SPDX"
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-core\/1.0.3\/spdx-java-core-1.0.3.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-core\/1.0.4\/spdx-java-core-1.0.4.jar"
           },
           "hashes": {
-            "md5": "eda865ec8f20f3452c6f97d03f17f466",
-            "sha1": "ddf4751cec50b29d0806a995d67b0ba6b071ae05",
-            "sha256": "3624a8edc894e4d9dba53a0acecc1d5d31bb68135a5c4759873535821e35fc02"
+            "md5": "a6c33d8ba6002bfef1566aef3d33d501",
+            "sha1": "d790adef6649d3314eff80ab73c36c2b7d22917e",
+            "sha256": "6d7bd79f9e2447d393bb5abcbdd72137bb60b8c52350527b5934a5cc63572976"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id13": "pkg:maven\/org.spdx\/spdx-java-core@1.0.3"
+"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id13": "pkg:maven\/org.spdx\/spdx-java-core@1.0.4"
           }
         }
 ,{
@@ -228,14 +228,14 @@
              "text": "SPDX model versions 2.0, 2.1, and 2.3"
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-2_X\/1.0.3\/spdx-java-model-2_X-1.0.3.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-2_X\/1.0.4\/spdx-java-model-2_X-1.0.4.jar"
           },
           "hashes": {
-            "md5": "f3e46827a2d7df81286712a0fb403bff",
-            "sha1": "b481453468f814b26cbfc8186dc98a1552949e59",
-            "sha256": "97ff4e4b7a4b04d59a3caacd8f67979493549ac5536ab1d0093c53e7aed1bf57"
+            "md5": "a155f05c557b520f59ea8a02a0698b4a",
+            "sha1": "890874f0a08a7b83cfaf3c264794825cec7726b9",
+            "sha256": "8f6b495fa25a210eec4690e65fed00300748d4fb473f64f8bdb4e2ba30ae69da"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id14": "pkg:maven\/org.spdx\/spdx-java-model-2_X@1.0.3"
+"license": "The Apache Software License, Version 2.0: http:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id14": "pkg:maven\/org.spdx\/spdx-java-model-2_X@1.0.4"
           }
         }
 ,{
@@ -243,14 +243,14 @@
              "text": "Generated java model source code"
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-3_0\/1.0.3\/spdx-java-model-3_0-1.0.3.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/spdx\/spdx-java-model-3_0\/1.0.4\/spdx-java-model-3_0-1.0.4.jar"
           },
           "hashes": {
-            "md5": "2dc2062035e4dbeeb0b4768b9d4f7a65",
-            "sha1": "f9012d906673a486eec9a553f060746689ece219",
-            "sha256": "7f2b1286cfbb7427aaaf89fac2037fdc0a0b3ab9f25812fe8872cf3e768a1644"
+            "md5": "188df95653edce6bcd6a8d97127cf589",
+            "sha1": "90c645bef180632caaa672a1c0020f063eff8137",
+            "sha256": "f6829826438f5f2f1488455506f494f4168a0d14311fe3ab49608ec81fceb268"
           },          "properties": {
-"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id15": "pkg:maven\/org.spdx\/spdx-java-model-3_0@1.0.3"
+"license": "The Apache Software License, Version 2.0: https:\/\/www.apache.org\/licenses\/LICENSE-2.0.txt",                    "id15": "pkg:maven\/org.spdx\/spdx-java-model-3_0@1.0.4"
           }
         }
 ,{

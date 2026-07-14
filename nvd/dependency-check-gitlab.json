@@ -22,8 +22,8 @@
                         "url": "https://github.com/dependency-check/DependencyCheck/"
         },
 
-        "end_time": "2026-06-16T08:49:34",
-                "start_time": "2026-06-16T08:49:34",
+        "end_time": "2026-07-14T07:49:05",
+                "start_time": "2026-07-14T07:49:05",
                 "status":  "success"  ,
                 "type": "dependency_scanning"
 
@@ -67,14 +67,14 @@
                         "package": {
                             "name": "com.google.errorprone:error_prone_annotations"
                         },
-                        "version": "2.41.0"
+                        "version": "2.48.0"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "com.google.code.gson:gson"
                         },
-                        "version": "2.13.2"
+                        "version": "2.14.0"
 
                                                                                                                     }
 ,                    {
@@ -88,14 +88,14 @@
                         "package": {
                             "name": "org.spdx:java-spdx-library"
                         },
-                        "version": "2.0.3"
+                        "version": "2.0.4"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.jsoup:jsoup"
                         },
-                        "version": "1.22.1"
+                        "version": "1.22.2"
 
                                                                                                                     }
 ,                    {
@@ -116,28 +116,28 @@
                         "package": {
                             "name": "org.slf4j:slf4j-api"
                         },
-                        "version": "2.0.17"
+                        "version": "2.0.18"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.spdx:spdx-java-core"
                         },
-                        "version": "1.0.3"
+                        "version": "1.0.4"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.spdx:spdx-java-model-2_X"
                         },
-                        "version": "1.0.3"
+                        "version": "1.0.4"
 
                                                                                                                     }
 ,                    {
                         "package": {
                             "name": "org.spdx:spdx-java-model-3_0"
                         },
-                        "version": "1.0.3"
+                        "version": "1.0.4"
 
                                                                                                                     }
 ,                    {
