@@ -15,7 +15,10 @@
 
 ; Static initialisation
 (when (s/blank? (System/getProperty "org.spdx.downloadCacheEnabled"))
-  (System/setProperty "org.spdx.downloadCacheEnabled" (str true)))  ; Note: unlike Spdx-Java-Library itself, we enable the download cache by default
+  (System/setProperty "org.spdx.downloadCacheEnabled" (str true)))     ; Note: unlike Spdx-Java-Library itself, we enable the download cache by default
+(when (s/blank? (System/getProperty "org.spdx.downloadCacheCheckIntervalSecs"))
+  (System/setProperty "org.spdx.downloadCacheEnabled" (str 2629746)))  ; We also set the default check interval to 1 month, instead of 1 day
+
 (org.spdx.library.SpdxModelFactory/init)
 
 (def list-obj (delay (org.spdx.library.ListedLicenses/getListedLicenses)))
