@@ -4,16 +4,16 @@
         <engineVersion>12.2.0</engineVersion>
         <dataSource>
             <name>NVD API Last Checked</name>
-            <timestamp>2026-08-11T05:48:40Z</timestamp>
+            <timestamp>2026-08-18T03:23:10Z</timestamp>
         </dataSource>
         <dataSource>
             <name>NVD API Last Modified</name>
-            <timestamp>2026-08-11T05:17:14Z</timestamp>
+            <timestamp>2026-08-18T03:16:40Z</timestamp>
         </dataSource>
     </scanInfo>
     <projectInfo>
         <name>com.github.pmonks/clj-spdx 1.0.354-SNAPSHOT</name>
-        <reportDate>2026-08-11T05:48:50.139812495Z</reportDate>
+        <reportDate>2026-08-18T03:23:19.875633213Z</reportDate>
         <credits>This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov, Github Advisory Database (via NPM Audit API): https://github.com/advisories/, and the RetireJS community.</credits>
     </projectInfo>
     <dependencies>
