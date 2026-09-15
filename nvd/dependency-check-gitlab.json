@@ -22,8 +22,8 @@
                         "url": "https://github.com/dependency-check/DependencyCheck/"
         },
 
-        "end_time": "2026-09-08T06:58:12",
-                "start_time": "2026-09-08T06:58:12",
+        "end_time": "2026-09-15T11:23:32",
+                "start_time": "2026-09-15T11:23:32",
                 "status":  "success"  ,
                 "type": "dependency_scanning"
 
@@ -116,7 +116,7 @@
                         "package": {
                             "name": "org.slf4j:slf4j-api"
                         },
-                        "version": "2.0.18"
+                        "version": "2.0.19"
 
                                                                                                                     }
 ,                    {
