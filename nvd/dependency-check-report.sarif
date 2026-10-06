@@ -17,8 +17,8 @@
           "npm": "This report may contain data retrieved from the the Github Advisory Database (via NPM Audit API): https://github.com/advisories/",
           "retirejs": "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
           "ossindex": "This report may contain data retrieved from the Sonatype OSS Index: https://ossindex.sonatype.org"
-            ,"NVD API Last Checked": "2026-09-29T08:27:40Z"
-            ,"NVD API Last Modified": "2026-09-29T08:17:21Z"
+            ,"NVD API Last Checked": "2026-10-06T10:47:57Z"
+            ,"NVD API Last Modified": "2026-10-06T10:16:55Z"
           }
         }
       },
@@ -198,14 +198,14 @@
              "text": "The slf4j API"
           },
           "location": {
-            "uri": "file://\/home\/runner\/.m2\/repository\/org\/slf4j\/slf4j-api\/2.0.19\/slf4j-api-2.0.19.jar"
+            "uri": "file://\/home\/runner\/.m2\/repository\/org\/slf4j\/slf4j-api\/2.0.20\/slf4j-api-2.0.20.jar"
           },
           "hashes": {
-            "md5": "1ca3a2acac3d5947b37d9b5536c55829",
-            "sha1": "efad9817997b3a6ce9e058f92e612917a744c290",
-            "sha256": "e91ff6d720609e7a194ffe758c3ed5c84e798617ae07b0a0f6a4fe229741b4bb"
+            "md5": "a7a6798aa78b29152479f89565f57446",
+            "sha1": "7fea9d92ba67e9b3c8f03515fb202b86a1fe44f6",
+            "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439"
           },          "properties": {
-"license": "https:\/\/opensource.org\/license\/mit",                    "id12": "pkg:maven\/org.slf4j\/slf4j-api@2.0.19"
+"license": "https:\/\/opensource.org\/license\/mit",                    "id12": "pkg:maven\/org.slf4j\/slf4j-api@2.0.20"
           }
         }
 ,{

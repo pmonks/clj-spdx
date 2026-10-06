@@ -5,19 +5,19 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-09-29T08:27:40Z"
+                "timestamp": "2026-10-06T10:47:57Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-09-29T08:17:21Z"
+                "timestamp": "2026-10-06T10:16:55Z"
             }
         ]
 
 
     },
     "projectInfo": {
-        "name": "com.github.pmonks\/clj-spdx 1.0.357-SNAPSHOT",
-        "reportDate": "2026-09-29T08:27:50.711077506Z",
+        "name": "com.github.pmonks\/clj-spdx 1.0.358-SNAPSHOT",
+        "reportDate": "2026-10-06T10:48:07.171281949Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
@@ -2995,11 +2995,11 @@
             ]
         },{
             "isVirtual": false,
-            "fileName": "slf4j-api-2.0.19.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/slf4j\/slf4j-api\/2.0.19\/slf4j-api-2.0.19.jar"
-,"md5": "1ca3a2acac3d5947b37d9b5536c55829",
-            "sha1": "efad9817997b3a6ce9e058f92e612917a744c290",
-            "sha256": "e91ff6d720609e7a194ffe758c3ed5c84e798617ae07b0a0f6a4fe229741b4bb","description": "The slf4j API","license": "https:\/\/opensource.org\/license\/mit"            ,"evidenceCollected": {
+            "fileName": "slf4j-api-2.0.20.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/slf4j\/slf4j-api\/2.0.20\/slf4j-api-2.0.20.jar"
+,"md5": "a7a6798aa78b29152479f89565f57446",
+            "sha1": "7fea9d92ba67e9b3c8f03515fb202b86a1fe44f6",
+            "sha256": "7e1446499b359675d8aabe6af2de86b85e72ae8a2a932c0b40d0e5ba57097439","description": "The slf4j API","license": "https:\/\/opensource.org\/license\/mit"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -3178,34 +3178,34 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "2.0.19"
+                        "value": "2.0.20"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGH",
                         "source": "Manifest",
                         "name": "Bundle-Version",
-                        "value": "2.0.19"
+                        "value": "2.0.20"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGH",
                         "source": "Manifest",
                         "name": "Implementation-Version",
-                        "value": "2.0.19"
+                        "value": "2.0.20"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "2.0.19"
+                        "value": "2.0.20"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.slf4j\/slf4j-api@2.0.19"
+                        "id": "pkg:maven\/org.slf4j\/slf4j-api@2.0.20"
 ,"confidence": "HIGH"                    }
             ]
         },{
