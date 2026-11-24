@@ -5,11 +5,11 @@
         "dataSource": [
 {
                 "name": "NVD API Last Checked",
-                "timestamp": "2026-11-17T10:16:08Z"
+                "timestamp": "2026-11-24T12:22:36Z"
             }
 ,{
                 "name": "NVD API Last Modified",
-                "timestamp": "2026-11-17T09:17:27Z"
+                "timestamp": "2026-11-24T12:17:26Z"
             }
         ]
 
@@ -17,7 +17,7 @@
     },
     "projectInfo": {
         "name": "com.github.pmonks\/clj-spdx 1.0.358-SNAPSHOT",
-        "reportDate": "2026-11-17T10:16:17.512469169Z",
+        "reportDate": "2026-11-24T12:22:45.494084536Z",
         "credits": {
             "NVD": "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
             "CISA": "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
@@ -29,11 +29,11 @@
     "dependencies": [
 {
             "isVirtual": false,
-            "fileName": "clojure-1.12.6.jar",
-            "filePath": "\/home\/runner\/.m2\/repository\/org\/clojure\/clojure\/1.12.6\/clojure-1.12.6.jar"
-,"md5": "fed52831369cb598402a7742e1310118",
-            "sha1": "ea744fe01a09db46021b07c4aadf072698bf7a75",
-            "sha256": "21b578db389a8e74b286ce79c4a7f86ec641e26d88b12f18d69030916b0e18ca","description": "Clojure core environment and runtime library.","license": "Eclipse Public License 1.0: http:\/\/opensource.org\/licenses\/eclipse-1.0.php"            ,"evidenceCollected": {
+            "fileName": "clojure-1.12.7.jar",
+            "filePath": "\/home\/runner\/.m2\/repository\/org\/clojure\/clojure\/1.12.7\/clojure-1.12.7.jar"
+,"md5": "c88443bb5f4e617dccadb0f77ac3ac6f",
+            "sha1": "2470bf256615c8058cdf64ea1baf38f26823e5ac",
+            "sha256": "97dd1a679d96c426133b4e4b7d39ee1ad8c49ad7ef5c5d7aaf691b56e6af8f0a","description": "Clojure core environment and runtime library.","license": "Eclipse Public License 1.0: http:\/\/opensource.org\/licenses\/eclipse-1.0.php"            ,"evidenceCollected": {
                 "vendorEvidence": [
 {
                             "type": "vendor",
@@ -184,25 +184,25 @@
                         "confidence": "HIGH",
                         "source": "file",
                         "name": "version",
-                        "value": "1.12.6"
+                        "value": "1.12.7"
                     }
 ,                    {
                         "type": "version",
                         "confidence": "HIGHEST",
                         "source": "pom",
                         "name": "version",
-                        "value": "1.12.6"
+                        "value": "1.12.7"
                     }
                 ]
             }
                 ,"packages": [
                     {
-                        "id": "pkg:maven\/org.clojure\/clojure@1.12.6"
+                        "id": "pkg:maven\/org.clojure\/clojure@1.12.7"
 ,"confidence": "HIGH"                    }
             ]                ,"vulnerabilityIds": [
                 {
-                    "id": "cpe:2.3:a:clojure:clojure:1.12.6:*:*:*:*:*:*:*"
-,"confidence": "HIGHEST","url": "https:\/\/nvd.nist.gov\/vuln\/search#\/nvd\/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Aclojure%3Aclojure%3A1.12.6%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A"                }
+                    "id": "cpe:2.3:a:clojure:clojure:1.12.7:*:*:*:*:*:*:*"
+,"confidence": "HIGHEST","url": "https:\/\/nvd.nist.gov\/vuln\/search#\/nvd\/home?sortOrder=3&sortDirection=2&cpeFilterMode=applicability&resultType=records&cpeName=cpe%3A2.3%3Aa%3Aclojure%3Aclojure%3A1.12.7%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A"                }
             ]
         },{
             "isVirtual": false,
